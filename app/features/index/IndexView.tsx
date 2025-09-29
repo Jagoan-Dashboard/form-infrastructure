@@ -179,7 +179,7 @@ export function IndexView() {
   const handleSubmit = () => {
     if (validateForm()) {
       // If validation passes, navigate to next page
-      navigate("/komoditas");
+      navigate("/infrastruktur");
     }
   };
 
