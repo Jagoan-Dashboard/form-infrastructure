@@ -21,25 +21,25 @@ export default function InfrastrukturView() {
       id: "tata bangunan",
       name: "Tata Bangunan",
       icon: "mynaui:building-solid",
-      path: "/tata-bangunan"
+      path: "/infrastruktur/tata-bangunan"
     },
     {
       id: "tata ruang",
       name: "Tata Ruang",
       icon: "fluent:data-area-20-filled",
-      path: "/tata-ruang"
+      path: "/infrastruktur/tata-ruang"
     },
     {
       id: "sumber daya air",
       name: "Sumber Daya Air",
       icon: "mdi:water-pump",
-      path: "/sumber-daya-air"
+      path: "/infrastruktur/sumber-daya-air"
     },
     {
       id: "binamarga",
       name: "Binamarga",
       icon: "fa6-solid:road",
-      path: "/binamarga"
+      path: "/infrastruktur/binamarga"
     },
   ];
 

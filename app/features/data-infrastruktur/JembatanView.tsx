@@ -418,7 +418,7 @@ export function JembatanView() {
 
         <div className="mt-8 flex w-full justify-end gap-3">
           <Button
-            onClick={() => navigate("/binamarga")}
+            onClick={() => navigate("/infrastruktur/binamarga")}
             variant="outline"
             className="px-8 py-6 rounded-xl cursor-pointer  border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
           >

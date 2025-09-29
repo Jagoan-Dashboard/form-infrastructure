@@ -3,4 +3,5 @@ export interface SidebarStep {
     title: string;
     desc: string;
     path: string;
+    isWildcard?: boolean;
 }

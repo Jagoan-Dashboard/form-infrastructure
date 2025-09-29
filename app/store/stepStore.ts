@@ -22,6 +22,8 @@ export const useStepStore = create<StepStore>((set, get) => ({
 
   setStep: (step) => {
     set({ currentStep: step });
+    // Don't auto-navigate for step 3 (Data Komoditas) since it has multiple sub-routes
+    if (step.number === 3) return;
     const { navigate } = get();
     if (navigate) navigate(step.path);
   },

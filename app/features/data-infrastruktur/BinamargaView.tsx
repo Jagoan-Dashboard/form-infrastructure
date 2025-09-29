@@ -11,9 +11,9 @@ interface BinamargaType {
 }
 
 export default function BinamargaView() {
-  const [selectedBinamarga, setSelectedBinamarga] = useState<
-    string | null
-  >(null);
+  const [selectedBinamarga, setSelectedBinamarga] = useState<string | null>(
+    null
+  );
   const navigate = useNavigate();
 
   const BinamargaList: BinamargaType[] = [
@@ -21,13 +21,13 @@ export default function BinamargaView() {
       id: "jalan",
       name: "Jalan",
       icon: "fa6-solid:road",
-      path: "/jalan",
+      path: "/infrastruktur/binamarga/jalan",
     },
     {
       id: "jembatan",
       name: "Jembatan",
       icon: "fa6-solid:bridge-water",
-      path: "/jembatan",
+      path: "/infrastruktur/binamarga/jembatan",
     },
   ];
 
