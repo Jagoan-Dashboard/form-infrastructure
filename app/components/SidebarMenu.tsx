@@ -136,17 +136,21 @@ export function SidebarMenu() {
               })}
             </div>
 
-            {/* Help */}
-            <div className="mt-8 pt-6 border-t border-gray-100">
-              <button className="w-full flex justify-between items-center gap-3 text-sm text-gray-700 hover:text-blue-600 transition-colors">
+            {/* Help Section */}
+            <div className="mt-12 pt-8 border-t border-gray-100">
+              <button className="w-full flex justify-between items-center gap-3 p-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-100 hover:border-blue-200 transition-all duration-200 group">
                 <div className="text-left">
-                  <p className="font-semibold text-base">Butuh bantuan?</p>
-                  <p className="text-xs text-gray-500">Hubungi kami</p>
+                  <p className="font-semibold text-base text-gray-800 group-hover:text-blue-700">
+                    Hubungi atau Perlu Bantuan?
+                  </p>
+                  <p className="text-xs text-gray-600 group-hover:text-blue-600 mt-1">
+                    Tim support siap membantu Anda
+                  </p>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center transition-colors duration-200">
                   <Icon
-                    icon="material-symbols:headset-mic"
-                    className="w-5 h-5 text-gray-600"
+                    icon="material-symbols:support-agent"
+                    className="w-5 h-5 text-blue-600 group-hover:text-blue-700"
                   />
                 </div>
               </button>
