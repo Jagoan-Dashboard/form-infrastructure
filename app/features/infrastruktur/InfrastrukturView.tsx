@@ -102,7 +102,12 @@ export default function InfrastrukturView() {
           Kembali
         </Button>
         <Button
-          onClick={() => navigate("/tata-ruang")}
+          onClick={() => {
+            const selected = infrastrukturList.find(item => item.id === selectedInfrastruktur);
+            if (selected) {
+              navigate(selected.path);
+            }
+          }}
           disabled={!selectedInfrastruktur}
           className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >

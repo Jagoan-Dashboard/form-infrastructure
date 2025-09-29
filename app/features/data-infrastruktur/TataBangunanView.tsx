@@ -204,41 +204,141 @@ export function TataBangunanView() {
 
   return (
     <main className="space-y-6">
-      {/* Data Kawasan */}
+      {/* Data Bangunan */}
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
         <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          Identifikasi Kawasan
+          Identifikasi Bangunan
         </h3>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Gambaran area lokasi / Kawasan
+              Nama Bangunan
               <span className="text-red-500">*</span>
             </label>
             <Input
               type="text"
-              placeholder="Contoh: Sempadan Sungai"
+              placeholder="Contoh: SMA Negeri"
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Kategori Kawasan<span className="text-red-500">*</span>
+              Jenis Bangunan yang Dilaporkan
+              <span className="text-red-500">*</span>
             </label>
             <Select>
               <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Kategori Kawasan" />
+                <SelectValue placeholder="Pilih Jenis Bangunan" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cagar-budaya">Kantor Pemerintah</SelectItem>
+                <SelectItem value="hutan">Sekolah</SelectItem>
+                <SelectItem value="pariwisata">Puskesmas/Posyandu</SelectItem>
+                <SelectItem value="perkebunan">Pasar</SelectItem>
+                <SelectItem value="permukiman">
+                  Fasilitas Umum Lainnya
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Status Laporan<span className="text-red-500">*</span>
+            </label>
+            <Select>
+              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+                <SelectValue placeholder="Pilih Status Laporan" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="cagar-budaya">
-                  Kawasan Cagar Budaya
+                  Rehabilitasi/Perbaikan
                 </SelectItem>
-                <SelectItem value="hutan">Kawasan Hutan</SelectItem>
-                <SelectItem value="pariwisata">Kawasan Pariwisata</SelectItem>
-                <SelectItem value="perkebunan">Kawasan Perkebunan</SelectItem>
-                <SelectItem value="permukiman">Kawasan Permukiman</SelectItem>
+                <SelectItem value="hutan">Sekolah</SelectItem>
+                <SelectItem value="pariwisata">Pembangunan Baru</SelectItem>
+                <SelectItem value="permukiman">Lainnya</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Sumber Dana<span className="text-red-500">*</span>
+            </label>
+            <Select>
+              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+                <SelectValue placeholder="Pilih Sumber Dana" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cagar-budaya">APBD Kabupaten</SelectItem>
+                <SelectItem value="hutan">APBD Provinsi</SelectItem>
+                <SelectItem value="pariwisata">APBN</SelectItem>
+                <SelectItem value="perkebunan">Dana Desa</SelectItem>
+                <SelectItem value="permukiman">Swadaya Masyarakat</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Tahun Pembangunan/Rehabilitasi Terakhir
+              <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              placeholder="Contoh: 2010"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Data Teknis */}
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+        <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+          Data Teknis Lokasi
+        </h3>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Alamat Lengkap
+              <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              placeholder="Contoh: Jl. Al-Hilal No.13, Sobo, Banyuwangi"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Luas Lantai (m<sup>2</sup>)
+              <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              placeholder="Contoh: 500"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Jumlah Lantai<span className="text-red-500">*</span>
+            </label>
+            <Select>
+              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+                <SelectValue placeholder="Pilih Sumber Dana" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cagar-budaya">1</SelectItem>
+                <SelectItem value="hutan">2</SelectItem>
+                <SelectItem value="pariwisata">3</SelectItem>
+                <SelectItem value="perkebunan">Lainnya</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -318,30 +418,30 @@ export function TataBangunanView() {
       {/* Data Pelanggaran */}
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
         <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          Data Pelanggaran/Kerusakan
+          Detail Kerusakan
         </h3>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Jenis Pelanggaran Tata Bangunan*
+              Jenis Pekerjaan (jika rehabilitasi)*
             </label>
             <Select>
               <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Jenis Pelanggaran" />
+                <SelectValue placeholder="Pilih Jenis Pekerjaan" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="desa-a">
-                  Bangunan di sempadan sungai/waduk/bendungan
+                  Perbaikan Atap
                 </SelectItem>
                 <SelectItem value="desa-b">
-                  Bangunan di sempadan jalan
+                  Perbaikan Dinding/Cat
                 </SelectItem>
                 <SelectItem value="desa-b">
-                  Alih fungsi lahan pertanian
+                  Perbaikan Pintu/Jendela
                 </SelectItem>
                 <SelectItem value="desa-b">
-                  Alih fungsi Bangunan terbuka hijau
+                  Perbaikan Sanitasi/MCK
                 </SelectItem>
                 <SelectItem value="desa-b">Lainnya</SelectItem>
               </SelectContent>
@@ -350,57 +450,22 @@ export function TataBangunanView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Tingkat Pelanggaran*
+              Kondisi Setelah Rehabilitasi*
             </label>
             <Select>
               <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Tingkat Pelanggaran" />
+                <SelectValue placeholder="Pilih TKondisi Setelah Rehabilitasi" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="desa-a">
-                  Ringan (dapat diperbaiki cepat, fungsi kawasan masih berjalan)
+                  Baik & Siap Pakai
                 </SelectItem>
                 <SelectItem value="desa-b">
-                  Sedang (fungsi kawasan terganggu sebagian)
+                  Masih Membutuhkan Perbaikan Tambahan
                 </SelectItem>
                 <SelectItem value="desa-b">
-                  Berat (fungsi kawasan hilang / tidak sesuai peruntukan)
+                  Lainnya
                 </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Dampak Lingkungan*
-            </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Dampak Lingkungan" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desa-a">
-                  Menurunnya kualitas Bangunan / ekosistem
-                </SelectItem>
-                <SelectItem value="desa-b">Potensi banjir / longsor</SelectItem>
-                <SelectItem value="desa-b">
-                  Mengganggu aktivitas warga
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Tingkat Urgensi Penanganan*
-            </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Peran Pelapor" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desa-a">Mendesak</SelectItem>
-                <SelectItem value="desa-b">Biasa</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -408,7 +473,7 @@ export function TataBangunanView() {
           {/* Foto Lokasi */}
           <div className="col-span-2">
             <Label className="text-sm font-semibold text-gray-700 mb-4">
-              Foto Lokasi/Kerusakan*
+              Foto Kerusakan*
             </Label>
             <ImageUpload />
           </div>

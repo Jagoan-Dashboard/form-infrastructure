@@ -13,7 +13,7 @@ import {
 import { useNavigate } from "react-router";
 import { Label } from "~/components/ui/label";
 
-export function SumberDayaAirView() {
+export function JalanView() {
   const [position, setPosition] = useState<[number, number]>([
     -7.4034, 111.4464,
   ]); // Default: Ngawi
@@ -207,36 +207,64 @@ export function SumberDayaAirView() {
       {/* Data Irigasi */}
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
         <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          Identifikasi Daerah Irigasi
+          Informasi Ruas Jalan
         </h3>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Nama Daerah Irigasi
+              Nama Ruas Jalan/Kode Ruas
               <span className="text-red-500">*</span>
             </label>
             <Input
               type="text"
-              placeholder="Contoh: DI Sambi"
+              placeholder="Contoh: Ruas Ngawi-Karangjati-20"
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Jenis Irigasi<span className="text-red-500">*</span>
+              Jenis Jalan<span className="text-red-500">*</span>
             </label>
             <Select>
               <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Jenis Irigasi" />
+                <SelectValue placeholder="Pilih Jenis Jalan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cagar-budaya">Saluran Sekunder</SelectItem>
-                <SelectItem value="hutan">Embung/Dam</SelectItem>
-                <SelectItem value="pariwisata">Bendung</SelectItem>
-                <SelectItem value="perkebunan">Pintu Air</SelectItem>
-                <SelectItem value="permukiman">Lainnya</SelectItem>
+                <SelectItem value="cagar-budaya">Jalan Nasional</SelectItem>
+                <SelectItem value="hutan">Jalan Provinsi</SelectItem>
+                <SelectItem value="pariwisata">Jalan Kabupaten</SelectItem>
+                <SelectItem value="perkebunan">Jalan Desa</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Panjang Segmen yang Diperiksa (m)
+              <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              placeholder="Contoh: 2785"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Klasifikasi Fungsi Jalan<span className="text-red-500">*</span>
+            </label>
+            <Select>
+              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+                <SelectValue placeholder="Pilih Klasifikasi Fungsi Jalan" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cagar-budaya">Arteri</SelectItem>
+                <SelectItem value="hutan">Kolektor</SelectItem>
+                <SelectItem value="pariwisata">Lokal</SelectItem>
+                <SelectItem value="perkebunan">Lingkungan</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -316,10 +344,27 @@ export function SumberDayaAirView() {
       {/* Data Kerusakan */}
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
         <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          Data Kerusakan
+          Data Teknis Perkerasan Jalan
         </h3>
 
         <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Jenis Perkerasan*
+            </label>
+            <Select>
+              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+                <SelectValue placeholder="Pilih Jenis Perkerasan" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desa-a">Aspal</SelectItem>
+                <SelectItem value="desa-b">Beton</SelectItem>
+                <SelectItem value="desa-b">Paving</SelectItem>
+                <SelectItem value="desa-b">Jalan Tanah</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Jenis Kerusakan*
@@ -329,11 +374,12 @@ export function SumberDayaAirView() {
                 <SelectValue placeholder="Pilih Jenis Kerusakan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">Retak/Bocor</SelectItem>
-                <SelectItem value="desa-b">Longsor/Ambrol</SelectItem>
-                <SelectItem value="desa-b">Sedimentasi Tinggi</SelectItem>
-                <SelectItem value="desa-b">Tersumbat Sampah</SelectItem>
-                <SelectItem value="desa-b">Struktur Beton Rusak</SelectItem>
+                <SelectItem value="desa-a">Lubang (Potholes)</SelectItem>
+                <SelectItem value="desa-b">
+                  Retak Buaya (Aligator Cracking)
+                </SelectItem>
+                <SelectItem value="desa-b">Amblas/Longsor</SelectItem>
+                <SelectItem value="desa-b">Permukaan Aus/Raveling</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -347,22 +393,16 @@ export function SumberDayaAirView() {
                 <SelectValue placeholder="Pilih Tingkat Pelanggaran" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">
-                  Ringan (fungsi masih berjalan)
-                </SelectItem>
-                <SelectItem value="desa-b">
-                  Sedang (fungsi terganggu sebagian)
-                </SelectItem>
-                <SelectItem value="desa-b">
-                  Berat (tidak dapat difungsikan sama sekali)
-                </SelectItem>
+                <SelectItem value="desa-a">Ringan</SelectItem>
+                <SelectItem value="desa-b">Sedang</SelectItem>
+                <SelectItem value="desa-b">Berat</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Perkiraan Panjang Kerusakan (m)*
+              Panjang Kerusakan (m)*
             </label>
             <Input
               type="text"
@@ -373,7 +413,7 @@ export function SumberDayaAirView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Perkiraan Lebar Kerusakan (m)*
+              Lebar Kerusakan (m)*
             </label>
             <Input
               type="text"
@@ -384,13 +424,65 @@ export function SumberDayaAirView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Perkiraan Luas Kerusakan (m<sup>2</sup>)*
+              Total Luas Kerusakan (m<sup>2</sup>)*
             </label>
             <Input
               type="text"
               placeholder="Contoh: 20"
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+        <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+          Dampak & Urgensi
+        </h3>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Kondisi Lalu Lintas Saat ini*
+            </label>
+            <Select>
+              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+                <SelectValue placeholder="Pilih Kondisi Lalu Lintas Saat ini" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desa-a">Masih Bisa Dilalui</SelectItem>
+                <SelectItem value="desa-b">Hanya Satu Jalur Bisa Dilalui</SelectItem>
+                <SelectItem value="desa-b">Tidak Bisa Dilalui/Jalan Putus</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Volume Lalu Lintas Harian
+              <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              placeholder="Contoh: 200"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Kategori Prioritas Penanganan*
+            </label>
+            <Select>
+              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+                <SelectValue placeholder="Pilih Kategori Prioritas Penanganan" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desa-a">Darurat</SelectItem>
+                <SelectItem value="desa-b">Cepat</SelectItem>
+                <SelectItem value="desa-b">Rutin</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Foto Lokasi */}
@@ -410,57 +502,9 @@ export function SumberDayaAirView() {
           </div>
         </div>
 
-      </div>
-
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
-        <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          Dampak
-        </h3>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Area Sawah Terdampak (ha)
-              <span className="text-red-500">*</span>
-            </label>
-            <Input
-              type="text"
-              placeholder="Contoh: 10"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Jumlah Petani Terdampak
-              <span className="text-red-500">*</span>
-            </label>
-            <Input
-              type="text"
-              placeholder="Contoh: 5"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Kategori Urgensi Penaganan<span className="text-red-500">*</span>
-            </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Kategori Urgensi Penaganan" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="cagar-budaya">Mendesak (potensi gagal panen/banjir)</SelectItem>
-                <SelectItem value="hutan">Rutin</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
         <div className="mt-8 flex w-full justify-end gap-3">
           <Button
-            onClick={() => navigate("/infrastruktur")}
+            onClick={() => navigate("/binamarga")}
             variant="outline"
             className="px-8 py-6 rounded-xl cursor-pointer  border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
           >
