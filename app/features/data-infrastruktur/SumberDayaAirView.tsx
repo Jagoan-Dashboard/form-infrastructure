@@ -1,3 +1,4 @@
+import z from "zod";
 import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
@@ -12,6 +13,7 @@ import {
 } from "~/components/ui/select";
 import { useNavigate } from "react-router";
 import { Label } from "~/components/ui/label";
+import { sumberDayaAirSchema } from "./validation/sumberDayaAirValidation";
 
 export function SumberDayaAirView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -20,6 +22,24 @@ export function SumberDayaAirView() {
   const [latitude, setLatitude] = useState("-7.4034");
   const [longitude, setLongitude] = useState("111.4464");
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
+  // Form states
+  const [namaDaerahIrigasi, setNamaDaerahIrigasi] = useState("");
+  const [jenisIrigasi, setJenisIrigasi] = useState("");
+  const [jenisKerusakan, setJenisKerusakan] = useState("");
+  const [tingkatKerusakan, setTingkatKerusakan] = useState("");
+  const [perkiraanPanjangKerusakan, setPerkiraanPanjangKerusakan] = useState("");
+  const [perkiraanLebarKerusakan, setPerkiraanLebarKerusakan] = useState("");
+  const [perkiraanLuasKerusakan, setPerkiraanLuasKerusakan] = useState("");
+  const [areaSawahTerdampak, setAreaSawahTerdampak] = useState("");
+  const [jumlahPetaniTerdampak, setJumlahPetaniTerdampak] = useState("");
+  const [kategoriUrgensi, setKategoriUrgensi] = useState("");
+  const [fotoKerusakan, setFotoKerusakan] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  // Error states
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const navigate = useNavigate();
 
   // Sync position dengan input values
@@ -109,9 +129,54 @@ export function SumberDayaAirView() {
     );
   };
 
+  const validateForm = () => {
+    try {
+      sumberDayaAirSchema.parse({
+        latitude,
+        longitude,
+        namaDaerahIrigasi,
+        jenisIrigasi,
+        jenisKerusakan,
+        tingkatKerusakan,
+        perkiraanPanjangKerusakan,
+        perkiraanLebarKerusakan,
+        perkiraanLuasKerusakan,
+        areaSawahTerdampak,
+        jumlahPetaniTerdampak,
+        kategoriUrgensi,
+        fotoKerusakan,
+      });
+
+      // If validation passes, clear errors
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Record<string, string> = {};
+        error.issues.forEach((err) => {
+          // Use the field path as key, not the message
+          if (err.path && err.path.length > 0) {
+            const fieldName = err.path[0] as string;
+            newErrors[fieldName] = err.message;
+          }
+        });
+        setErrors(newErrors);
+        return false;
+      }
+      return false;
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    if (validateForm()) {
+      // If validation passes, navigate to next page
+      navigate("/submit");
+    }
+  };
+
   function ImageUpload() {
     const [isDragging, setIsDragging] = useState(false);
-    const [preview, setPreview] = useState<string | null>(null);
 
     const handleDragOver = (e: React.DragEvent) => {
       e.preventDefault();
@@ -126,24 +191,36 @@ export function SumberDayaAirView() {
       e.preventDefault();
       setIsDragging(false);
 
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+      const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith("image/"));
+      if (files.length > 0) {
+        const newFiles = [...fotoKerusakan, ...files];
+        setFotoKerusakan(newFiles);
+
+        // Create preview URLs for new files
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewUrls(prev => [...prev, reader.result as string]);
+          };
+          reader.readAsDataURL(file);
+        });
       }
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+      const files = Array.from(e.target.files || []).filter(file => file.type.startsWith("image/"));
+      if (files.length > 0) {
+        const newFiles = [...fotoKerusakan, ...files];
+        setFotoKerusakan(newFiles);
+
+        // Create preview URLs for new files
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewUrls(prev => [...prev, reader.result as string]);
+          };
+          reader.readAsDataURL(file);
+        });
       }
     };
 
@@ -161,26 +238,39 @@ export function SumberDayaAirView() {
         <input
           type="file"
           accept="image/*"
+          multiple
           onChange={handleFileSelect}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
 
-        {preview ? (
-          <div className="relative">
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-full h-48 object-cover rounded-lg"
-            />
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setPreview(null);
-              }}
-              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-            >
-              <Icon icon="mdi:close" className="w-4 h-4" />
-            </button>
+        {previewUrls.length > 0 ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {previewUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={url}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+                      const newFiles = fotoKerusakan.filter((_, i) => i !== index);
+                      setPreviewUrls(newPreviewUrls);
+                      setFotoKerusakan(newFiles);
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                  >
+                    <Icon icon="mdi:close" className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 text-center">
+              {fotoKerusakan.length} foto dipilih. Klik + untuk menambah foto lagi.
+            </p>
           </div>
         ) : (
           <div className="text-center">
@@ -188,13 +278,13 @@ export function SumberDayaAirView() {
               <Icon icon="mdi:cloud-upload" className="w-8 h-8 text-blue-600" />
             </div>
             <p className="text-sm font-semibold text-gray-700 mb-1">
-              Upload Foto Pertumbuhan
+              Upload Foto Kerusakan
             </p>
             <p className="text-xs text-gray-500">
-              Drag & drop atau klik untuk upload
+              Drag & drop atau klik untuk upload (minimal 1 foto)
             </p>
             <p className="text-xs text-gray-400 mt-2">
-              PNG, JPG, JPEG (Max 5MB)
+              PNG, JPG, JPEG (Max 5MB per file)
             </p>
           </div>
         )}
@@ -218,27 +308,43 @@ export function SumberDayaAirView() {
             </label>
             <Input
               type="text"
+              value={namaDaerahIrigasi}
+              onChange={(e) => setNamaDaerahIrigasi(e.target.value)}
               placeholder="Contoh: DI Sambi"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.namaDaerahIrigasi
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.namaDaerahIrigasi && (
+              <p className="text-red-500 text-sm mt-1">{errors.namaDaerahIrigasi}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Jenis Irigasi<span className="text-red-500">*</span>
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={jenisIrigasi} onValueChange={setJenisIrigasi}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.jenisIrigasi
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Jenis Irigasi" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cagar-budaya">Saluran Sekunder</SelectItem>
-                <SelectItem value="hutan">Embung/Dam</SelectItem>
-                <SelectItem value="pariwisata">Bendung</SelectItem>
-                <SelectItem value="perkebunan">Pintu Air</SelectItem>
-                <SelectItem value="permukiman">Lainnya</SelectItem>
+                <SelectItem value="saluran-sekunder">Saluran Sekunder</SelectItem>
+                <SelectItem value="embung-dam">Embung/Dam</SelectItem>
+                <SelectItem value="bendung">Bendung</SelectItem>
+                <SelectItem value="pintu-air">Pintu Air</SelectItem>
+                <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
             </Select>
+            {errors.jenisIrigasi && (
+              <p className="text-red-500 text-sm mt-1">{errors.jenisIrigasi}</p>
+            )}
           </div>
         </div>
       </div>
@@ -268,9 +374,16 @@ export function SumberDayaAirView() {
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  errors.latitude
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
                 placeholder="-7.4034"
               />
+              {errors.latitude && (
+                <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
+              )}
             </div>
 
             <div>
@@ -281,9 +394,16 @@ export function SumberDayaAirView() {
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  errors.longitude
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
                 placeholder="111.4464"
               />
+              {errors.longitude && (
+                <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>
+              )}
             </div>
 
             <Button
@@ -324,40 +444,54 @@ export function SumberDayaAirView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Jenis Kerusakan*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={jenisKerusakan} onValueChange={setJenisKerusakan}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.jenisKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Jenis Kerusakan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">Retak/Bocor</SelectItem>
-                <SelectItem value="desa-b">Longsor/Ambrol</SelectItem>
-                <SelectItem value="desa-b">Sedimentasi Tinggi</SelectItem>
-                <SelectItem value="desa-b">Tersumbat Sampah</SelectItem>
-                <SelectItem value="desa-b">Struktur Beton Rusak</SelectItem>
+                <SelectItem value="retak-bocor">Retak/Bocor</SelectItem>
+                <SelectItem value="longsor-ambrol">Longsor/Ambrol</SelectItem>
+                <SelectItem value="sedimentasi-tinggi">Sedimentasi Tinggi</SelectItem>
+                <SelectItem value="tersumbat-sampah">Tersumbat Sampah</SelectItem>
+                <SelectItem value="struktur-beton-rusak">Struktur Beton Rusak</SelectItem>
               </SelectContent>
             </Select>
+            {errors.jenisKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.jenisKerusakan}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Tingkat Kerusakan*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Tingkat Pelanggaran" />
+            <Select value={tingkatKerusakan} onValueChange={setTingkatKerusakan}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.tingkatKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
+                <SelectValue placeholder="Pilih Tingkat Kerusakan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">
+                <SelectItem value="ringan">
                   Ringan (fungsi masih berjalan)
                 </SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="sedang">
                   Sedang (fungsi terganggu sebagian)
                 </SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="berat">
                   Berat (tidak dapat difungsikan sama sekali)
                 </SelectItem>
               </SelectContent>
             </Select>
+            {errors.tingkatKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.tingkatKerusakan}</p>
+            )}
           </div>
 
           <div>
@@ -366,9 +500,18 @@ export function SumberDayaAirView() {
             </label>
             <Input
               type="text"
+              value={perkiraanPanjangKerusakan}
+              onChange={(e) => setPerkiraanPanjangKerusakan(e.target.value)}
               placeholder="Contoh: 10"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.perkiraanPanjangKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.perkiraanPanjangKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.perkiraanPanjangKerusakan}</p>
+            )}
           </div>
 
           <div>
@@ -377,9 +520,18 @@ export function SumberDayaAirView() {
             </label>
             <Input
               type="text"
+              value={perkiraanLebarKerusakan}
+              onChange={(e) => setPerkiraanLebarKerusakan(e.target.value)}
               placeholder="Contoh: 2"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.perkiraanLebarKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.perkiraanLebarKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.perkiraanLebarKerusakan}</p>
+            )}
           </div>
 
           <div>
@@ -388,9 +540,18 @@ export function SumberDayaAirView() {
             </label>
             <Input
               type="text"
+              value={perkiraanLuasKerusakan}
+              onChange={(e) => setPerkiraanLuasKerusakan(e.target.value)}
               placeholder="Contoh: 20"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.perkiraanLuasKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.perkiraanLuasKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.perkiraanLuasKerusakan}</p>
+            )}
           </div>
 
           {/* Foto Lokasi */}
@@ -399,6 +560,9 @@ export function SumberDayaAirView() {
               Foto Lokasi/Kerusakan*
             </Label>
             <ImageUpload />
+            {errors.fotoKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.fotoKerusakan}</p>
+            )}
           </div>
 
           {/* Upload Button - Mobile */}
@@ -425,9 +589,18 @@ export function SumberDayaAirView() {
             </label>
             <Input
               type="text"
+              value={areaSawahTerdampak}
+              onChange={(e) => setAreaSawahTerdampak(e.target.value)}
               placeholder="Contoh: 10"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.areaSawahTerdampak
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.areaSawahTerdampak && (
+              <p className="text-red-500 text-sm mt-1">{errors.areaSawahTerdampak}</p>
+            )}
           </div>
 
           <div>
@@ -437,24 +610,40 @@ export function SumberDayaAirView() {
             </label>
             <Input
               type="text"
+              value={jumlahPetaniTerdampak}
+              onChange={(e) => setJumlahPetaniTerdampak(e.target.value)}
               placeholder="Contoh: 5"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.jumlahPetaniTerdampak
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.jumlahPetaniTerdampak && (
+              <p className="text-red-500 text-sm mt-1">{errors.jumlahPetaniTerdampak}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Kategori Urgensi Penaganan<span className="text-red-500">*</span>
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Kategori Urgensi Penaganan" />
+            <Select value={kategoriUrgensi} onValueChange={setKategoriUrgensi}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.kategoriUrgensi
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
+                <SelectValue placeholder="Pilih Kategori Urgensi Penanganan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cagar-budaya">Mendesak (potensi gagal panen/banjir)</SelectItem>
-                <SelectItem value="hutan">Rutin</SelectItem>
+                <SelectItem value="mendesak">Mendesak (potensi gagal panen/banjir)</SelectItem>
+                <SelectItem value="rutin">Rutin</SelectItem>
               </SelectContent>
             </Select>
+            {errors.kategoriUrgensi && (
+              <p className="text-red-500 text-sm mt-1">{errors.kategoriUrgensi}</p>
+            )}
           </div>
         </div>
 
@@ -467,7 +656,7 @@ export function SumberDayaAirView() {
             Kembali
           </Button>
           <Button
-            onClick={() => navigate("/submit")}
+            onClick={handleSubmit}
             className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2"
           >
             Kirim

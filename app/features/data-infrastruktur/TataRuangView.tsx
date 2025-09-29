@@ -1,3 +1,4 @@
+import z from "zod";
 import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
@@ -12,6 +13,7 @@ import {
 } from "~/components/ui/select";
 import { useNavigate } from "react-router";
 import { Label } from "~/components/ui/label";
+import { tataRuangSchema } from "./validation/tataRuangValidation";
 
 export function TataRuangView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -20,6 +22,20 @@ export function TataRuangView() {
   const [latitude, setLatitude] = useState("-7.4034");
   const [longitude, setLongitude] = useState("111.4464");
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
+  // Form states
+  const [gambaranAreaLokasi, setGambaranAreaLokasi] = useState("");
+  const [kategoriKawasan, setKategoriKawasan] = useState("");
+  const [jenisPelanggaran, setJenisPelanggaran] = useState("");
+  const [tingkatPelanggaran, setTingkatPelanggaran] = useState("");
+  const [dampakLingkungan, setDampakLingkungan] = useState("");
+  const [tingkatUrgensi, setTingkatUrgensi] = useState("");
+  const [fotoLokasi, setFotoLokasi] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  // Error states
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const navigate = useNavigate();
 
   // Sync position dengan input values
@@ -109,9 +125,50 @@ export function TataRuangView() {
     );
   };
 
+  const validateForm = () => {
+    try {
+      tataRuangSchema.parse({
+        latitude,
+        longitude,
+        gambaranAreaLokasi,
+        kategoriKawasan,
+        jenisPelanggaran,
+        tingkatPelanggaran,
+        dampakLingkungan,
+        tingkatUrgensi,
+        fotoLokasi,
+      });
+
+      // If validation passes, clear errors
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Record<string, string> = {};
+        error.issues.forEach((err) => {
+          // Use the field path as key, not the message
+          if (err.path && err.path.length > 0) {
+            const fieldName = err.path[0] as string;
+            newErrors[fieldName] = err.message;
+          }
+        });
+        setErrors(newErrors);
+        return false;
+      }
+      return false;
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    if (validateForm()) {
+      // If validation passes, navigate to next page
+      navigate("/submit");
+    }
+  };
+
   function ImageUpload() {
     const [isDragging, setIsDragging] = useState(false);
-    const [preview, setPreview] = useState<string | null>(null);
 
     const handleDragOver = (e: React.DragEvent) => {
       e.preventDefault();
@@ -126,24 +183,36 @@ export function TataRuangView() {
       e.preventDefault();
       setIsDragging(false);
 
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+      const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith("image/"));
+      if (files.length > 0) {
+        const newFiles = [...fotoLokasi, ...files];
+        setFotoLokasi(newFiles);
+
+        // Create preview URLs for new files
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewUrls(prev => [...prev, reader.result as string]);
+          };
+          reader.readAsDataURL(file);
+        });
       }
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+      const files = Array.from(e.target.files || []).filter(file => file.type.startsWith("image/"));
+      if (files.length > 0) {
+        const newFiles = [...fotoLokasi, ...files];
+        setFotoLokasi(newFiles);
+
+        // Create preview URLs for new files
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewUrls(prev => [...prev, reader.result as string]);
+          };
+          reader.readAsDataURL(file);
+        });
       }
     };
 
@@ -161,26 +230,39 @@ export function TataRuangView() {
         <input
           type="file"
           accept="image/*"
+          multiple
           onChange={handleFileSelect}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
 
-        {preview ? (
-          <div className="relative">
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-full h-48 object-cover rounded-lg"
-            />
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setPreview(null);
-              }}
-              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-            >
-              <Icon icon="mdi:close" className="w-4 h-4" />
-            </button>
+        {previewUrls.length > 0 ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {previewUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={url}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+                      const newFiles = fotoLokasi.filter((_, i) => i !== index);
+                      setPreviewUrls(newPreviewUrls);
+                      setFotoLokasi(newFiles);
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                  >
+                    <Icon icon="mdi:close" className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 text-center">
+              {fotoLokasi.length} foto dipilih. Klik + untuk menambah foto lagi.
+            </p>
           </div>
         ) : (
           <div className="text-center">
@@ -188,13 +270,13 @@ export function TataRuangView() {
               <Icon icon="mdi:cloud-upload" className="w-8 h-8 text-blue-600" />
             </div>
             <p className="text-sm font-semibold text-gray-700 mb-1">
-              Upload Foto Pertumbuhan
+              Upload Foto Lokasi
             </p>
             <p className="text-xs text-gray-500">
-              Drag & drop atau klik untuk upload
+              Drag & drop atau klik untuk upload (minimal 1 foto)
             </p>
             <p className="text-xs text-gray-400 mt-2">
-              PNG, JPG, JPEG (Max 5MB)
+              PNG, JPG, JPEG (Max 5MB per file)
             </p>
           </div>
         )}
@@ -218,17 +300,30 @@ export function TataRuangView() {
             </label>
             <Input
               type="text"
+              value={gambaranAreaLokasi}
+              onChange={(e) => setGambaranAreaLokasi(e.target.value)}
               placeholder="Contoh: Sempadan Sungai"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.gambaranAreaLokasi
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.gambaranAreaLokasi && (
+              <p className="text-red-500 text-sm mt-1">{errors.gambaranAreaLokasi}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Kategori Kawasan<span className="text-red-500">*</span>
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={kategoriKawasan} onValueChange={setKategoriKawasan}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.kategoriKawasan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Kategori Kawasan" />
               </SelectTrigger>
               <SelectContent>
@@ -241,6 +336,9 @@ export function TataRuangView() {
                 <SelectItem value="permukiman">Kawasan Permukiman</SelectItem>
               </SelectContent>
             </Select>
+            {errors.kategoriKawasan && (
+              <p className="text-red-500 text-sm mt-1">{errors.kategoriKawasan}</p>
+            )}
           </div>
         </div>
       </div>
@@ -270,9 +368,16 @@ export function TataRuangView() {
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  errors.latitude
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
                 placeholder="-7.4034"
               />
+              {errors.latitude && (
+                <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
+              )}
             </div>
 
             <div>
@@ -283,9 +388,16 @@ export function TataRuangView() {
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  errors.longitude
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
                 placeholder="111.4464"
               />
+              {errors.longitude && (
+                <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>
+              )}
             </div>
 
             <Button
@@ -326,83 +438,111 @@ export function TataRuangView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Jenis Pelanggaran Tata Ruang*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={jenisPelanggaran} onValueChange={setJenisPelanggaran}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.jenisPelanggaran
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Jenis Pelanggaran" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">
+                <SelectItem value="bangunan-sempadan-sungai">
                   Bangunan di sempadan sungai/waduk/bendungan
                 </SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="bangunan-sempadan-jalan">
                   Bangunan di sempadan jalan
                 </SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="alih-fungsi-lahan-pertanian">
                   Alih fungsi lahan pertanian
                 </SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="alih-fungsi-ruang-terbuka-hijau">
                   Alih fungsi ruang terbuka hijau
                 </SelectItem>
-                <SelectItem value="desa-b">Lainnya</SelectItem>
+                <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
             </Select>
+            {errors.jenisPelanggaran && (
+              <p className="text-red-500 text-sm mt-1">{errors.jenisPelanggaran}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Tingkat Pelanggaran*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={tingkatPelanggaran} onValueChange={setTingkatPelanggaran}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.tingkatPelanggaran
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Tingkat Pelanggaran" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">
+                <SelectItem value="ringan">
                   Ringan (dapat diperbaiki cepat, fungsi kawasan masih berjalan)
                 </SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="sedang">
                   Sedang (fungsi kawasan terganggu sebagian)
                 </SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="berat">
                   Berat (fungsi kawasan hilang / tidak sesuai peruntukan)
                 </SelectItem>
               </SelectContent>
             </Select>
+            {errors.tingkatPelanggaran && (
+              <p className="text-red-500 text-sm mt-1">{errors.tingkatPelanggaran}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Dampak Lingkungan*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={dampakLingkungan} onValueChange={setDampakLingkungan}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.dampakLingkungan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Dampak Lingkungan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">
+                <SelectItem value="menurunnya-kualitas-ruang">
                   Menurunnya kualitas ruang / ekosistem
                 </SelectItem>
-                <SelectItem value="desa-b">Potensi banjir / longsor</SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="potensi-banjir-longsor">Potensi banjir / longsor</SelectItem>
+                <SelectItem value="mengganggu-aktivitas-warga">
                   Mengganggu aktivitas warga
                 </SelectItem>
               </SelectContent>
             </Select>
+            {errors.dampakLingkungan && (
+              <p className="text-red-500 text-sm mt-1">{errors.dampakLingkungan}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Tingkat Urgensi Penanganan*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Peran Pelapor" />
+            <Select value={tingkatUrgensi} onValueChange={setTingkatUrgensi}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.tingkatUrgensi
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
+                <SelectValue placeholder="Pilih Tingkat Urgensi" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">Mendesak</SelectItem>
-                <SelectItem value="desa-b">Biasa</SelectItem>
+                <SelectItem value="mendesak">Mendesak</SelectItem>
+                <SelectItem value="biasa">Biasa</SelectItem>
               </SelectContent>
             </Select>
+            {errors.tingkatUrgensi && (
+              <p className="text-red-500 text-sm mt-1">{errors.tingkatUrgensi}</p>
+            )}
           </div>
 
           {/* Foto Lokasi */}
@@ -411,6 +551,9 @@ export function TataRuangView() {
               Foto Lokasi/Kerusakan*
             </Label>
             <ImageUpload />
+            {errors.fotoLokasi && (
+              <p className="text-red-500 text-sm mt-1">{errors.fotoLokasi}</p>
+            )}
           </div>
 
           {/* Upload Button - Mobile */}
@@ -431,7 +574,7 @@ export function TataRuangView() {
             Kembali
           </Button>
           <Button
-            onClick={() => navigate("/submit")}
+            onClick={handleSubmit}
             className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2"
           >
             Kirim

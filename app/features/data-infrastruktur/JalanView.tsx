@@ -1,3 +1,4 @@
+import z from "zod";
 import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
@@ -12,6 +13,7 @@ import {
 } from "~/components/ui/select";
 import { useNavigate } from "react-router";
 import { Label } from "~/components/ui/label";
+import { jalanSchema } from "./validation/jalanValidation";
 
 export function JalanView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -20,6 +22,27 @@ export function JalanView() {
   const [latitude, setLatitude] = useState("-7.4034");
   const [longitude, setLongitude] = useState("111.4464");
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
+  // Form states
+  const [namaRuasJalan, setNamaRuasJalan] = useState("");
+  const [jenisJalan, setJenisJalan] = useState("");
+  const [panjangSegmen, setPanjangSegmen] = useState("");
+  const [klasifikasiFungsi, setKlasifikasiFungsi] = useState("");
+  const [jenisPerkerasan, setJenisPerkerasan] = useState("");
+  const [jenisKerusakan, setJenisKerusakan] = useState("");
+  const [tingkatKerusakan, setTingkatKerusakan] = useState("");
+  const [panjangKerusakan, setPanjangKerusakan] = useState("");
+  const [lebarKerusakan, setLebarKerusakan] = useState("");
+  const [totalLuasKerusakan, setTotalLuasKerusakan] = useState("");
+  const [kondisiLaluLintas, setKondisiLaluLintas] = useState("");
+  const [volumeLaluLintas, setVolumeLaluLintas] = useState("");
+  const [kategoriPrioritas, setKategoriPrioritas] = useState("");
+  const [fotoKerusakan, setFotoKerusakan] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  // Error states
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const navigate = useNavigate();
 
   // Sync position dengan input values
@@ -109,9 +132,57 @@ export function JalanView() {
     );
   };
 
+  const validateForm = () => {
+    try {
+      jalanSchema.parse({
+        latitude,
+        longitude,
+        namaRuasJalan,
+        jenisJalan,
+        panjangSegmen,
+        klasifikasiFungsi,
+        jenisPerkerasan,
+        jenisKerusakan,
+        tingkatKerusakan,
+        panjangKerusakan,
+        lebarKerusakan,
+        totalLuasKerusakan,
+        kondisiLaluLintas,
+        volumeLaluLintas,
+        kategoriPrioritas,
+        fotoKerusakan,
+      });
+
+      // If validation passes, clear errors
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Record<string, string> = {};
+        error.issues.forEach((err) => {
+          // Use the field path as key, not the message
+          if (err.path && err.path.length > 0) {
+            const fieldName = err.path[0] as string;
+            newErrors[fieldName] = err.message;
+          }
+        });
+        setErrors(newErrors);
+        return false;
+      }
+      return false;
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    if (validateForm()) {
+      // If validation passes, navigate to next page
+      navigate("/submit");
+    }
+  };
+
   function ImageUpload() {
     const [isDragging, setIsDragging] = useState(false);
-    const [preview, setPreview] = useState<string | null>(null);
 
     const handleDragOver = (e: React.DragEvent) => {
       e.preventDefault();
@@ -126,24 +197,36 @@ export function JalanView() {
       e.preventDefault();
       setIsDragging(false);
 
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+      const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith("image/"));
+      if (files.length > 0) {
+        const newFiles = [...fotoKerusakan, ...files];
+        setFotoKerusakan(newFiles);
+
+        // Create preview URLs for new files
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewUrls(prev => [...prev, reader.result as string]);
+          };
+          reader.readAsDataURL(file);
+        });
       }
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+      const files = Array.from(e.target.files || []).filter(file => file.type.startsWith("image/"));
+      if (files.length > 0) {
+        const newFiles = [...fotoKerusakan, ...files];
+        setFotoKerusakan(newFiles);
+
+        // Create preview URLs for new files
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewUrls(prev => [...prev, reader.result as string]);
+          };
+          reader.readAsDataURL(file);
+        });
       }
     };
 
@@ -161,26 +244,39 @@ export function JalanView() {
         <input
           type="file"
           accept="image/*"
+          multiple
           onChange={handleFileSelect}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
 
-        {preview ? (
-          <div className="relative">
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-full h-48 object-cover rounded-lg"
-            />
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setPreview(null);
-              }}
-              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-            >
-              <Icon icon="mdi:close" className="w-4 h-4" />
-            </button>
+        {previewUrls.length > 0 ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {previewUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={url}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+                      const newFiles = fotoKerusakan.filter((_, i) => i !== index);
+                      setPreviewUrls(newPreviewUrls);
+                      setFotoKerusakan(newFiles);
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                  >
+                    <Icon icon="mdi:close" className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 text-center">
+              {fotoKerusakan.length} foto dipilih. Klik + untuk menambah foto lagi.
+            </p>
           </div>
         ) : (
           <div className="text-center">
@@ -188,13 +284,13 @@ export function JalanView() {
               <Icon icon="mdi:cloud-upload" className="w-8 h-8 text-blue-600" />
             </div>
             <p className="text-sm font-semibold text-gray-700 mb-1">
-              Upload Foto Pertumbuhan
+              Upload Foto Kerusakan
             </p>
             <p className="text-xs text-gray-500">
-              Drag & drop atau klik untuk upload
+              Drag & drop atau klik untuk upload (minimal 1 foto)
             </p>
             <p className="text-xs text-gray-400 mt-2">
-              PNG, JPG, JPEG (Max 5MB)
+              PNG, JPG, JPEG (Max 5MB per file)
             </p>
           </div>
         )}
@@ -218,26 +314,42 @@ export function JalanView() {
             </label>
             <Input
               type="text"
+              value={namaRuasJalan}
+              onChange={(e) => setNamaRuasJalan(e.target.value)}
               placeholder="Contoh: Ruas Ngawi-Karangjati-20"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.namaRuasJalan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.namaRuasJalan && (
+              <p className="text-red-500 text-sm mt-1">{errors.namaRuasJalan}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Jenis Jalan<span className="text-red-500">*</span>
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={jenisJalan} onValueChange={setJenisJalan}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.jenisJalan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Jenis Jalan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cagar-budaya">Jalan Nasional</SelectItem>
-                <SelectItem value="hutan">Jalan Provinsi</SelectItem>
-                <SelectItem value="pariwisata">Jalan Kabupaten</SelectItem>
-                <SelectItem value="perkebunan">Jalan Desa</SelectItem>
+                <SelectItem value="jalan-nasional">Jalan Nasional</SelectItem>
+                <SelectItem value="jalan-provinsi">Jalan Provinsi</SelectItem>
+                <SelectItem value="jalan-kabupaten">Jalan Kabupaten</SelectItem>
+                <SelectItem value="jalan-desa">Jalan Desa</SelectItem>
               </SelectContent>
             </Select>
+            {errors.jenisJalan && (
+              <p className="text-red-500 text-sm mt-1">{errors.jenisJalan}</p>
+            )}
           </div>
 
           <div>
@@ -247,26 +359,42 @@ export function JalanView() {
             </label>
             <Input
               type="text"
+              value={panjangSegmen}
+              onChange={(e) => setPanjangSegmen(e.target.value)}
               placeholder="Contoh: 2785"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.panjangSegmen
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.panjangSegmen && (
+              <p className="text-red-500 text-sm mt-1">{errors.panjangSegmen}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Klasifikasi Fungsi Jalan<span className="text-red-500">*</span>
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={klasifikasiFungsi} onValueChange={setKlasifikasiFungsi}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.klasifikasiFungsi
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Klasifikasi Fungsi Jalan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cagar-budaya">Arteri</SelectItem>
-                <SelectItem value="hutan">Kolektor</SelectItem>
-                <SelectItem value="pariwisata">Lokal</SelectItem>
-                <SelectItem value="perkebunan">Lingkungan</SelectItem>
+                <SelectItem value="arteri">Arteri</SelectItem>
+                <SelectItem value="kolektor">Kolektor</SelectItem>
+                <SelectItem value="lokal">Lokal</SelectItem>
+                <SelectItem value="lingkungan">Lingkungan</SelectItem>
               </SelectContent>
             </Select>
+            {errors.klasifikasiFungsi && (
+              <p className="text-red-500 text-sm mt-1">{errors.klasifikasiFungsi}</p>
+            )}
           </div>
         </div>
       </div>
@@ -296,9 +424,16 @@ export function JalanView() {
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  errors.latitude
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
                 placeholder="-7.4034"
               />
+              {errors.latitude && (
+                <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
+              )}
             </div>
 
             <div>
@@ -309,9 +444,16 @@ export function JalanView() {
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  errors.longitude
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
                 placeholder="111.4464"
               />
+              {errors.longitude && (
+                <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>
+              )}
             </div>
 
             <Button
@@ -352,52 +494,73 @@ export function JalanView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Jenis Perkerasan*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={jenisPerkerasan} onValueChange={setJenisPerkerasan}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.jenisPerkerasan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Jenis Perkerasan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">Aspal</SelectItem>
-                <SelectItem value="desa-b">Beton</SelectItem>
-                <SelectItem value="desa-b">Paving</SelectItem>
-                <SelectItem value="desa-b">Jalan Tanah</SelectItem>
+                <SelectItem value="aspal">Aspal</SelectItem>
+                <SelectItem value="beton">Beton</SelectItem>
+                <SelectItem value="paving">Paving</SelectItem>
+                <SelectItem value="jalan-tanah">Jalan Tanah</SelectItem>
               </SelectContent>
             </Select>
+            {errors.jenisPerkerasan && (
+              <p className="text-red-500 text-sm mt-1">{errors.jenisPerkerasan}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Jenis Kerusakan*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={jenisKerusakan} onValueChange={setJenisKerusakan}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.jenisKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Jenis Kerusakan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">Lubang (Potholes)</SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="lubang">Lubang (Potholes)</SelectItem>
+                <SelectItem value="retak-buaya">
                   Retak Buaya (Aligator Cracking)
                 </SelectItem>
-                <SelectItem value="desa-b">Amblas/Longsor</SelectItem>
-                <SelectItem value="desa-b">Permukaan Aus/Raveling</SelectItem>
+                <SelectItem value="amblas-longsor">Amblas/Longsor</SelectItem>
+                <SelectItem value="permukaan-aus">Permukaan Aus/Raveling</SelectItem>
               </SelectContent>
             </Select>
+            {errors.jenisKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.jenisKerusakan}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Tingkat Kerusakan*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
-                <SelectValue placeholder="Pilih Tingkat Pelanggaran" />
+            <Select value={tingkatKerusakan} onValueChange={setTingkatKerusakan}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.tingkatKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
+                <SelectValue placeholder="Pilih Tingkat Kerusakan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">Ringan</SelectItem>
-                <SelectItem value="desa-b">Sedang</SelectItem>
-                <SelectItem value="desa-b">Berat</SelectItem>
+                <SelectItem value="ringan">Ringan</SelectItem>
+                <SelectItem value="sedang">Sedang</SelectItem>
+                <SelectItem value="berat">Berat</SelectItem>
               </SelectContent>
             </Select>
+            {errors.tingkatKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.tingkatKerusakan}</p>
+            )}
           </div>
 
           <div>
@@ -406,9 +569,18 @@ export function JalanView() {
             </label>
             <Input
               type="text"
+              value={panjangKerusakan}
+              onChange={(e) => setPanjangKerusakan(e.target.value)}
               placeholder="Contoh: 10"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
+                errors.panjangKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.panjangKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.panjangKerusakan}</p>
+            )}
           </div>
 
           <div>
@@ -417,9 +589,18 @@ export function JalanView() {
             </label>
             <Input
               type="text"
+              value={lebarKerusakan}
+              onChange={(e) => setLebarKerusakan(e.target.value)}
               placeholder="Contoh: 2"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
+                errors.lebarKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.lebarKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.lebarKerusakan}</p>
+            )}
           </div>
 
           <div>
@@ -428,9 +609,18 @@ export function JalanView() {
             </label>
             <Input
               type="text"
+              value={totalLuasKerusakan}
+              onChange={(e) => setTotalLuasKerusakan(e.target.value)}
               placeholder="Contoh: 20"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
+                errors.totalLuasKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.totalLuasKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.totalLuasKerusakan}</p>
+            )}
           </div>
         </div>
       </div>
@@ -445,20 +635,27 @@ export function JalanView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Kondisi Lalu Lintas Saat ini*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={kondisiLaluLintas} onValueChange={setKondisiLaluLintas}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.kondisiLaluLintas
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Kondisi Lalu Lintas Saat ini" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">Masih Bisa Dilalui</SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="masih-bisa-dilalui">Masih Bisa Dilalui</SelectItem>
+                <SelectItem value="satu-jalur">
                   Hanya Satu Jalur Bisa Dilalui
                 </SelectItem>
-                <SelectItem value="desa-b">
+                <SelectItem value="tidak-bisa-dilalui">
                   Tidak Bisa Dilalui/Jalan Putus
                 </SelectItem>
               </SelectContent>
             </Select>
+            {errors.kondisiLaluLintas && (
+              <p className="text-red-500 text-sm mt-1">{errors.kondisiLaluLintas}</p>
+            )}
           </div>
 
           <div>
@@ -468,25 +665,41 @@ export function JalanView() {
             </label>
             <Input
               type="text"
+              value={volumeLaluLintas}
+              onChange={(e) => setVolumeLaluLintas(e.target.value)}
               placeholder="Contoh: 200"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
+                errors.volumeLaluLintas
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
             />
+            {errors.volumeLaluLintas && (
+              <p className="text-red-500 text-sm mt-1">{errors.volumeLaluLintas}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Kategori Prioritas Penanganan*
             </label>
-            <Select>
-              <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white">
+            <Select value={kategoriPrioritas} onValueChange={setKategoriPrioritas}>
+              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                errors.kategoriPrioritas
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}>
                 <SelectValue placeholder="Pilih Kategori Prioritas Penanganan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">Darurat</SelectItem>
-                <SelectItem value="desa-b">Cepat</SelectItem>
-                <SelectItem value="desa-b">Rutin</SelectItem>
+                <SelectItem value="darurat">Darurat</SelectItem>
+                <SelectItem value="cepat">Cepat</SelectItem>
+                <SelectItem value="rutin">Rutin</SelectItem>
               </SelectContent>
             </Select>
+            {errors.kategoriPrioritas && (
+              <p className="text-red-500 text-sm mt-1">{errors.kategoriPrioritas}</p>
+            )}
           </div>
 
           {/* Foto Lokasi */}
@@ -495,6 +708,9 @@ export function JalanView() {
               Foto Lokasi/Kerusakan*
             </Label>
             <ImageUpload />
+            {errors.fotoKerusakan && (
+              <p className="text-red-500 text-sm mt-1">{errors.fotoKerusakan}</p>
+            )}
           </div>
 
           {/* Upload Button - Mobile */}
@@ -515,7 +731,7 @@ export function JalanView() {
             Kembali
           </Button>
           <Button
-            onClick={() => navigate("/submit")}
+            onClick={handleSubmit}
             className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2"
           >
             Kirim

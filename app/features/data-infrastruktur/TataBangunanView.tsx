@@ -34,8 +34,8 @@ export function TataBangunanView() {
   const [jumlahLantai, setJumlahLantai] = useState("");
   const [jenisPekerjaan, setJenisPekerjaan] = useState("");
   const [kondisiSetelahRehabilitasi, setKondisiSetelahRehabilitasi] = useState("");
-  const [fotoKerusakan, setFotoKerusakan] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [fotoKerusakan, setFotoKerusakan] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   // Error states
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -191,26 +191,36 @@ export function TataBangunanView() {
       e.preventDefault();
       setIsDragging(false);
 
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith("image/")) {
-        setFotoKerusakan(file);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreviewUrl(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+      const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith("image/"));
+      if (files.length > 0) {
+        const newFiles = [...fotoKerusakan, ...files];
+        setFotoKerusakan(newFiles);
+
+        // Create preview URLs for new files
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewUrls(prev => [...prev, reader.result as string]);
+          };
+          reader.readAsDataURL(file);
+        });
       }
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        setFotoKerusakan(file);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreviewUrl(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+      const files = Array.from(e.target.files || []).filter(file => file.type.startsWith("image/"));
+      if (files.length > 0) {
+        const newFiles = [...fotoKerusakan, ...files];
+        setFotoKerusakan(newFiles);
+
+        // Create preview URLs for new files
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewUrls(prev => [...prev, reader.result as string]);
+          };
+          reader.readAsDataURL(file);
+        });
       }
     };
 
@@ -228,27 +238,39 @@ export function TataBangunanView() {
         <input
           type="file"
           accept="image/*"
+          multiple
           onChange={handleFileSelect}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
 
-        {previewUrl ? (
-          <div className="relative">
-            <img
-              src={previewUrl}
-              alt="Preview"
-              className="w-full h-48 object-cover rounded-lg"
-            />
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setPreviewUrl(null);
-                setFotoKerusakan(null);
-              }}
-              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-            >
-              <Icon icon="mdi:close" className="w-4 h-4" />
-            </button>
+        {previewUrls.length > 0 ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {previewUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={url}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+                      const newFiles = fotoKerusakan.filter((_, i) => i !== index);
+                      setPreviewUrls(newPreviewUrls);
+                      setFotoKerusakan(newFiles);
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                  >
+                    <Icon icon="mdi:close" className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 text-center">
+              {fotoKerusakan.length} foto dipilih. Klik + untuk menambah foto lagi.
+            </p>
           </div>
         ) : (
           <div className="text-center">
@@ -259,10 +281,10 @@ export function TataBangunanView() {
               Upload Foto Kerusakan
             </p>
             <p className="text-xs text-gray-500">
-              Drag & drop atau klik untuk upload
+              Drag & drop atau klik untuk upload (minimal 1 foto)
             </p>
             <p className="text-xs text-gray-400 mt-2">
-              PNG, JPG, JPEG (Max 5MB)
+              PNG, JPG, JPEG (Max 5MB per file)
             </p>
           </div>
         )}

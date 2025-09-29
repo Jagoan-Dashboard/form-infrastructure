@@ -75,22 +75,16 @@ export const tataBangunanSchema = z.object({
     .string()
     .min(1, "Kondisi Setelah Rehabilitasi wajib dipilih"),
 
-  // File upload validation (optional - will be validated when file is uploaded)
+  // File upload validation (minimum 1 file required, multiple files allowed)
   fotoKerusakan: z
-    .any()
-    .optional()
-    .refine((file) => {
-      if (!file) return true; // Optional field
-      return file instanceof File;
-    }, "File harus berupa gambar yang valid")
-    .refine((file) => {
-      if (!file) return true;
-      return file.size <= 5 * 1024 * 1024; // 5MB max
-    }, "Ukuran file tidak boleh lebih dari 5MB")
-    .refine((file) => {
-      if (!file) return true;
-      return ["image/jpeg", "image/jpg", "image/png"].includes(file.type);
-    }, "File harus berformat JPG, JPEG, atau PNG"),
+    .array(z.instanceof(File))
+    .min(1, "Minimal 1 foto harus diupload")
+    .refine((files) => {
+      return files.every(file => file.size <= 5 * 1024 * 1024); // 5MB max per file
+    }, "Setiap file tidak boleh lebih dari 5MB")
+    .refine((files) => {
+      return files.every(file => ["image/jpeg", "image/jpg", "image/png"].includes(file.type));
+    }, "Semua file harus berformat JPG, JPEG, atau PNG"),
 });
 
 export type TataBangunanFormData = z.infer<typeof tataBangunanSchema>;
