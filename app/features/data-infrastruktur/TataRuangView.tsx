@@ -14,6 +14,10 @@ import {
 import { useNavigate } from "react-router";
 import { Label } from "~/components/ui/label";
 import { tataRuangSchema } from "./validation/tataRuangValidation";
+import { useFormDataStore } from "~/store/formDataStore";
+import { useSpatialPlanningMutation } from "~/hooks/useMutations";
+import type { TataRuangForm } from "~/types/formData";
+import { formatImageForAPI } from "~/utils/fileUtils";
 
 export function TataRuangView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -35,8 +39,16 @@ export function TataRuangView() {
 
   // Error states
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
+  const { getIndexData, clearAllData } = useFormDataStore();
+  const spatialPlanningMutation = useSpatialPlanningMutation();
+
+  // Debug: Clear any potentially corrupted localStorage on component mount
+  useEffect(() => {
+    const storedData = getIndexData();
+  }, []);
 
   // Sync position dengan input values
   useEffect(() => {
@@ -160,10 +172,174 @@ export function TataRuangView() {
   };
 
   // Handle form submission
-  const handleSubmit = () => {
-    if (validateForm()) {
-      // If validation passes, navigate to next page
-      navigate("/submit");
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const indexData = getIndexData();
+      if (!indexData) {
+        alert("Data tidak ditemukan. Silakan mulai dari halaman awal.");
+        navigate("/");
+        return;
+      }
+      // Map peran pelapor to institution - API expects: DINAS, DESA, KECAMATAN
+      const getInstitution = (peran: string) => {
+        switch (peran) {
+          case "desa-a":
+            return "DESA"; // Perangkat Desa → DESA
+          case "desa-b":
+            return "DINAS"; // OPD / Dinas Terkait → DINAS
+          case "kelompok-masyarakat":
+            return "KECAMATAN"; // Kelompok Masyarakat → KECAMATAN
+          default:
+            return "DESA"; // Default to DESA
+        }
+      };
+
+      // Map violation level to API format - API expects: RINGAN, SEDANG, BERAT
+      const getViolationLevel = (level: string) => {
+        switch (level) {
+          case "ringan":
+            return "RINGAN";
+          case "sedang":
+            return "SEDANG";
+          case "berat":
+            return "BERAT";
+          default:
+            return level.toUpperCase();
+        }
+      };
+
+      // Map urgency level to API format - API expects: MENDESAK, BIASA
+      const getUrgencyLevel = (urgency: string) => {
+        switch (urgency) {
+          case "mendesak":
+            return "MENDESAK";
+          case "biasa":
+            return "BIASA";
+          default:
+            return urgency.toUpperCase();
+        }
+      };
+
+      // Format datetime properly - API expects "2024-01-15T10:30:00Z" format
+      const formatDateTime = (date: Date | string | undefined): string => {
+        let dateObj: Date;
+
+        if (!date) {
+          dateObj = new Date();
+        } else if (typeof date === 'string') {
+          dateObj = new Date(date);
+          if (isNaN(dateObj.getTime())) {
+            dateObj = new Date();
+          }
+        } else if (date instanceof Date) {
+          if (isNaN(date.getTime())) {
+            dateObj = new Date();
+          } else {
+            dateObj = date;
+          }
+        } else {
+          dateObj = new Date();
+        }
+
+        // Try different formats - API error mentions "2006-01-02 15:04:05" format
+        // Let's try multiple formats
+        const isoString = dateObj.toISOString();
+        const withoutMilliseconds = isoString.replace(/\.\d{3}Z$/, 'Z');
+
+        // Format yang mungkin diharapkan API: YYYY-MM-DD HH:MM:SS
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const hours = String(dateObj.getHours()).padStart(2, '0');
+        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+        const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+
+        const sqlFormat = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+        // Try RFC3339 format first (API tries this first)
+        return withoutMilliseconds;
+      };
+
+      // Prepare data for API - try multiple datetime formats
+      const formattedDateTime = formatDateTime(indexData.tanggalLaporan);
+
+      const apiData: any = {
+        reporter_name: indexData.namaPelapor,
+        institution: getInstitution(indexData.peranPelapor),
+        phone_number: indexData.nomorHP,
+        report_datetime: formattedDateTime,
+        area_description: gambaranAreaLokasi,
+        area_category: kategoriKawasan,
+        violation_type: jenisPelanggaran,
+        violation_level: getViolationLevel(tingkatPelanggaran), // Use mapped value
+        environmental_impact: dampakLingkungan,
+        tingkatUrgensi: getUrgencyLevel(tingkatUrgensi), // Use mapped value
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+        address: indexData.desaKecamatan,
+        photos: [], // Not needed for FormData
+        photoFiles: fotoLokasi, // Send actual File objects
+      };
+
+      // Check for empty strings
+      const emptyFields = Object.entries(apiData)
+        .filter(([key, value]) => value === "" || value === null || value === undefined)
+        .map(([key]) => key);
+
+      if (emptyFields.length > 0) {
+        alert(`Field kosong ditemukan: ${emptyFields.join(', ')}`);
+        return;
+      }
+
+      // Final validation before submission
+      if (!apiData.report_datetime || apiData.report_datetime === "") {
+        alert("Error: Tanggal laporan tidak valid");
+        return;
+      }
+
+      // Submit using Tanstack Query mutation
+      await spatialPlanningMutation.mutateAsync(apiData);
+
+      // Clear stored data after successful submission
+      clearAllData();
+
+      alert("Data berhasil dikirim!");
+
+      // Navigate to success page or home
+      navigate("/");
+
+    } catch (error: any) {
+
+      // Log validation errors in detail
+      if (error.response?.data?.error && Array.isArray(error.response.data.error)) {
+        console.error("🔍 Validation Errors:");
+        error.response.data.error.forEach((err: any, index: number) => {
+          console.error(`  ${index + 1}.`, err);
+        });
+      }
+
+      let errorMessage = "Gagal mengirim data. ";
+      if (error.response?.data?.message) {
+        errorMessage += error.response.data.message;
+      } else if (error.response?.data?.detail) {
+        errorMessage += error.response.data.detail;
+      } else if (error.response?.data) {
+        errorMessage += JSON.stringify(error.response.data);
+      } else if (error.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += "Silakan coba lagi.";
+      }
+
+      alert(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -575,9 +751,17 @@ export function TataRuangView() {
           </Button>
           <Button
             onClick={handleSubmit}
-            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2"
+            disabled={isSubmitting || spatialPlanningMutation.isPending}
+            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Kirim
+            {isSubmitting || spatialPlanningMutation.isPending ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Mengirim...
+              </>
+            ) : (
+              "Kirim"
+            )}
           </Button>
         </div>
       </div>

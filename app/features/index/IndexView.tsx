@@ -23,6 +23,7 @@ import { Calendar } from "~/components/ui/calendar";
 import { useStepStore } from "~/store/stepStore";
 import { useNavigate } from "react-router";
 import { indexViewSchema } from "./validation/validation";
+import { useFormDataStore } from "~/store/formDataStore";
 
 export function IndexView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -38,6 +39,7 @@ export function IndexView() {
   const [date, setDate] = useState<Date>();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
+  const { setIndexData } = useFormDataStore();
 
   // Sync position dengan input values
   useEffect(() => {
@@ -178,7 +180,21 @@ export function IndexView() {
   // Handle form submission
   const handleSubmit = () => {
     if (validateForm()) {
-      // If validation passes, navigate to next page
+      // Store form data temporarily
+      const formData = {
+        latitude,
+        longitude,
+        namaPelapor,
+        nomorHP,
+        peranPelapor,
+        tanggalLaporan: date,
+        desaKecamatan,
+      };
+
+      console.log("📝 Submitting Index Form Data:", formData);
+      setIndexData(formData);
+
+      // Navigate to next page
       navigate("/infrastruktur");
     }
   };
