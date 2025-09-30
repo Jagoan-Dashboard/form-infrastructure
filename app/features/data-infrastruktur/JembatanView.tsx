@@ -14,6 +14,9 @@ import {
 import { useNavigate } from "react-router";
 import { Label } from "~/components/ui/label";
 import { jembatanSchema } from "./validation/jembatanValidation";
+import { apiService } from "~/services/apiService";
+import type { BinamargaJembatanForm } from "~/types/formData";
+import { useFormDataStore } from "~/store/formDataStore";
 
 export function JembatanView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -36,8 +39,11 @@ export function JembatanView() {
 
   // Error states
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const { indexData } = useFormDataStore();
 
   // Sync position dengan input values
   useEffect(() => {
@@ -161,11 +167,72 @@ export function JembatanView() {
     }
   };
 
+  // Map form values to API format
+  const mapFormToApiData = (): BinamargaJembatanForm & { photoFiles?: File[] } => {
+    const getUrgencyMapping = (formValue: string): string => {
+      const mapping: Record<string, string> = {
+        'darurat': 'DARURAT',
+        'cepat': 'CEPAT',
+        'rutin': 'RUTIN'
+      };
+      return mapping[formValue] || formValue.toUpperCase();
+    };
+
+    return {
+      // Reporter info from index form
+      reporter_name: indexData?.namaPelapor || "Default Reporter",
+      institution_unit: "DINAS", // Default value
+      phone_number: indexData?.nomorHP || "000000000000",
+      report_datetime: indexData?.tanggalLaporan?.toISOString() || new Date().toISOString(),
+
+      // Bridge identification
+      bridge_name: namaJembatan,
+      bridge_structure_type: jenisStruktur,
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+
+      // Damage details
+      bridge_damage_type: jenisKerusakan,
+      bridge_damage_level: tingkatKerusakan,
+
+      // Traffic impact
+      traffic_condition: kondisiLaluLintas,
+      daily_traffic_volume: parseInt(volumeLaluLintas) || 0,
+      urgency_level: getUrgencyMapping(kategoriPrioritas),
+
+      // Photos
+      photos: previewUrls,
+      photoFiles: fotoKerusakan
+    };
+  };
+
   // Handle form submission
-  const handleSubmit = () => {
-    if (validateForm()) {
-      // If validation passes, navigate to next page
-      navigate("/submit");
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const apiData = mapFormToApiData();
+      console.log('Submitting Binamarga Jembatan data:', apiData);
+
+      const response = await apiService.submitBinamargaJembatan(apiData);
+
+      if (response.data.success) {
+        console.log('\u2705 Binamarga Jembatan submission successful:', response.data);
+        navigate("/submit");
+      } else {
+        throw new Error(response.data.message || 'Submission failed');
+      }
+    } catch (error: any) {
+      console.error('\u274c Binamarga Jembatan submission error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat mengirim data';
+      setSubmitError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -570,19 +637,35 @@ export function JembatanView() {
           </div>
         </div>
 
+        {/* Error Message */}
+        {submitError && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-red-600 text-sm font-medium">{submitError}</p>
+          </div>
+        )}
+
         <div className="mt-8 flex w-full justify-end gap-3">
           <Button
             onClick={() => navigate("/infrastruktur/binamarga")}
             variant="outline"
             className="px-8 py-6 rounded-xl cursor-pointer  border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
+            disabled={isSubmitting}
           >
             Kembali
           </Button>
           <Button
             onClick={handleSubmit}
-            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2"
+            disabled={isSubmitting}
+            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Kirim
+            {isSubmitting ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Mengirim...
+              </>
+            ) : (
+              "Kirim"
+            )}
           </Button>
         </div>
       </div>

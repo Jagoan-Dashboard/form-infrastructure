@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useNavigate } from "react-router";
+import { apiService } from "~/services/apiService";
+import type { TataBangunanForm } from "~/types/formData";
 import { Label } from "~/components/ui/label";
 import { tataBangunanSchema } from "./validation/tataBangunanValidation";
 
@@ -39,6 +41,14 @@ export function TataBangunanView() {
 
   // Error states
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Reporter info states (these would typically come from user context or form)
+  const [reporterName, setReporterName] = useState("");
+  const [reporterRole, setReporterRole] = useState("");
+  const [village, setVillage] = useState("");
+  const [district, setDistrict] = useState("");
 
   const navigate = useNavigate();
 
@@ -167,11 +177,75 @@ export function TataBangunanView() {
     }
   };
 
+  // Map form values to API format
+  const mapFormToApiData = (): TataBangunanForm & {
+    photoFiles?: File[],
+    reporter_name: string,
+    reporter_role: string,
+    village: string,
+    district: string
+  } => {
+    return {
+      // Reporter info (would typically come from user context)
+      reporter_name: reporterName || "Default Reporter",
+      reporter_role: reporterRole || "Public",
+      village: village || "Default Village",
+      district: district || "Default District",
+
+      // Building identification
+      building_name: namaBangunan,
+      building_type: jenisBangunan,
+      report_status: statusLaporan,
+      funding_source: sumberDana,
+      last_year_construction: parseInt(tahunPembangunan),
+
+      // Technical data
+      full_address: alamatLengkap,
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+      floor_area: parseFloat(luasLantai),
+      floor_count: jumlahLantai,
+
+      // Optional rehabilitation data
+      work_type: jenisPekerjaan || undefined,
+      condition_after_rehab: kondisiSetelahRehabilitasi || undefined,
+
+      // Photos as string array (base64 or URLs - but we'll use files)
+      photos: previewUrls,
+
+      // Actual files for upload
+      photoFiles: fotoKerusakan
+    };
+  };
+
   // Handle form submission
-  const handleSubmit = () => {
-    if (validateForm()) {
-      // If validation passes, navigate to next page
-      navigate("/submit");
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const apiData = mapFormToApiData();
+      console.log('Submitting TataBangunan data:', apiData);
+
+      const response = await apiService.submitBuildingReport(apiData);
+
+      if (response.data.success) {
+        console.log('✅ TataBangunan submission successful:', response.data);
+        // Navigate to success page or show success message
+        navigate("/submit");
+      } else {
+        throw new Error(response.data.message || 'Submission failed');
+      }
+    } catch (error: any) {
+      console.error('❌ TataBangunan submission error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat mengirim data';
+      setSubmitError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -671,19 +745,35 @@ export function TataBangunanView() {
           </div>
         </div>
 
+        {/* Error Message */}
+        {submitError && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-red-600 text-sm font-medium">{submitError}</p>
+          </div>
+        )}
+
         <div className="mt-8 flex w-full justify-end gap-3">
           <Button
             onClick={() => navigate("/infrastruktur")}
             variant="outline"
             className="px-8 py-6 rounded-xl cursor-pointer  border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
+            disabled={isSubmitting}
           >
             Kembali
           </Button>
           <Button
             onClick={handleSubmit}
-            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2"
+            disabled={isSubmitting}
+            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Kirim
+            {isSubmitting ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Mengirim...
+              </>
+            ) : (
+              "Kirim"
+            )}
           </Button>
         </div>
       </div>

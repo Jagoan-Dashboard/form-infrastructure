@@ -14,6 +14,9 @@ import {
 import { useNavigate } from "react-router";
 import { Label } from "~/components/ui/label";
 import { sumberDayaAirSchema } from "./validation/sumberDayaAirValidation";
+import { apiService } from "~/services/apiService";
+import type { SumberDayaAirForm } from "~/types/formData";
+import { useFormDataStore } from "~/store/formDataStore";
 
 export function SumberDayaAirView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -39,8 +42,11 @@ export function SumberDayaAirView() {
 
   // Error states
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const { indexData } = useFormDataStore(); // Get reporter data from index form
 
   // Sync position dengan input values
   useEffect(() => {
@@ -167,11 +173,73 @@ export function SumberDayaAirView() {
     }
   };
 
+  // Map form values to API format
+  const mapFormToApiData = (): SumberDayaAirForm & { photoFiles?: File[] } => {
+    return {
+      // Reporter info from index form
+      reporter_name: indexData?.namaPelapor || "Default Reporter",
+      institution_unit: "DINAS", // Default value, should be collected from form
+      phone_number: indexData?.nomorHP || "000000000000",
+      report_datetime: indexData?.tanggalLaporan?.toISOString() || new Date().toISOString(),
+
+      // Irrigation data
+      irrigation_area_name: namaDaerahIrigasi,
+      irrigation_type: jenisIrigasi,
+
+      // Location data
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+
+      // Damage data
+      damage_type: jenisKerusakan,
+      damage_level: tingkatKerusakan,
+
+      // Estimated measurements
+      estimated_length: parseFloat(perkiraanPanjangKerusakan) || 0,
+      estimated_width: parseFloat(perkiraanLebarKerusakan) || 0,
+      estimated_volume: parseFloat(perkiraanLuasKerusakan) || 0,
+
+      // Impact data
+      affected_rice_field_area: parseFloat(areaSawahTerdampak) || 0,
+      affected_farmers_count: parseInt(jumlahPetaniTerdampak) || 0,
+      urgency_category: kategoriUrgensi,
+
+      // Photos as string array (base64 or URLs - but we'll use files)
+      photos: previewUrls,
+
+      // Actual files for upload
+      photoFiles: fotoKerusakan
+    };
+  };
+
   // Handle form submission
-  const handleSubmit = () => {
-    if (validateForm()) {
-      // If validation passes, navigate to next page
-      navigate("/submit");
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const apiData = mapFormToApiData();
+      console.log('Submitting Water Resources data:', apiData);
+
+      const response = await apiService.submitWaterResources(apiData);
+
+      if (response.data.success) {
+        console.log('\u2705 Water Resources submission successful:', response.data);
+        // Navigate to success page or show success message
+        navigate("/submit");
+      } else {
+        throw new Error(response.data.message || 'Submission failed');
+      }
+    } catch (error: any) {
+      console.error('\u274c Water Resources submission error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat mengirim data';
+      setSubmitError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -647,19 +715,35 @@ export function SumberDayaAirView() {
           </div>
         </div>
 
+        {/* Error Message */}
+        {submitError && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-red-600 text-sm font-medium">{submitError}</p>
+          </div>
+        )}
+
         <div className="mt-8 flex w-full justify-end gap-3">
           <Button
             onClick={() => navigate("/infrastruktur")}
             variant="outline"
             className="px-8 py-6 rounded-xl cursor-pointer  border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
+            disabled={isSubmitting}
           >
             Kembali
           </Button>
           <Button
             onClick={handleSubmit}
-            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2"
+            disabled={isSubmitting}
+            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Kirim
+            {isSubmitting ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Mengirim...
+              </>
+            ) : (
+              "Kirim"
+            )}
           </Button>
         </div>
       </div>
