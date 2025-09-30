@@ -90,11 +90,6 @@ export function JalanView() {
 
     // Check if running on localhost (HTTP) vs production (HTTPS)
     const isSecureContext = window.isSecureContext;
-    if (!isSecureContext) {
-      console.warn(
-        "Geolocation might not work properly in non-HTTPS environment"
-      );
-    }
 
     // Use more specific options for mobile
     navigator.geolocation.getCurrentPosition(
@@ -105,11 +100,9 @@ export function JalanView() {
         ];
         setPosition(newPosition);
         setIsLoadingLocation(false);
-        console.log(`Location received: ${newPosition[0]}, ${newPosition[1]}`);
       },
       (error) => {
         setIsLoadingLocation(false);
-        console.error("Error getting location:", error);
 
         // Provide more specific error messages
         let errorMessage = "Tidak dapat mengakses lokasi. ";
@@ -266,18 +259,14 @@ export function JalanView() {
 
     try {
       const apiData = mapFormToApiData();
-      console.log('Submitting Binamarga Jalan data:', apiData);
-
       const response = await apiService.submitBinamargaJalan(apiData);
 
       if (response.data.success) {
-        console.log('\u2705 Binamarga Jalan submission successful:', response.data);
         navigate("/success");
       } else {
         throw new Error(response.data.message || 'Submission failed');
       }
     } catch (error: any) {
-      console.error('\u274c Binamarga Jalan submission error:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat mengirim data';
       setSubmitError(errorMessage);
     } finally {

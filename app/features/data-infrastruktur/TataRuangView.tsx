@@ -89,11 +89,6 @@ export function TataRuangView() {
 
     // Check if running on localhost (HTTP) vs production (HTTPS)
     const isSecureContext = window.isSecureContext;
-    if (!isSecureContext) {
-      console.warn(
-        "Geolocation might not work properly in non-HTTPS environment"
-      );
-    }
 
     // Use more specific options for mobile
     navigator.geolocation.getCurrentPosition(
@@ -104,11 +99,9 @@ export function TataRuangView() {
         ];
         setPosition(newPosition);
         setIsLoadingLocation(false);
-        console.log(`Location received: ${newPosition[0]}, ${newPosition[1]}`);
       },
       (error) => {
         setIsLoadingLocation(false);
-        console.error("Error getting location:", error);
 
         // Provide more specific error messages
         let errorMessage = "Tidak dapat mengakses lokasi. ";
@@ -313,14 +306,6 @@ export function TataRuangView() {
       navigate("/success");
 
     } catch (error: any) {
-
-      // Log validation errors in detail
-      if (error.response?.data?.error && Array.isArray(error.response.data.error)) {
-        console.error("🔍 Validation Errors:");
-        error.response.data.error.forEach((err: any, index: number) => {
-          console.error(`  ${index + 1}.`, err);
-        });
-      }
 
       let errorMessage = "Gagal mengirim data. ";
       if (error.response?.data?.message) {

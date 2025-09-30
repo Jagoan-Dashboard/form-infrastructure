@@ -1,28 +1,17 @@
-import axios from 'axios';
 import type { AxiosResponse } from 'axios';
 import type { TataRuangForm, TataBangunanForm, SumberDayaAirForm, BinamargaJalanForm, BinamargaJembatanForm } from '~/types/formData';
-
-// API base configuration
-const API_BASE_URL = '/api/v1';
-
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 30000, // 30 seconds timeout
-});
+import apiClient from '~/lib/api-client';
 
 // Response interceptor for debugging
 apiClient.interceptors.response.use(
   (response) => {
-    console.log('✅ API Response:', response.status, response.data);
+    // console.log('✅ API Response:', response.status, response.data);
     return response;
   },
   (error) => {
-    console.error('❌ API Error:', error.response?.status, error.response?.data || error.message);
-    console.error('❌ Full Error Response:', error.response);
-    console.error('❌ Request Data that failed:', error.config?.data);
+    // console.error('❌ API Error:', error.response?.status, error.response?.data || error.message);
+    // console.error('❌ Full Error Response:', error.response);
+    // console.error('❌ Request Data that failed:', error.config?.data);
     return Promise.reject(error);
   }
 );
@@ -82,10 +71,10 @@ export const spatialPlanningApi = {
       formData.append('photos', dummyFile, 'dummy.txt');
     }
 
-    console.log('📤 FormData entries:');
-    for (let [key, value] of formData.entries()) {
-      console.log(`  ${key}:`, value);
-    }
+    // console.log('📤 FormData entries:');
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`  ${key}:`, value);
+    // }
 
     return apiClient.post('/spatial-planning', formData, {
       headers: {
@@ -151,10 +140,10 @@ export const buildingReportApi = {
       });
     }
 
-    console.log('📤 Building Report FormData entries:');
-    for (let [key, value] of formData.entries()) {
-      console.log(`  ${key}:`, value);
-    }
+    // console.log('📤 Building Report FormData entries:');
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`  ${key}:`, value);
+    // }
 
     return apiClient.post('/reports', formData, {
       headers: {
@@ -205,10 +194,10 @@ export const waterResourcesApi = {
       });
     }
 
-    console.log('📤 Water Resources FormData entries:');
-    for (let [key, value] of formData.entries()) {
-      console.log(`  ${key}:`, value);
-    }
+    // console.log('📤 Water Resources FormData entries:');
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`  ${key}:`, value);
+    // }
 
     return apiClient.post('/water-resources', formData, {
       headers: {
@@ -274,10 +263,10 @@ export const binamargaJalanApi = {
       });
     }
 
-    console.log('📤 Binamarga Jalan FormData entries:');
-    for (let [key, value] of formData.entries()) {
-      console.log(`  ${key}:`, value);
-    }
+    // console.log('📤 Binamarga Jalan FormData entries:');
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`  ${key}:`, value);
+    // }
 
     return apiClient.post('/bina-marga', formData, {
       headers: {
@@ -337,10 +326,10 @@ export const binamargaJembatanApi = {
       });
     }
 
-    console.log('📤 Binamarga Jembatan FormData entries:');
-    for (let [key, value] of formData.entries()) {
-      console.log(`  ${key}:`, value);
-    }
+    // console.log('📤 Binamarga Jembatan FormData entries:');
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`  ${key}:`, value);
+    // }
 
     return apiClient.post('/bina-marga', formData, {
       headers: {

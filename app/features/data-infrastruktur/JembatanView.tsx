@@ -84,11 +84,6 @@ export function JembatanView() {
 
     // Check if running on localhost (HTTP) vs production (HTTPS)
     const isSecureContext = window.isSecureContext;
-    if (!isSecureContext) {
-      console.warn(
-        "Geolocation might not work properly in non-HTTPS environment"
-      );
-    }
 
     // Use more specific options for mobile
     navigator.geolocation.getCurrentPosition(
@@ -99,11 +94,9 @@ export function JembatanView() {
         ];
         setPosition(newPosition);
         setIsLoadingLocation(false);
-        console.log(`Location received: ${newPosition[0]}, ${newPosition[1]}`);
       },
       (error) => {
         setIsLoadingLocation(false);
-        console.error("Error getting location:", error);
 
         // Provide more specific error messages
         let errorMessage = "Tidak dapat mengakses lokasi. ";
@@ -217,18 +210,14 @@ export function JembatanView() {
 
     try {
       const apiData = mapFormToApiData();
-      console.log('Submitting Binamarga Jembatan data:', apiData);
-
       const response = await apiService.submitBinamargaJembatan(apiData);
 
       if (response.data.success) {
-        console.log('\u2705 Binamarga Jembatan submission successful:', response.data);
         navigate("/success");
       } else {
         throw new Error(response.data.message || 'Submission failed');
       }
     } catch (error: any) {
-      console.error('\u274c Binamarga Jembatan submission error:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat mengirim data';
       setSubmitError(errorMessage);
     } finally {

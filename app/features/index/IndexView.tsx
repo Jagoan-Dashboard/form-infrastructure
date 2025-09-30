@@ -80,11 +80,6 @@ export function IndexView() {
 
     // Check if running on localhost (HTTP) vs production (HTTPS)
     const isSecureContext = window.isSecureContext;
-    if (!isSecureContext) {
-      console.warn(
-        "Geolocation might not work properly in non-HTTPS environment"
-      );
-    }
 
     // Use more specific options for mobile
     navigator.geolocation.getCurrentPosition(
@@ -95,11 +90,9 @@ export function IndexView() {
         ];
         setPosition(newPosition);
         setIsLoadingLocation(false);
-        console.log(`Location received: ${newPosition[0]}, ${newPosition[1]}`);
       },
       (error) => {
         setIsLoadingLocation(false);
-        console.error("Error getting location:", error);
 
         // Provide more specific error messages
         let errorMessage = "Tidak dapat mengakses lokasi. ";
@@ -191,7 +184,6 @@ export function IndexView() {
         desaKecamatan,
       };
 
-      console.log("📝 Submitting Index Form Data:", formData);
       setIndexData(formData);
 
       // Navigate to next page

@@ -20,7 +20,7 @@ export interface TataBangunanForm {
 };
 
 // endpoint POST /api/v1/spatial-planning
-export interface TataRuang {
+export interface TataRuangForm {
     reporter_name: string;
     institution: string;
     phone_number: string;

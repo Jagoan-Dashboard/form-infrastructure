@@ -229,18 +229,14 @@ export function TataBangunanView() {
 
     try {
       const apiData = mapFormToApiData();
-      console.log('Submitting TataBangunan data:', apiData);
-
       const response = await apiService.submitBuildingReport(apiData);
 
       if (response.data.success) {
-        console.log('✅ TataBangunan submission successful:', response.data);
         navigate("/success");
       } else {
         throw new Error(response.data.message || 'Submission failed');
       }
     } catch (error: any) {
-      console.error('❌ TataBangunan submission error:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat mengirim data';
       setSubmitError(errorMessage);
     } finally {
