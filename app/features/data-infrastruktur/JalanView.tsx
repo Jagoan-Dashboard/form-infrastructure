@@ -272,7 +272,7 @@ export function JalanView() {
 
       if (response.data.success) {
         console.log('\u2705 Binamarga Jalan submission successful:', response.data);
-        navigate("/submit");
+        navigate("/success");
       } else {
         throw new Error(response.data.message || 'Submission failed');
       }

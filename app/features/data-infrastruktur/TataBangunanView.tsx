@@ -235,8 +235,7 @@ export function TataBangunanView() {
 
       if (response.data.success) {
         console.log('✅ TataBangunan submission successful:', response.data);
-        // Navigate to success page or show success message
-        navigate("/submit");
+        navigate("/success");
       } else {
         throw new Error(response.data.message || 'Submission failed');
       }

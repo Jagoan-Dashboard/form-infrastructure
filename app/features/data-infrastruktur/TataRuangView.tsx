@@ -309,10 +309,8 @@ export function TataRuangView() {
       // Clear stored data after successful submission
       clearAllData();
 
-      alert("Data berhasil dikirim!");
-
-      // Navigate to success page or home
-      navigate("/");
+      // Navigate to success page
+      navigate("/success");
 
     } catch (error: any) {
 
