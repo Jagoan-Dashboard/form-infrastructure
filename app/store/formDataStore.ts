@@ -46,27 +46,27 @@ export const useFormDataStore = create<FormDataStore>()(
       tataRuangData: null,
 
       setIndexData: (data: IndexFormData) => {
-        console.log('🏠 Storing Index Data:', data);
+        // console.log('🏠 Storing Index Data:', data);
         set({ indexData: data });
       },
 
       setTataRuangData: (data: TataRuangFormData) => {
-        console.log('🏗️ Storing Tata Ruang Data:', data);
+        // console.log('🏗️ Storing Tata Ruang Data:', data);
         set({ tataRuangData: data });
       },
 
       clearIndexData: () => {
-        console.log('🗑️ Clearing Index Data');
+        // console.log('🗑️ Clearing Index Data');
         set({ indexData: null });
       },
 
       clearTataRuangData: () => {
-        console.log('🗑️ Clearing Tata Ruang Data');
+        // console.log('🗑️ Clearing Tata Ruang Data');
         set({ tataRuangData: null });
       },
 
       clearAllData: () => {
-        console.log('🗑️ Clearing All Form Data');
+        // console.log('🗑️ Clearing All Form Data');
         set({ indexData: null, tataRuangData: null });
       },
 
@@ -92,7 +92,7 @@ export const useFormDataStore = create<FormDataStore>()(
       onRehydrateStorage: () => (state) => {
         if (state?.indexData?.tanggalLaporan && typeof state.indexData.tanggalLaporan === 'string') {
           state.indexData.tanggalLaporan = new Date(state.indexData.tanggalLaporan);
-          console.log('📅 Rehydrated date:', state.indexData.tanggalLaporan);
+          // console.log('📅 Rehydrated date:', state.indexData.tanggalLaporan);
         }
       },
     }
