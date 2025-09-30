@@ -161,12 +161,14 @@ export function JembatanView() {
   };
 
   // Map form values to API format
-  const mapFormToApiData = (): BinamargaJembatanForm & { photoFiles?: File[] } => {
+  const mapFormToApiData = (): BinamargaJembatanForm & {
+    photoFiles?: File[];
+  } => {
     const getUrgencyMapping = (formValue: string): string => {
       const mapping: Record<string, string> = {
-        'darurat': 'DARURAT',
-        'cepat': 'CEPAT',
-        'rutin': 'RUTIN'
+        darurat: "DARURAT",
+        cepat: "CEPAT",
+        rutin: "RUTIN",
       };
       return mapping[formValue] || formValue.toUpperCase();
     };
@@ -176,7 +178,8 @@ export function JembatanView() {
       reporter_name: indexData?.namaPelapor || "Default Reporter",
       institution_unit: "DINAS", // Default value
       phone_number: indexData?.nomorHP || "000000000000",
-      report_datetime: indexData?.tanggalLaporan?.toISOString() || new Date().toISOString(),
+      report_datetime:
+        indexData?.tanggalLaporan?.toISOString() || new Date().toISOString(),
 
       // Bridge identification
       bridge_name: namaJembatan,
@@ -195,7 +198,7 @@ export function JembatanView() {
 
       // Photos
       photos: previewUrls,
-      photoFiles: fotoKerusakan
+      photoFiles: fotoKerusakan,
     };
   };
 
@@ -215,10 +218,13 @@ export function JembatanView() {
       if (response.data.success) {
         navigate("/success");
       } else {
-        throw new Error(response.data.message || 'Submission failed');
+        throw new Error(response.data.message || "Submission failed");
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat mengirim data';
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Terjadi kesalahan saat mengirim data";
       setSubmitError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -241,16 +247,18 @@ export function JembatanView() {
       e.preventDefault();
       setIsDragging(false);
 
-      const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith("image/"));
+      const files = Array.from(e.dataTransfer.files).filter((file) =>
+        file.type.startsWith("image/")
+      );
       if (files.length > 0) {
         const newFiles = [...fotoKerusakan, ...files];
         setFotoKerusakan(newFiles);
 
         // Create preview URLs for new files
-        files.forEach(file => {
+        files.forEach((file) => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            setPreviewUrls(prev => [...prev, reader.result as string]);
+            setPreviewUrls((prev) => [...prev, reader.result as string]);
           };
           reader.readAsDataURL(file);
         });
@@ -258,16 +266,18 @@ export function JembatanView() {
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(e.target.files || []).filter(file => file.type.startsWith("image/"));
+      const files = Array.from(e.target.files || []).filter((file) =>
+        file.type.startsWith("image/")
+      );
       if (files.length > 0) {
         const newFiles = [...fotoKerusakan, ...files];
         setFotoKerusakan(newFiles);
 
         // Create preview URLs for new files
-        files.forEach(file => {
+        files.forEach((file) => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            setPreviewUrls(prev => [...prev, reader.result as string]);
+            setPreviewUrls((prev) => [...prev, reader.result as string]);
           };
           reader.readAsDataURL(file);
         });
@@ -306,8 +316,12 @@ export function JembatanView() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
-                      const newFiles = fotoKerusakan.filter((_, i) => i !== index);
+                      const newPreviewUrls = previewUrls.filter(
+                        (_, i) => i !== index
+                      );
+                      const newFiles = fotoKerusakan.filter(
+                        (_, i) => i !== index
+                      );
                       setPreviewUrls(newPreviewUrls);
                       setFotoKerusakan(newFiles);
                     }}
@@ -319,7 +333,8 @@ export function JembatanView() {
               ))}
             </div>
             <p className="text-sm text-gray-600 text-center">
-              {fotoKerusakan.length} foto dipilih. Klik + untuk menambah foto lagi.
+              {fotoKerusakan.length} foto dipilih. Klik + untuk menambah foto
+              lagi.
             </p>
           </div>
         ) : (
@@ -377,11 +392,13 @@ export function JembatanView() {
               Jenis Struktur<span className="text-red-500">*</span>
             </label>
             <Select value={jenisStruktur} onValueChange={setJenisStruktur}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.jenisStruktur
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.jenisStruktur
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Jenis Struktur" />
               </SelectTrigger>
               <SelectContent>
@@ -391,7 +408,9 @@ export function JembatanView() {
               </SelectContent>
             </Select>
             {errors.jenisStruktur && (
-              <p className="text-red-500 text-sm mt-1">{errors.jenisStruktur}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.jenisStruktur}
+              </p>
             )}
           </div>
 
@@ -400,22 +419,34 @@ export function JembatanView() {
               Jenis Kerusakan<span className="text-red-500">*</span>
             </label>
             <Select value={jenisKerusakan} onValueChange={setJenisKerusakan}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.jenisKerusakan
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.jenisKerusakan
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Jenis Kerusakan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="lantai-jembatan-retak">Lantai Jembatan Retak/Rusak</SelectItem>
-                <SelectItem value="oprit-abutment-amblas">Oprit/Abutment Amblas</SelectItem>
-                <SelectItem value="rangka-utama-retak">Rangka Utama Retak</SelectItem>
-                <SelectItem value="pondasi-terseret-arus">Pondasi Terseret Arus</SelectItem>
+                <SelectItem value="lantai-jembatan-retak">
+                  Lantai Jembatan Retak/Rusak
+                </SelectItem>
+                <SelectItem value="oprit-abutment-amblas">
+                  Oprit/Abutment Amblas
+                </SelectItem>
+                <SelectItem value="rangka-utama-retak">
+                  Rangka Utama Retak
+                </SelectItem>
+                <SelectItem value="pondasi-terseret-arus">
+                  Pondasi Terseret Arus
+                </SelectItem>
               </SelectContent>
             </Select>
             {errors.jenisKerusakan && (
-              <p className="text-red-500 text-sm mt-1">{errors.jenisKerusakan}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.jenisKerusakan}
+              </p>
             )}
           </div>
 
@@ -423,22 +454,31 @@ export function JembatanView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Tingkat Kerusakan<span className="text-red-500">*</span>
             </label>
-            <Select value={tingkatKerusakan} onValueChange={setTingkatKerusakan}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.tingkatKerusakan
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+            <Select
+              value={tingkatKerusakan}
+              onValueChange={setTingkatKerusakan}
+            >
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.tingkatKerusakan
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Tingkat Kerusakan" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ringan">Ringan</SelectItem>
                 <SelectItem value="sedang">Sedang</SelectItem>
-                <SelectItem value="berat-tidak-layak">Berat/Tidak Layak</SelectItem>
+                <SelectItem value="berat-tidak-layak">
+                  Berat/Tidak Layak
+                </SelectItem>
               </SelectContent>
             </Select>
             {errors.tingkatKerusakan && (
-              <p className="text-red-500 text-sm mt-1">{errors.tingkatKerusakan}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.tingkatKerusakan}
+              </p>
             )}
           </div>
         </div>
@@ -539,16 +579,23 @@ export function JembatanView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Kondisi Lalu Lintas Saat ini*
             </label>
-            <Select value={kondisiLaluLintas} onValueChange={setKondisiLaluLintas}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.kondisiLaluLintas
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+            <Select
+              value={kondisiLaluLintas}
+              onValueChange={setKondisiLaluLintas}
+            >
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.kondisiLaluLintas
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Kondisi Lalu Lintas Saat ini" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="masih-bisa-dilalui">Masih Bisa Dilalui</SelectItem>
+                <SelectItem value="masih-bisa-dilalui">
+                  Masih Bisa Dilalui
+                </SelectItem>
                 <SelectItem value="satu-jalur-bisa-dilalui">
                   Hanya Satu Jalur Bisa Dilalui
                 </SelectItem>
@@ -558,7 +605,9 @@ export function JembatanView() {
               </SelectContent>
             </Select>
             {errors.kondisiLaluLintas && (
-              <p className="text-red-500 text-sm mt-1">{errors.kondisiLaluLintas}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.kondisiLaluLintas}
+              </p>
             )}
           </div>
 
@@ -579,7 +628,9 @@ export function JembatanView() {
               }`}
             />
             {errors.volumeLaluLintas && (
-              <p className="text-red-500 text-sm mt-1">{errors.volumeLaluLintas}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.volumeLaluLintas}
+              </p>
             )}
           </div>
 
@@ -587,12 +638,17 @@ export function JembatanView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Kategori Prioritas Penanganan*
             </label>
-            <Select value={kategoriPrioritas} onValueChange={setKategoriPrioritas}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.kategoriPrioritas
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+            <Select
+              value={kategoriPrioritas}
+              onValueChange={setKategoriPrioritas}
+            >
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.kategoriPrioritas
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Kategori Prioritas Penanganan" />
               </SelectTrigger>
               <SelectContent>
@@ -602,27 +658,23 @@ export function JembatanView() {
               </SelectContent>
             </Select>
             {errors.kategoriPrioritas && (
-              <p className="text-red-500 text-sm mt-1">{errors.kategoriPrioritas}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.kategoriPrioritas}
+              </p>
             )}
           </div>
 
           {/* Foto Lokasi */}
-          <div className="col-span-2">
+          <div className="md:col-span-2">
             <Label className="text-sm font-semibold text-gray-700 mb-4">
               Foto Lokasi/Kerusakan*
             </Label>
             <ImageUpload />
             {errors.fotoKerusakan && (
-              <p className="text-red-500 text-sm mt-1">{errors.fotoKerusakan}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.fotoKerusakan}
+              </p>
             )}
-          </div>
-
-          {/* Upload Button - Mobile */}
-          <div className="mt-6 md:hidden">
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 rounded-xl">
-              <Icon icon="mdi:upload" className="w-5 h-5 mr-2" />
-              Unggah
-            </Button>
           </div>
         </div>
 
@@ -633,19 +685,20 @@ export function JembatanView() {
           </div>
         )}
 
-        <div className="mt-8 flex w-full justify-end gap-3">
+        <div className="mt-8 w-full flex flex-col md:flex-row md:justify-end gap-3">
           <Button
             onClick={() => navigate("/infrastruktur/binamarga")}
             variant="outline"
-            className="px-8 py-6 rounded-xl cursor-pointer  border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
+            className="px-8 py-6 rounded-xl cursor-pointer border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600 w-full md:w-fit order-2 md:order-1"
             disabled={isSubmitting}
           >
             Kembali
           </Button>
+
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-blue-600 cursor-pointer w-full md:w-fit hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed order-1 md:order-2"
           >
             {isSubmitting ? (
               <>

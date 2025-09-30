@@ -16,8 +16,6 @@ import { Label } from "~/components/ui/label";
 import { tataRuangSchema } from "./validation/tataRuangValidation";
 import { useFormDataStore } from "~/store/formDataStore";
 import { useSpatialPlanningMutation } from "~/hooks/useMutations";
-import type { TataRuangForm } from "~/types/formData";
-import { formatImageForAPI } from "~/utils/fileUtils";
 
 export function TataRuangView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -225,7 +223,7 @@ export function TataRuangView() {
 
         if (!date) {
           dateObj = new Date();
-        } else if (typeof date === 'string') {
+        } else if (typeof date === "string") {
           dateObj = new Date(date);
           if (isNaN(dateObj.getTime())) {
             dateObj = new Date();
@@ -243,15 +241,15 @@ export function TataRuangView() {
         // Try different formats - API error mentions "2006-01-02 15:04:05" format
         // Let's try multiple formats
         const isoString = dateObj.toISOString();
-        const withoutMilliseconds = isoString.replace(/\.\d{3}Z$/, 'Z');
+        const withoutMilliseconds = isoString.replace(/\.\d{3}Z$/, "Z");
 
         // Format yang mungkin diharapkan API: YYYY-MM-DD HH:MM:SS
         const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const hours = String(dateObj.getHours()).padStart(2, '0');
-        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-        const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        const hours = String(dateObj.getHours()).padStart(2, "0");
+        const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+        const seconds = String(dateObj.getSeconds()).padStart(2, "0");
 
         const sqlFormat = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
@@ -282,11 +280,14 @@ export function TataRuangView() {
 
       // Check for empty strings
       const emptyFields = Object.entries(apiData)
-        .filter(([key, value]) => value === "" || value === null || value === undefined)
+        .filter(
+          ([key, value]) =>
+            value === "" || value === null || value === undefined
+        )
         .map(([key]) => key);
 
       if (emptyFields.length > 0) {
-        alert(`Field kosong ditemukan: ${emptyFields.join(', ')}`);
+        alert(`Field kosong ditemukan: ${emptyFields.join(", ")}`);
         return;
       }
 
@@ -304,9 +305,7 @@ export function TataRuangView() {
 
       // Navigate to success page
       navigate("/success");
-
     } catch (error: any) {
-
       let errorMessage = "Gagal mengirim data. ";
       if (error.response?.data?.message) {
         errorMessage += error.response.data.message;
@@ -342,16 +341,18 @@ export function TataRuangView() {
       e.preventDefault();
       setIsDragging(false);
 
-      const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith("image/"));
+      const files = Array.from(e.dataTransfer.files).filter((file) =>
+        file.type.startsWith("image/")
+      );
       if (files.length > 0) {
         const newFiles = [...fotoLokasi, ...files];
         setFotoLokasi(newFiles);
 
         // Create preview URLs for new files
-        files.forEach(file => {
+        files.forEach((file) => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            setPreviewUrls(prev => [...prev, reader.result as string]);
+            setPreviewUrls((prev) => [...prev, reader.result as string]);
           };
           reader.readAsDataURL(file);
         });
@@ -359,16 +360,18 @@ export function TataRuangView() {
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(e.target.files || []).filter(file => file.type.startsWith("image/"));
+      const files = Array.from(e.target.files || []).filter((file) =>
+        file.type.startsWith("image/")
+      );
       if (files.length > 0) {
         const newFiles = [...fotoLokasi, ...files];
         setFotoLokasi(newFiles);
 
         // Create preview URLs for new files
-        files.forEach(file => {
+        files.forEach((file) => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            setPreviewUrls(prev => [...prev, reader.result as string]);
+            setPreviewUrls((prev) => [...prev, reader.result as string]);
           };
           reader.readAsDataURL(file);
         });
@@ -407,7 +410,9 @@ export function TataRuangView() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+                      const newPreviewUrls = previewUrls.filter(
+                        (_, i) => i !== index
+                      );
                       const newFiles = fotoLokasi.filter((_, i) => i !== index);
                       setPreviewUrls(newPreviewUrls);
                       setFotoLokasi(newFiles);
@@ -469,7 +474,9 @@ export function TataRuangView() {
               }`}
             />
             {errors.gambaranAreaLokasi && (
-              <p className="text-red-500 text-sm mt-1">{errors.gambaranAreaLokasi}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.gambaranAreaLokasi}
+              </p>
             )}
           </div>
 
@@ -478,11 +485,13 @@ export function TataRuangView() {
               Kategori Kawasan<span className="text-red-500">*</span>
             </label>
             <Select value={kategoriKawasan} onValueChange={setKategoriKawasan}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.kategoriKawasan
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.kategoriKawasan
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Kategori Kawasan" />
               </SelectTrigger>
               <SelectContent>
@@ -496,7 +505,9 @@ export function TataRuangView() {
               </SelectContent>
             </Select>
             {errors.kategoriKawasan && (
-              <p className="text-red-500 text-sm mt-1">{errors.kategoriKawasan}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.kategoriKawasan}
+              </p>
             )}
           </div>
         </div>
@@ -597,12 +608,17 @@ export function TataRuangView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Jenis Pelanggaran Tata Ruang*
             </label>
-            <Select value={jenisPelanggaran} onValueChange={setJenisPelanggaran}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.jenisPelanggaran
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+            <Select
+              value={jenisPelanggaran}
+              onValueChange={setJenisPelanggaran}
+            >
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.jenisPelanggaran
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Jenis Pelanggaran" />
               </SelectTrigger>
               <SelectContent>
@@ -622,7 +638,9 @@ export function TataRuangView() {
               </SelectContent>
             </Select>
             {errors.jenisPelanggaran && (
-              <p className="text-red-500 text-sm mt-1">{errors.jenisPelanggaran}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.jenisPelanggaran}
+              </p>
             )}
           </div>
 
@@ -630,12 +648,17 @@ export function TataRuangView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Tingkat Pelanggaran*
             </label>
-            <Select value={tingkatPelanggaran} onValueChange={setTingkatPelanggaran}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.tingkatPelanggaran
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+            <Select
+              value={tingkatPelanggaran}
+              onValueChange={setTingkatPelanggaran}
+            >
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.tingkatPelanggaran
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Tingkat Pelanggaran" />
               </SelectTrigger>
               <SelectContent>
@@ -651,7 +674,9 @@ export function TataRuangView() {
               </SelectContent>
             </Select>
             {errors.tingkatPelanggaran && (
-              <p className="text-red-500 text-sm mt-1">{errors.tingkatPelanggaran}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.tingkatPelanggaran}
+              </p>
             )}
           </div>
 
@@ -659,26 +684,35 @@ export function TataRuangView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Dampak Lingkungan*
             </label>
-            <Select value={dampakLingkungan} onValueChange={setDampakLingkungan}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.dampakLingkungan
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+            <Select
+              value={dampakLingkungan}
+              onValueChange={setDampakLingkungan}
+            >
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.dampakLingkungan
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Dampak Lingkungan" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="menurunnya-kualitas-ruang">
                   Menurunnya kualitas ruang / ekosistem
                 </SelectItem>
-                <SelectItem value="potensi-banjir-longsor">Potensi banjir / longsor</SelectItem>
+                <SelectItem value="potensi-banjir-longsor">
+                  Potensi banjir / longsor
+                </SelectItem>
                 <SelectItem value="mengganggu-aktivitas-warga">
                   Mengganggu aktivitas warga
                 </SelectItem>
               </SelectContent>
             </Select>
             {errors.dampakLingkungan && (
-              <p className="text-red-500 text-sm mt-1">{errors.dampakLingkungan}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.dampakLingkungan}
+              </p>
             )}
           </div>
 
@@ -687,11 +721,13 @@ export function TataRuangView() {
               Tingkat Urgensi Penanganan*
             </label>
             <Select value={tingkatUrgensi} onValueChange={setTingkatUrgensi}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.tingkatUrgensi
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.tingkatUrgensi
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Tingkat Urgensi" />
               </SelectTrigger>
               <SelectContent>
@@ -700,12 +736,14 @@ export function TataRuangView() {
               </SelectContent>
             </Select>
             {errors.tingkatUrgensi && (
-              <p className="text-red-500 text-sm mt-1">{errors.tingkatUrgensi}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.tingkatUrgensi}
+              </p>
             )}
           </div>
 
           {/* Foto Lokasi */}
-          <div className="col-span-2">
+          <div className="md:col-span-2">
             <Label className="text-sm font-semibold text-gray-700 mb-4">
               Foto Lokasi/Kerusakan*
             </Label>
@@ -714,30 +752,24 @@ export function TataRuangView() {
               <p className="text-red-500 text-sm mt-1">{errors.fotoLokasi}</p>
             )}
           </div>
-
-          {/* Upload Button - Mobile */}
-          <div className="mt-6 md:hidden">
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 rounded-xl">
-              <Icon icon="mdi:upload" className="w-5 h-5 mr-2" />
-              Unggah
-            </Button>
-          </div>
         </div>
 
-        <div className="mt-8 flex w-full justify-end gap-3">
+        <div className="mt-8 w-full flex flex-col md:flex-row md:justify-end gap-3">
           <Button
             onClick={() => navigate("/infrastruktur")}
             variant="outline"
-            className="px-8 py-6 rounded-xl cursor-pointer  border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
+            className="px-8 py-6 rounded-xl cursor-pointer border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600 w-full md:w-fit order-2 md:order-1"
+            disabled={isSubmitting}
           >
             Kembali
           </Button>
+
           <Button
             onClick={handleSubmit}
-            disabled={isSubmitting || spatialPlanningMutation.isPending}
-            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
+            className="bg-blue-600 cursor-pointer w-full md:w-fit hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed order-1 md:order-2"
           >
-            {isSubmitting || spatialPlanningMutation.isPending ? (
+            {isSubmitting ? (
               <>
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Mengirim...

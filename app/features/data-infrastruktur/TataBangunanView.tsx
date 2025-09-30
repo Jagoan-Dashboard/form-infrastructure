@@ -35,7 +35,8 @@ export function TataBangunanView() {
   const [luasLantai, setLuasLantai] = useState("");
   const [jumlahLantai, setJumlahLantai] = useState("");
   const [jenisPekerjaan, setJenisPekerjaan] = useState("");
-  const [kondisiSetelahRehabilitasi, setKondisiSetelahRehabilitasi] = useState("");
+  const [kondisiSetelahRehabilitasi, setKondisiSetelahRehabilitasi] =
+    useState("");
   const [fotoKerusakan, setFotoKerusakan] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
@@ -179,11 +180,11 @@ export function TataBangunanView() {
 
   // Map form values to API format
   const mapFormToApiData = (): TataBangunanForm & {
-    photoFiles?: File[],
-    reporter_name: string,
-    reporter_role: string,
-    village: string,
-    district: string
+    photoFiles?: File[];
+    reporter_name: string;
+    reporter_role: string;
+    village: string;
+    district: string;
   } => {
     return {
       // Reporter info (would typically come from user context)
@@ -214,7 +215,7 @@ export function TataBangunanView() {
       photos: previewUrls,
 
       // Actual files for upload
-      photoFiles: fotoKerusakan
+      photoFiles: fotoKerusakan,
     };
   };
 
@@ -234,10 +235,13 @@ export function TataBangunanView() {
       if (response.data.success) {
         navigate("/success");
       } else {
-        throw new Error(response.data.message || 'Submission failed');
+        throw new Error(response.data.message || "Submission failed");
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat mengirim data';
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Terjadi kesalahan saat mengirim data";
       setSubmitError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -260,16 +264,18 @@ export function TataBangunanView() {
       e.preventDefault();
       setIsDragging(false);
 
-      const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith("image/"));
+      const files = Array.from(e.dataTransfer.files).filter((file) =>
+        file.type.startsWith("image/")
+      );
       if (files.length > 0) {
         const newFiles = [...fotoKerusakan, ...files];
         setFotoKerusakan(newFiles);
 
         // Create preview URLs for new files
-        files.forEach(file => {
+        files.forEach((file) => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            setPreviewUrls(prev => [...prev, reader.result as string]);
+            setPreviewUrls((prev) => [...prev, reader.result as string]);
           };
           reader.readAsDataURL(file);
         });
@@ -277,16 +283,18 @@ export function TataBangunanView() {
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(e.target.files || []).filter(file => file.type.startsWith("image/"));
+      const files = Array.from(e.target.files || []).filter((file) =>
+        file.type.startsWith("image/")
+      );
       if (files.length > 0) {
         const newFiles = [...fotoKerusakan, ...files];
         setFotoKerusakan(newFiles);
 
         // Create preview URLs for new files
-        files.forEach(file => {
+        files.forEach((file) => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            setPreviewUrls(prev => [...prev, reader.result as string]);
+            setPreviewUrls((prev) => [...prev, reader.result as string]);
           };
           reader.readAsDataURL(file);
         });
@@ -325,8 +333,12 @@ export function TataBangunanView() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
-                      const newFiles = fotoKerusakan.filter((_, i) => i !== index);
+                      const newPreviewUrls = previewUrls.filter(
+                        (_, i) => i !== index
+                      );
+                      const newFiles = fotoKerusakan.filter(
+                        (_, i) => i !== index
+                      );
                       setPreviewUrls(newPreviewUrls);
                       setFotoKerusakan(newFiles);
                     }}
@@ -338,7 +350,8 @@ export function TataBangunanView() {
               ))}
             </div>
             <p className="text-sm text-gray-600 text-center">
-              {fotoKerusakan.length} foto dipilih. Klik + untuk menambah foto lagi.
+              {fotoKerusakan.length} foto dipilih. Klik + untuk menambah foto
+              lagi.
             </p>
           </div>
         ) : (
@@ -397,17 +410,23 @@ export function TataBangunanView() {
               <span className="text-red-500">*</span>
             </label>
             <Select value={jenisBangunan} onValueChange={setJenisBangunan}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.jenisBangunan
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.jenisBangunan
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Jenis Bangunan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="kantor-pemerintah">Kantor Pemerintah</SelectItem>
+                <SelectItem value="kantor-pemerintah">
+                  Kantor Pemerintah
+                </SelectItem>
                 <SelectItem value="sekolah">Sekolah</SelectItem>
-                <SelectItem value="puskesmas-posyandu">Puskesmas/Posyandu</SelectItem>
+                <SelectItem value="puskesmas-posyandu">
+                  Puskesmas/Posyandu
+                </SelectItem>
                 <SelectItem value="pasar">Pasar</SelectItem>
                 <SelectItem value="fasilitas-umum-lainnya">
                   Fasilitas Umum Lainnya
@@ -415,7 +434,9 @@ export function TataBangunanView() {
               </SelectContent>
             </Select>
             {errors.jenisBangunan && (
-              <p className="text-red-500 text-sm mt-1">{errors.jenisBangunan}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.jenisBangunan}
+              </p>
             )}
           </div>
 
@@ -424,23 +445,29 @@ export function TataBangunanView() {
               Status Laporan<span className="text-red-500">*</span>
             </label>
             <Select value={statusLaporan} onValueChange={setStatusLaporan}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.statusLaporan
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.statusLaporan
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Status Laporan" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="rehabilitasi-perbaikan">
                   Rehabilitasi/Perbaikan
                 </SelectItem>
-                <SelectItem value="pembangunan-baru">Pembangunan Baru</SelectItem>
+                <SelectItem value="pembangunan-baru">
+                  Pembangunan Baru
+                </SelectItem>
                 <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
             </Select>
             {errors.statusLaporan && (
-              <p className="text-red-500 text-sm mt-1">{errors.statusLaporan}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.statusLaporan}
+              </p>
             )}
           </div>
 
@@ -449,11 +476,13 @@ export function TataBangunanView() {
               Sumber Dana<span className="text-red-500">*</span>
             </label>
             <Select value={sumberDana} onValueChange={setSumberDana}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.sumberDana
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.sumberDana
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Sumber Dana" />
               </SelectTrigger>
               <SelectContent>
@@ -461,7 +490,9 @@ export function TataBangunanView() {
                 <SelectItem value="apbd-provinsi">APBD Provinsi</SelectItem>
                 <SelectItem value="apbn">APBN</SelectItem>
                 <SelectItem value="dana-desa">Dana Desa</SelectItem>
-                <SelectItem value="swadaya-masyarakat">Swadaya Masyarakat</SelectItem>
+                <SelectItem value="swadaya-masyarakat">
+                  Swadaya Masyarakat
+                </SelectItem>
               </SelectContent>
             </Select>
             {errors.sumberDana && (
@@ -486,7 +517,9 @@ export function TataBangunanView() {
               }`}
             />
             {errors.tahunPembangunan && (
-              <p className="text-red-500 text-sm mt-1">{errors.tahunPembangunan}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.tahunPembangunan}
+              </p>
             )}
           </div>
         </div>
@@ -499,7 +532,7 @@ export function TataBangunanView() {
         </h3>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="col-span-2">
+          <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Alamat Lengkap
               <span className="text-red-500">*</span>
@@ -516,14 +549,15 @@ export function TataBangunanView() {
               }`}
             />
             {errors.alamatLengkap && (
-              <p className="text-red-500 text-sm mt-1">{errors.alamatLengkap}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.alamatLengkap}
+              </p>
             )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Luas Lantai (m<sup>2</sup>)
-              <span className="text-red-500">*</span>
+              Luas Lantai (m<sup>2</sup>)<span className="text-red-500">*</span>
             </label>
             <Input
               type="text"
@@ -546,11 +580,13 @@ export function TataBangunanView() {
               Jumlah Lantai<span className="text-red-500">*</span>
             </label>
             <Select value={jumlahLantai} onValueChange={setJumlahLantai}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.jumlahLantai
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.jumlahLantai
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Jumlah Lantai" />
               </SelectTrigger>
               <SelectContent>
@@ -663,21 +699,21 @@ export function TataBangunanView() {
               Jenis Pekerjaan (jika rehabilitasi)*
             </label>
             <Select value={jenisPekerjaan} onValueChange={setJenisPekerjaan}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.jenisPekerjaan
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.jenisPekerjaan
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Jenis Pekerjaan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="perbaikan-atap">
-                  Perbaikan Atap
-                </SelectItem>
-                <SelectItem value="perbaikan-dinding-cat">
+                <SelectItem value="Perbaikan Atap">Perbaikan Atap</SelectItem>
+                <SelectItem value="Perbaikan Dinding/Cat">
                   Perbaikan Dinding/Cat
                 </SelectItem>
-                <SelectItem value="perbaikan-pintu-jendela">
+                <SelectItem value="Perbaikan Pintu Jendela">
                   Perbaikan Pintu/Jendela
                 </SelectItem>
                 <SelectItem value="perbaikan-sanitasi-mck">
@@ -687,7 +723,9 @@ export function TataBangunanView() {
               </SelectContent>
             </Select>
             {errors.jenisPekerjaan && (
-              <p className="text-red-500 text-sm mt-1">{errors.jenisPekerjaan}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.jenisPekerjaan}
+              </p>
             )}
           </div>
 
@@ -695,12 +733,17 @@ export function TataBangunanView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Kondisi Setelah Rehabilitasi*
             </label>
-            <Select value={kondisiSetelahRehabilitasi} onValueChange={setKondisiSetelahRehabilitasi}>
-              <SelectTrigger className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                errors.kondisiSetelahRehabilitasi
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}>
+            <Select
+              value={kondisiSetelahRehabilitasi}
+              onValueChange={setKondisiSetelahRehabilitasi}
+            >
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                  errors.kondisiSetelahRehabilitasi
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                }`}
+              >
                 <SelectValue placeholder="Pilih Kondisi Setelah Rehabilitasi" />
               </SelectTrigger>
               <SelectContent>
@@ -710,33 +753,27 @@ export function TataBangunanView() {
                 <SelectItem value="masih-membutuhkan-perbaikan">
                   Masih Membutuhkan Perbaikan Tambahan
                 </SelectItem>
-                <SelectItem value="lainnya">
-                  Lainnya
-                </SelectItem>
+                <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
             </Select>
             {errors.kondisiSetelahRehabilitasi && (
-              <p className="text-red-500 text-sm mt-1">{errors.kondisiSetelahRehabilitasi}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.kondisiSetelahRehabilitasi}
+              </p>
             )}
           </div>
 
           {/* Foto Lokasi */}
-          <div className="col-span-2">
+          <div className="md:col-span-2">
             <Label className="text-sm font-semibold text-gray-700 mb-4">
               Foto Kerusakan*
             </Label>
             <ImageUpload />
             {errors.fotoKerusakan && (
-              <p className="text-red-500 text-sm mt-1">{errors.fotoKerusakan}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.fotoKerusakan}
+              </p>
             )}
-          </div>
-
-          {/* Upload Button - Mobile */}
-          <div className="mt-6 md:hidden">
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 rounded-xl">
-              <Icon icon="mdi:upload" className="w-5 h-5 mr-2" />
-              Unggah
-            </Button>
           </div>
         </div>
 
@@ -747,19 +784,20 @@ export function TataBangunanView() {
           </div>
         )}
 
-        <div className="mt-8 flex w-full justify-end gap-3">
+        <div className="mt-8 w-full flex flex-col md:flex-row md:justify-end gap-3">
           <Button
             onClick={() => navigate("/infrastruktur")}
             variant="outline"
-            className="px-8 py-6 rounded-xl cursor-pointer  border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
+            className="px-8 py-6 rounded-xl cursor-pointer border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600 w-full md:w-fit order-2 md:order-1"
             disabled={isSubmitting}
           >
             Kembali
           </Button>
+
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-blue-600 cursor-pointer w-full md:w-fit hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed order-1 md:order-2"
           >
             {isSubmitting ? (
               <>

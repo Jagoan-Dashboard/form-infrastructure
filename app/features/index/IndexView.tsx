@@ -78,10 +78,6 @@ export function IndexView() {
       return;
     }
 
-    // Check if running on localhost (HTTP) vs production (HTTPS)
-    const isSecureContext = window.isSecureContext;
-
-    // Use more specific options for mobile
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const newPosition: [number, number] = [
@@ -397,11 +393,12 @@ export function IndexView() {
                 <SelectValue placeholder="Pilih Peran Pelapor" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">Perangkat Desa</SelectItem>
-                <SelectItem value="desa-b">OPD / Dinas Terkait</SelectItem>
-                <SelectItem value="desa-b">Kelompok Masyarakat</SelectItem>
-                <SelectItem value="desa-b">Masyarakat Umum</SelectItem>
-                <SelectItem value="desa-b"></SelectItem>
+                <SelectItem value="Perangkat Desa">Perangkat Desa</SelectItem>
+                <SelectItem value="Dinas">OPD / Dinas Terkait</SelectItem>
+                <SelectItem value="Kelompok Masyarakat">
+                  Kelompok Masyarakat
+                </SelectItem>
+                <SelectItem value="Masyarakan Umum">Masyarakat Umum</SelectItem>
               </SelectContent>
             </Select>
             {errors.peranPelapor && (
@@ -409,7 +406,7 @@ export function IndexView() {
             )}
           </div>
 
-          <div className="md:col-span-2">
+          <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Desa/Kecamatan*
             </label>
@@ -424,8 +421,26 @@ export function IndexView() {
                 <SelectValue placeholder="Pilih Desa/Kecamatan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desa-a">Desa A</SelectItem>
-                <SelectItem value="desa-b">Desa B</SelectItem>
+                <SelectItem value="Bringin">Bringin</SelectItem>
+                <SelectItem value="Geneng">Geneng</SelectItem>
+                <SelectItem value="Gerih">Gerih</SelectItem>
+                <SelectItem value="Jogorogo">Jogorogo</SelectItem>
+                <SelectItem value="Karanganyar">Karanganyar</SelectItem>
+                <SelectItem value="Karangjati">Karangjati</SelectItem>
+                <SelectItem value="Kasreman">Kasreman</SelectItem>
+                <SelectItem value="Kendal">Kendal</SelectItem>
+                <SelectItem value="Kendal">Kendal</SelectItem>
+                <SelectItem value="Kedunggalar">Kedunggalar</SelectItem>
+                <SelectItem value="Kwadungan">Kwadungan</SelectItem>
+                <SelectItem value="Mantingan">Mantingan</SelectItem>
+                <SelectItem value="Ngawi">Ngawi</SelectItem>
+                <SelectItem value="Ngrambe">Ngrambe</SelectItem>
+                <SelectItem value="Pedas">Pedas</SelectItem>
+                <SelectItem value="Pangkur">Pangkur</SelectItem>
+                <SelectItem value="Paron">Paron</SelectItem>
+                <SelectItem value="Pitu">Pitu</SelectItem>
+                <SelectItem value="Sine">Sine</SelectItem>
+                <SelectItem value="Widodaren">Widodaren</SelectItem>
               </SelectContent>
             </Select>
             {errors.desaKecamatan && (
@@ -434,16 +449,16 @@ export function IndexView() {
               </p>
             )}
           </div>
-        </div>
 
-        <div className="mt-8 flex w-full justify-end ">
-          <Button
-            onClick={handleSubmit}
-            className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2"
-          >
-            Selanjutnya
-            <Icon icon="material-symbols:chevron-right" className="w-5 h-5" />
-          </Button>
+          <div className="mt-8 flex w-full justify-end sm:max-w-full">
+            <Button
+              onClick={handleSubmit}
+              className="bg-blue-600 sm:w-fit cursor-pointer w-full hover:bg-blue-700 text-white font-semibold py-6 px-10 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2"
+            >
+              Selanjutnya
+              <Icon icon="material-symbols:chevron-right" className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </div>
     </main>
