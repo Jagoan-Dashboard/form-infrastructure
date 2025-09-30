@@ -1,0 +1,14 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install --include=optional",
+  "outputDirectory": "build/client",
+  "framework": null,
+  "regions": ["sin1"],
+  "functions": {
+    "build/server/index.js": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
+}
