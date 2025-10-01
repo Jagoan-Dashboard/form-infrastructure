@@ -20,7 +20,6 @@ import {
 import { cn } from "~/lib/utils";
 import { id as idLocale } from "date-fns/locale/id";
 import { Calendar } from "~/components/ui/calendar";
-import { useStepStore } from "~/store/stepStore";
 import { useNavigate } from "react-router";
 import { indexViewSchema } from "./validation/validation";
 import { useFormDataStore } from "~/store/formDataStore";
@@ -28,7 +27,7 @@ import { useFormDataStore } from "~/store/formDataStore";
 export function IndexView() {
   const [position, setPosition] = useState<[number, number]>([
     -7.4034, 111.4464,
-  ]); // Default: Ngawi
+  ]);
   const [latitude, setLatitude] = useState("-7.4034");
   const [longitude, setLongitude] = useState("111.4464");
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
@@ -41,7 +40,6 @@ export function IndexView() {
   const navigate = useNavigate();
   const { setIndexData } = useFormDataStore();
 
-  // Sync position dengan input values
   useEffect(() => {
     if (position) {
       setLatitude(position[0].toString());
@@ -49,7 +47,6 @@ export function IndexView() {
     }
   }, [position]);
 
-  // Handle manual input latitude
   const handleLatitudeChange = (value: string) => {
     setLatitude(value);
     const lat = parseFloat(value);
@@ -58,7 +55,6 @@ export function IndexView() {
     }
   };
 
-  // Handle manual input longitude
   const handleLongitudeChange = (value: string) => {
     setLongitude(value);
     const lng = parseFloat(value);
@@ -67,7 +63,6 @@ export function IndexView() {
     }
   };
 
-  // Aktifkan GPS location
   const aktivasiLokasi = () => {
     setIsLoadingLocation(true);
 
@@ -147,14 +142,12 @@ export function IndexView() {
         desaKecamatan,
       });
 
-      // If validation passes, clear errors
       setErrors({});
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
         const newErrors: Record<string, string> = {};
         error.issues.forEach((err) => {
-          // Use the field path as key, not the message
           if (err.path && err.path.length > 0) {
             const fieldName = err.path[0] as string;
             newErrors[fieldName] = err.message;
@@ -166,23 +159,21 @@ export function IndexView() {
       return false;
     }
   };
-  // Handle form submission
+
   const handleSubmit = () => {
     if (validateForm()) {
-      // Store form data temporarily
       const formData = {
         latitude,
         longitude,
         namaPelapor,
         nomorHP,
         peranPelapor,
-        tanggalLaporan: date,
+        tanggalLaporan: date || null,
         desaKecamatan,
       };
 
       setIndexData(formData);
 
-      // Navigate to next page
       navigate("/infrastruktur");
     }
   };

@@ -16,6 +16,7 @@ import { apiService } from "~/services/apiService";
 import type { TataBangunanForm } from "~/types/formData";
 import { Label } from "~/components/ui/label";
 import { tataBangunanSchema } from "./validation/tataBangunanValidation";
+import { useFormDataStore } from "~/store/formDataStore";
 
 export function TataBangunanView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -45,13 +46,8 @@ export function TataBangunanView() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Reporter info states (these would typically come from user context or form)
-  const [reporterName, setReporterName] = useState("");
-  const [reporterRole, setReporterRole] = useState("");
-  const [village, setVillage] = useState("");
-  const [district, setDistrict] = useState("");
-
   const navigate = useNavigate();
+  const { indexData } = useFormDataStore();
 
   // Sync position dengan input values
   useEffect(() => {
@@ -98,7 +94,6 @@ export function TataBangunanView() {
       );
     }
 
-    // Use more specific options for mobile
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const newPosition: [number, number] = [
@@ -133,9 +128,9 @@ export function TataBangunanView() {
         alert(errorMessage);
       },
       {
-        enableHighAccuracy: true, // Use GPS if available for better accuracy
-        timeout: 10000, // 10 seconds timeout
-        maximumAge: 60000, // Accept cached position up to 1 minute old
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
       }
     );
   };
@@ -187,11 +182,11 @@ export function TataBangunanView() {
     district: string;
   } => {
     return {
-      // Reporter info (would typically come from user context)
-      reporter_name: reporterName || "Default Reporter",
-      reporter_role: reporterRole || "Public",
-      village: village || "Default Village",
-      district: district || "Default District",
+      // Reporter info from index form
+      reporter_name: indexData?.namaPelapor || "Default Reporter",
+      reporter_role: indexData?.jabatan || "Public",
+      village: indexData?.desaKecamatan || "Default Village",
+      district: indexData?.desaKecamatan || "Default District",
 
       // Building identification
       building_name: namaBangunan,
@@ -208,8 +203,8 @@ export function TataBangunanView() {
       floor_count: jumlahLantai,
 
       // Optional rehabilitation data
-      work_type: jenisPekerjaan || undefined,
-      condition_after_rehab: kondisiSetelahRehabilitasi || undefined,
+      work_type: jenisPekerjaan || "",
+      condition_after_rehab: kondisiSetelahRehabilitasi || "",
 
       // Photos as string array (base64 or URLs - but we'll use files)
       photos: previewUrls,
@@ -420,15 +415,16 @@ export function TataBangunanView() {
                 <SelectValue placeholder="Pilih Jenis Bangunan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="kantor-pemerintah">
+                <SelectItem value="kantor pemerintah">
                   Kantor Pemerintah
                 </SelectItem>
                 <SelectItem value="sekolah">Sekolah</SelectItem>
-                <SelectItem value="puskesmas-posyandu">
+                <SelectItem value="puskesmas/posyandu">
                   Puskesmas/Posyandu
                 </SelectItem>
                 <SelectItem value="pasar">Pasar</SelectItem>
-                <SelectItem value="fasilitas-umum-lainnya">
+                <SelectItem value="sarana olahraga/gedung serbaguna">Sarana Olahraga/Gedung Serbaguna</SelectItem>
+                <SelectItem value="fasilitas umum lainnya">
                   Fasilitas Umum Lainnya
                 </SelectItem>
               </SelectContent>
@@ -455,10 +451,10 @@ export function TataBangunanView() {
                 <SelectValue placeholder="Pilih Status Laporan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="rehabilitasi-perbaikan">
+                <SelectItem value="rehabilitasi perbaikan">
                   Rehabilitasi/Perbaikan
                 </SelectItem>
-                <SelectItem value="pembangunan-baru">
+                <SelectItem value="pembangunan baru">
                   Pembangunan Baru
                 </SelectItem>
                 <SelectItem value="lainnya">Lainnya</SelectItem>
@@ -486,12 +482,15 @@ export function TataBangunanView() {
                 <SelectValue placeholder="Pilih Sumber Dana" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="apbd-kabupaten">APBD Kabupaten</SelectItem>
-                <SelectItem value="apbd-provinsi">APBD Provinsi</SelectItem>
+                <SelectItem value="apbd kabupaten">APBD Kabupaten</SelectItem>
+                <SelectItem value="apbd provinsi">APBD Provinsi</SelectItem>
                 <SelectItem value="apbn">APBN</SelectItem>
-                <SelectItem value="dana-desa">Dana Desa</SelectItem>
-                <SelectItem value="swadaya-masyarakat">
+                <SelectItem value="dana desa">Dana Desa</SelectItem>
+                <SelectItem value="swadaya masyarakat">
                   Swadaya Masyarakat
+                </SelectItem>
+                <SelectItem value="lainnya">
+                  Lainnya
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -709,15 +708,18 @@ export function TataBangunanView() {
                 <SelectValue placeholder="Pilih Jenis Pekerjaan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Perbaikan Atap">Perbaikan Atap</SelectItem>
-                <SelectItem value="Perbaikan Dinding/Cat">
+                <SelectItem value="perbaikan atap">Perbaikan Atap</SelectItem>
+                <SelectItem value="perbaikan dinding/cat">
                   Perbaikan Dinding/Cat
                 </SelectItem>
-                <SelectItem value="Perbaikan Pintu Jendela">
+                <SelectItem value="perbaikan pintu jendela">
                   Perbaikan Pintu/Jendela
                 </SelectItem>
-                <SelectItem value="perbaikan-sanitasi-mck">
+                <SelectItem value="perbaikan sanitasi mck">
                   Perbaikan Sanitasi/MCK
+                </SelectItem>
+                <SelectItem value="perbaikan listrik/air">
+                  Perbaikan Listrik/Air
                 </SelectItem>
                 <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
@@ -747,10 +749,10 @@ export function TataBangunanView() {
                 <SelectValue placeholder="Pilih Kondisi Setelah Rehabilitasi" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="baik-siap-pakai">
+                <SelectItem value="baik siap pakai">
                   Baik & Siap Pakai
                 </SelectItem>
-                <SelectItem value="masih-membutuhkan-perbaikan">
+                <SelectItem value="masih membutuhkan perbaikan tambahan">
                   Masih Membutuhkan Perbaikan Tambahan
                 </SelectItem>
                 <SelectItem value="lainnya">Lainnya</SelectItem>

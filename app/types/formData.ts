@@ -4,6 +4,7 @@ export interface TataBangunanForm {
     reporter_role: string;
     village: string;
     district: string;
+    
     building_name: string;
     building_type: string;
     report_status: string;
@@ -24,7 +25,8 @@ export interface TataRuangForm {
     reporter_name: string;
     institution: string;
     phone_number: string;
-    report_datetime: string; // Format: "YYYY-MM-DDTHH:mm:ssZ"
+    report_datetime: string;
+
     area_description: string;
     area_category: string;
     violation_type: string;
@@ -42,6 +44,7 @@ export interface SumberDayaAirForm {
     institution_unit: string;
     phone_number: string;
     report_datetime: string;
+
     irrigation_area_name: string;
     irrigation_type: string;
     latitude: number;
@@ -59,35 +62,27 @@ export interface SumberDayaAirForm {
 
 // endpoint POST /api/v1/bina-marga
 export interface BinamargaJalanForm {
-    // Reporter info
     reporter_name: string;
     institution_unit: string;
     phone_number: string;
     report_datetime: string;
 
-    // Road identification
     road_name: string;
-    road_type: string; // JALAN_NASIONAL, JALAN_PROVINSI, JALAN_KABUPATEN, JALAN_DESA
-    road_class: string; // ARTERI, KOLEKTOR, LOKAL, LINGKUNGAN
+    road_type: string;
+    road_class: string;
     segment_length: number;
     latitude: number;
     longitude: number;
-
-    // Damage details
-    pavement_type: string; // ASPAL_FLEXIBLE, BETON_RIGID, PAVING, JALAN_TANAH
+    pavement_type: string;
     damage_type: string;
-    damage_level: string; // RINGAN, SEDANG, BERAT
+    damage_level: string;
     damaged_length: number;
     damaged_width: number;
     total_damaged_area: number;
-
-    // Traffic impact
     traffic_condition: string;
     traffic_impact?: string;
     daily_traffic_volume: number;
-    urgency_level: string; // DARURAT, CEPAT, RUTIN
-
-    // Additional info
+    urgency_level: string;
     cause_of_damage?: string;
     notes?: string;
     photos: string[];
@@ -95,29 +90,21 @@ export interface BinamargaJalanForm {
 
 // endpoint POST /api/v1/bina-marga
 export interface BinamargaJembatanForm {
-    // Reporter info
     reporter_name: string;
     institution_unit: string;
     phone_number: string;
     report_datetime: string;
 
-    // Bridge identification
     bridge_name: string;
     bridge_structure_type: string;
     latitude: number;
     longitude: number;
-
-    // Damage details
     bridge_damage_type: string;
     bridge_damage_level: string;
-
-    // Traffic impact
     traffic_condition: string;
     traffic_impact?: string;
     daily_traffic_volume: number;
-    urgency_level: string; // DARURAT, CEPAT, RUTIN
-
-    // Additional info
+    urgency_level: string;
     cause_of_damage?: string;
     notes?: string;
     photos: string[];

@@ -15,7 +15,7 @@ import { useNavigate } from "react-router";
 import { Label } from "~/components/ui/label";
 import { tataRuangSchema } from "./validation/tataRuangValidation";
 import { useFormDataStore } from "~/store/formDataStore";
-import { useSpatialPlanningMutation } from "~/hooks/useMutations";
+import { apiService } from "~/services/apiService";
 
 export function TataRuangView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -41,7 +41,6 @@ export function TataRuangView() {
 
   const navigate = useNavigate();
   const { getIndexData, clearAllData } = useFormDataStore();
-  const spatialPlanningMutation = useSpatialPlanningMutation();
 
   // Debug: Clear any potentially corrupted localStorage on component mount
   useEffect(() => {
@@ -218,24 +217,13 @@ export function TataRuangView() {
       };
 
       // Format datetime properly - API expects "2024-01-15T10:30:00Z" format
-      const formatDateTime = (date: Date | string | undefined): string => {
+      const formatDateTime = (date: Date | null): string => {
         let dateObj: Date;
 
-        if (!date) {
+        if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
           dateObj = new Date();
-        } else if (typeof date === "string") {
-          dateObj = new Date(date);
-          if (isNaN(dateObj.getTime())) {
-            dateObj = new Date();
-          }
-        } else if (date instanceof Date) {
-          if (isNaN(date.getTime())) {
-            dateObj = new Date();
-          } else {
-            dateObj = date;
-          }
         } else {
-          dateObj = new Date();
+          dateObj = date;
         }
 
         // Try different formats - API error mentions "2006-01-02 15:04:05" format
@@ -297,14 +285,18 @@ export function TataRuangView() {
         return;
       }
 
-      // Submit using Tanstack Query mutation
-      await spatialPlanningMutation.mutateAsync(apiData);
+      // Submit using API service
+      const response = await apiService.submitSpatialPlanning(apiData);
 
-      // Clear stored data after successful submission
-      clearAllData();
+      if (response.data.success) {
+        // Clear stored data after successful submission
+        clearAllData();
 
-      // Navigate to success page
-      navigate("/success");
+        // Navigate to success page
+        navigate("/success");
+      } else {
+        throw new Error(response.data.message || "Submission failed");
+      }
     } catch (error: any) {
       let errorMessage = "Gagal mengirim data. ";
       if (error.response?.data?.message) {
@@ -498,10 +490,17 @@ export function TataRuangView() {
                 <SelectItem value="cagar-budaya">
                   Kawasan Cagar Budaya
                 </SelectItem>
+                <SelectItem value="cagar budaya">Kawasan Cagar Budaya</SelectItem>
                 <SelectItem value="hutan">Kawasan Hutan</SelectItem>
                 <SelectItem value="pariwisata">Kawasan Pariwisata</SelectItem>
                 <SelectItem value="perkebunan">Kawasan Perkebunan</SelectItem>
                 <SelectItem value="permukiman">Kawasan Permukiman</SelectItem>
+                <SelectItem value="pertahanan dan keamanan">Kawasan Pertahanan dan Keamanan</SelectItem>
+                <SelectItem value="peruntukan industri">Kawasan Peruntukan Industri</SelectItem>
+                <SelectItem value="peruntukan pertambangan batuan">Kawasan Peruntukan Pertambangan Batuan</SelectItem>
+                <SelectItem value="tanaman pangan">Kawasan Tanaman Pangan</SelectItem>
+                <SelectItem value="transportasi">Kawasan Transportasi</SelectItem>
+                <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
             </Select>
             {errors.kategoriKawasan && (
@@ -622,17 +621,20 @@ export function TataRuangView() {
                 <SelectValue placeholder="Pilih Jenis Pelanggaran" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="bangunan-sempadan-sungai">
+                <SelectItem value="bangunan sempadan sungai">
                   Bangunan di sempadan sungai/waduk/bendungan
                 </SelectItem>
-                <SelectItem value="bangunan-sempadan-jalan">
+                <SelectItem value="bangunan sempadan jalan">
                   Bangunan di sempadan jalan
                 </SelectItem>
-                <SelectItem value="alih-fungsi-lahan-pertanian">
+                <SelectItem value="alih fungsi lahan pertanian">
                   Alih fungsi lahan pertanian
                 </SelectItem>
-                <SelectItem value="alih-fungsi-ruang-terbuka-hijau">
+                <SelectItem value="alih fungsi ruang terbuka hijau">
                   Alih fungsi ruang terbuka hijau
+                </SelectItem>
+                <SelectItem value="pembangunan tanpa izin pemanfaatan ruang">
+                  Pembangunan tanpa izin pemanfaatan ruang
                 </SelectItem>
                 <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
@@ -698,13 +700,13 @@ export function TataRuangView() {
                 <SelectValue placeholder="Pilih Dampak Lingkungan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="menurunnya-kualitas-ruang">
+                <SelectItem value="menurunnya kualitas ruang">
                   Menurunnya kualitas ruang / ekosistem
                 </SelectItem>
-                <SelectItem value="potensi-banjir-longsor">
+                <SelectItem value="potensi banjir longsor">
                   Potensi banjir / longsor
                 </SelectItem>
-                <SelectItem value="mengganggu-aktivitas-warga">
+                <SelectItem value="mengganggu aktivitas warga">
                   Mengganggu aktivitas warga
                 </SelectItem>
               </SelectContent>
@@ -742,7 +744,6 @@ export function TataRuangView() {
             )}
           </div>
 
-          {/* Foto Lokasi */}
           <div className="md:col-span-2">
             <Label className="text-sm font-semibold text-gray-700 mb-4">
               Foto Lokasi/Kerusakan*

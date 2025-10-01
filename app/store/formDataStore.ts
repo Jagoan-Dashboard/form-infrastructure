@@ -7,8 +7,12 @@ interface IndexFormData {
   namaPelapor: string;
   nomorHP: string;
   peranPelapor: string;
-  tanggalLaporan: Date | string | undefined;
+  tanggalLaporan: Date | null;
   desaKecamatan: string;
+  // Additional fields for TataBangunan compatibility
+  jabatan?: string;
+  desa?: string;
+  kecamatan?: string;
 }
 
 interface TataRuangFormData {
@@ -27,14 +31,12 @@ interface FormDataStore {
   indexData: IndexFormData | null;
   tataRuangData: TataRuangFormData | null;
 
-  // Actions
   setIndexData: (data: IndexFormData) => void;
   setTataRuangData: (data: TataRuangFormData) => void;
   clearIndexData: () => void;
   clearTataRuangData: () => void;
   clearAllData: () => void;
 
-  // Getters
   getIndexData: () => IndexFormData | null;
   getTataRuangData: () => TataRuangFormData | null;
 }
@@ -46,27 +48,22 @@ export const useFormDataStore = create<FormDataStore>()(
       tataRuangData: null,
 
       setIndexData: (data: IndexFormData) => {
-        // console.log('🏠 Storing Index Data:', data);
         set({ indexData: data });
       },
 
       setTataRuangData: (data: TataRuangFormData) => {
-        // console.log('🏗️ Storing Tata Ruang Data:', data);
         set({ tataRuangData: data });
       },
 
       clearIndexData: () => {
-        // console.log('🗑️ Clearing Index Data');
         set({ indexData: null });
       },
 
       clearTataRuangData: () => {
-        // console.log('🗑️ Clearing Tata Ruang Data');
         set({ tataRuangData: null });
       },
 
       clearAllData: () => {
-        // console.log('🗑️ Clearing All Form Data');
         set({ indexData: null, tataRuangData: null });
       },
 
@@ -75,24 +72,21 @@ export const useFormDataStore = create<FormDataStore>()(
     }),
     {
       name: 'form-data-storage',
-      // Only persist basic data, not File objects
       partialize: (state) => ({
         indexData: state.indexData ? {
           ...state.indexData,
-          // Convert Date to string for persistence
-          tanggalLaporan: state.indexData.tanggalLaporan?.toISOString() || null,
+          tanggalLaporan: state.indexData.tanggalLaporan instanceof Date
+            ? state.indexData.tanggalLaporan.toISOString()
+            : null,
         } : null,
-        // Don't persist files in tataRuangData to avoid serialization issues
         tataRuangData: state.tataRuangData ? {
           ...state.tataRuangData,
-          fotoLokasi: [] // Reset files on reload
+          fotoLokasi: []
         } : null,
       }),
-      // Handle date deserialization when loading from storage
       onRehydrateStorage: () => (state) => {
         if (state?.indexData?.tanggalLaporan && typeof state.indexData.tanggalLaporan === 'string') {
           state.indexData.tanggalLaporan = new Date(state.indexData.tanggalLaporan);
-          // console.log('📅 Rehydrated date:', state.indexData.tanggalLaporan);
         }
       },
     }

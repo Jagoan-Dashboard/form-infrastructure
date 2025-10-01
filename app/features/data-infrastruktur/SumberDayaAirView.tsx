@@ -169,13 +169,29 @@ export function SumberDayaAirView() {
 
   // Map form values to API format
   const mapFormToApiData = (): SumberDayaAirForm & { photoFiles?: File[] } => {
+    // Map peran pelapor to institution - API expects: DINAS, DESA, KECAMATAN
+    const getInstitution = (peran: string) => {
+      switch (peran) {
+        case "desa-a":
+          return "DESA"; // Perangkat Desa → DESA
+        case "desa-b":
+          return "DINAS"; // OPD / Dinas Terkait → DINAS
+        case "kelompok-masyarakat":
+          return "KECAMATAN"; // Kelompok Masyarakat → KECAMATAN
+        default:
+          return "DESA"; // Default to DESA
+      }
+    };
+
     return {
       // Reporter info from index form
       reporter_name: indexData?.namaPelapor || "Default Reporter",
-      institution_unit: "DINAS", // Default value, should be collected from form
+      institution_unit: getInstitution(indexData?.peranPelapor || ""),
       phone_number: indexData?.nomorHP || "000000000000",
       report_datetime:
-        indexData?.tanggalLaporan?.toISOString() || new Date().toISOString(),
+        (indexData?.tanggalLaporan instanceof Date
+          ? indexData.tanggalLaporan.toISOString()
+          : new Date().toISOString()),
 
       // Irrigation data
       irrigation_area_name: namaDaerahIrigasi,
@@ -409,12 +425,12 @@ export function SumberDayaAirView() {
                 <SelectValue placeholder="Pilih Jenis Irigasi" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="saluran-sekunder">
+                <SelectItem value="saluran sekunder">
                   Saluran Sekunder
                 </SelectItem>
-                <SelectItem value="embung-dam">Embung/Dam</SelectItem>
                 <SelectItem value="bendung">Bendung</SelectItem>
-                <SelectItem value="pintu-air">Pintu Air</SelectItem>
+                <SelectItem value="embung/dam">Embung/Dam</SelectItem>
+                <SelectItem value="pintu air">Pintu Air</SelectItem>
                 <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
             </Select>
@@ -531,16 +547,25 @@ export function SumberDayaAirView() {
                 <SelectValue placeholder="Pilih Jenis Kerusakan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="retak-bocor">Retak/Bocor</SelectItem>
-                <SelectItem value="longsor-ambrol">Longsor/Ambrol</SelectItem>
-                <SelectItem value="sedimentasi-tinggi">
+                <SelectItem value="retak/bocor">Retak/Bocor</SelectItem>
+                <SelectItem value="longsor/ambrol">Longsor/Ambrol</SelectItem>
+                <SelectItem value="sedimentasi tinggi">
                   Sedimentasi Tinggi
                 </SelectItem>
-                <SelectItem value="tersumbat-sampah">
+                <SelectItem value="tersumbat sampah">
                   Tersumbat Sampah
                 </SelectItem>
-                <SelectItem value="struktur-beton-rusak">
+                <SelectItem value="struktur beton rusak">
                   Struktur Beton Rusak
+                </SelectItem>
+                <SelectItem value="pintu air macet">
+                  Pintu Air Macet/Tidak Berfungsi
+                </SelectItem>
+                <SelectItem value="tanggul jebol">
+                  Tanggul Jebol
+                </SelectItem>
+                <SelectItem value="lainnya">
+                  Lainnya
                 </SelectItem>
               </SelectContent>
             </Select>

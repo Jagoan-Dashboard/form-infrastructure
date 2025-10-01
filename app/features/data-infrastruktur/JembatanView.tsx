@@ -173,13 +173,29 @@ export function JembatanView() {
       return mapping[formValue] || formValue.toUpperCase();
     };
 
+    // Map peran pelapor to institution - API expects: DINAS, DESA, KECAMATAN
+    const getInstitution = (peran: string) => {
+      switch (peran) {
+        case "desa-a":
+          return "DESA"; // Perangkat Desa → DESA
+        case "desa-b":
+          return "DINAS"; // OPD / Dinas Terkait → DINAS
+        case "kelompok-masyarakat":
+          return "KECAMATAN"; // Kelompok Masyarakat → KECAMATAN
+        default:
+          return "DESA"; // Default to DESA
+      }
+    };
+
     return {
       // Reporter info from index form
       reporter_name: indexData?.namaPelapor || "Default Reporter",
-      institution_unit: "DINAS", // Default value
+      institution_unit: getInstitution(indexData?.peranPelapor || ""),
       phone_number: indexData?.nomorHP || "000000000000",
       report_datetime:
-        indexData?.tanggalLaporan?.toISOString() || new Date().toISOString(),
+        (indexData?.tanggalLaporan instanceof Date
+          ? indexData.tanggalLaporan.toISOString()
+          : new Date().toISOString()),
 
       // Bridge identification
       bridge_name: namaJembatan,
@@ -402,7 +418,7 @@ export function JembatanView() {
                 <SelectValue placeholder="Pilih Jenis Struktur" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="beton-bertulang">Beton Bertulang</SelectItem>
+                <SelectItem value="beton bertulang">Beton Bertulang</SelectItem>
                 <SelectItem value="baja">Baja</SelectItem>
                 <SelectItem value="kayu">Kayu</SelectItem>
               </SelectContent>
@@ -429,16 +445,16 @@ export function JembatanView() {
                 <SelectValue placeholder="Pilih Jenis Kerusakan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="lantai-jembatan-retak">
+                <SelectItem value="lantai jembatan retak">
                   Lantai Jembatan Retak/Rusak
                 </SelectItem>
-                <SelectItem value="oprit-abutment-amblas">
+                <SelectItem value="oprit/abutment amblas">
                   Oprit/Abutment Amblas
                 </SelectItem>
-                <SelectItem value="rangka-utama-retak">
+                <SelectItem value="rangka utama retak">
                   Rangka Utama Retak
                 </SelectItem>
-                <SelectItem value="pondasi-terseret-arus">
+                <SelectItem value="pondasi terseret arus">
                   Pondasi Terseret Arus
                 </SelectItem>
               </SelectContent>
@@ -470,7 +486,7 @@ export function JembatanView() {
               <SelectContent>
                 <SelectItem value="ringan">Ringan</SelectItem>
                 <SelectItem value="sedang">Sedang</SelectItem>
-                <SelectItem value="berat-tidak-layak">
+                <SelectItem value="berat">
                   Berat/Tidak Layak
                 </SelectItem>
               </SelectContent>
@@ -593,14 +609,14 @@ export function JembatanView() {
                 <SelectValue placeholder="Pilih Kondisi Lalu Lintas Saat ini" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="masih-bisa-dilalui">
+                <SelectItem value="masih bisa dilalui">
                   Masih Bisa Dilalui
                 </SelectItem>
-                <SelectItem value="satu-jalur-bisa-dilalui">
+                <SelectItem value="satu jalur bisa dilalui">
                   Hanya Satu Jalur Bisa Dilalui
                 </SelectItem>
-                <SelectItem value="tidak-bisa-dilalui">
-                  Tidak Bisa Dilalui/Jalan Putus
+                <SelectItem value="tidak bisa dilalui">
+                  Tidak Bisa Dilalui(Jembatan Putus)
                 </SelectItem>
               </SelectContent>
             </Select>
