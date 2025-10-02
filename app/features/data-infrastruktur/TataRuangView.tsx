@@ -16,6 +16,7 @@ import { Label } from "~/components/ui/label";
 import { tataRuangSchema } from "./validation/tataRuangValidation";
 import { useFormDataStore } from "~/store/formDataStore";
 import { apiService } from "~/services/apiService";
+import { peranPelaporToInstitution } from "~/utils/enumMapper";
 
 export function TataRuangView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -177,18 +178,6 @@ export function TataRuangView() {
         return;
       }
       // Map peran pelapor to institution - API expects: DINAS, DESA, KECAMATAN
-      const getInstitution = (peran: string) => {
-        switch (peran) {
-          case "desa-a":
-            return "DESA"; // Perangkat Desa → DESA
-          case "desa-b":
-            return "DINAS"; // OPD / Dinas Terkait → DINAS
-          case "kelompok-masyarakat":
-            return "KECAMATAN"; // Kelompok Masyarakat → KECAMATAN
-          default:
-            return "DESA"; // Default to DESA
-        }
-      };
 
       // Map violation level to API format - API expects: RINGAN, SEDANG, BERAT
       const getViolationLevel = (level: string) => {
@@ -250,7 +239,7 @@ export function TataRuangView() {
 
       const apiData: any = {
         reporter_name: indexData.namaPelapor,
-        institution: getInstitution(indexData.peranPelapor),
+        institution: peranPelaporToInstitution(indexData.peranPelapor),
         phone_number: indexData.nomorHP,
         report_datetime: formattedDateTime,
         area_description: gambaranAreaLokasi,

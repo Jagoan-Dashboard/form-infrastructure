@@ -17,6 +17,7 @@ import { jembatanSchema } from "./validation/jembatanValidation";
 import { apiService } from "~/services/apiService";
 import type { BinamargaJembatanForm } from "~/types/formData";
 import { useFormDataStore } from "~/store/formDataStore";
+import { peranPelaporToInstitution } from "~/utils/enumMapper";
 
 export function JembatanView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -174,23 +175,10 @@ export function JembatanView() {
     };
 
     // Map peran pelapor to institution - API expects: DINAS, DESA, KECAMATAN
-    const getInstitution = (peran: string) => {
-      switch (peran) {
-        case "desa-a":
-          return "DESA"; // Perangkat Desa → DESA
-        case "desa-b":
-          return "DINAS"; // OPD / Dinas Terkait → DINAS
-        case "kelompok-masyarakat":
-          return "KECAMATAN"; // Kelompok Masyarakat → KECAMATAN
-        default:
-          return "DESA"; // Default to DESA
-      }
-    };
-
     return {
       // Reporter info from index form
       reporter_name: indexData?.namaPelapor || "Default Reporter",
-      institution_unit: getInstitution(indexData?.peranPelapor || ""),
+      institution_unit: peranPelaporToInstitution(indexData?.peranPelapor || ""),
       phone_number: indexData?.nomorHP || "000000000000",
       report_datetime:
         (indexData?.tanggalLaporan instanceof Date

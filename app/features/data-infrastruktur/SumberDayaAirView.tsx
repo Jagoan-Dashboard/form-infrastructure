@@ -17,6 +17,7 @@ import { sumberDayaAirSchema } from "./validation/sumberDayaAirValidation";
 import { apiService } from "~/services/apiService";
 import type { SumberDayaAirForm } from "~/types/formData";
 import { useFormDataStore } from "~/store/formDataStore";
+import { peranPelaporToInstitution } from "~/utils/enumMapper";
 
 export function SumberDayaAirView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -170,23 +171,10 @@ export function SumberDayaAirView() {
   // Map form values to API format
   const mapFormToApiData = (): SumberDayaAirForm & { photoFiles?: File[] } => {
     // Map peran pelapor to institution - API expects: DINAS, DESA, KECAMATAN
-    const getInstitution = (peran: string) => {
-      switch (peran) {
-        case "desa-a":
-          return "DESA"; // Perangkat Desa → DESA
-        case "desa-b":
-          return "DINAS"; // OPD / Dinas Terkait → DINAS
-        case "kelompok-masyarakat":
-          return "KECAMATAN"; // Kelompok Masyarakat → KECAMATAN
-        default:
-          return "DESA"; // Default to DESA
-      }
-    };
-
     return {
       // Reporter info from index form
       reporter_name: indexData?.namaPelapor || "Default Reporter",
-      institution_unit: getInstitution(indexData?.peranPelapor || ""),
+      institution_unit: peranPelaporToInstitution(indexData?.peranPelapor || ""),
       phone_number: indexData?.nomorHP || "000000000000",
       report_datetime:
         (indexData?.tanggalLaporan instanceof Date
