@@ -2,7 +2,8 @@ import z from "zod";
 import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
-import { Input } from "~/components/ui/input";
+import { InputWithMic } from "~/components/InputWithMic";
+import { TextareaWithMic } from "~/components/TextareaWithMic";
 import { Button } from "~/components/ui/button";
 import {
   Select,
@@ -421,8 +422,7 @@ export function JalanView() {
               Nama Ruas Jalan/Kode Ruas
               <span className="text-red-500">*</span>
             </label>
-            <Input
-              type="text"
+            <TextareaWithMic
               value={namaRuasJalan}
               onChange={(e) => setNamaRuasJalan(e.target.value)}
               placeholder="Contoh: Ruas Ngawi-Karangjati-20"
@@ -470,11 +470,12 @@ export function JalanView() {
               Panjang Segmen yang Diperiksa (m)
               <span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={panjangSegmen}
               onChange={(e) => setPanjangSegmen(e.target.value)}
               placeholder="Contoh: 2785"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.panjangSegmen
                   ? "border-red-500 focus:ring-red-500"
@@ -540,9 +541,9 @@ export function JalanView() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Latitude*
+                Latitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
@@ -552,6 +553,7 @@ export function JalanView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="-7.4034"
+                enableVoice={false}
               />
               {errors.latitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
@@ -560,9 +562,9 @@ export function JalanView() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Longitude*
+                Longitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
@@ -572,6 +574,7 @@ export function JalanView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="111.4464"
+                enableVoice={false}
               />
               {errors.longitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>
@@ -614,7 +617,7 @@ export function JalanView() {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Jenis Perkerasan*
+              Jenis Perkerasan<span className="text-red-500">*</span>
             </label>
             <Select value={jenisPerkerasan} onValueChange={setJenisPerkerasan}>
               <SelectTrigger
@@ -642,7 +645,7 @@ export function JalanView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Jenis Kerusakan*
+              Jenis Kerusakan<span className="text-red-500">*</span>
             </label>
             <Select value={jenisKerusakan} onValueChange={setJenisKerusakan}>
               <SelectTrigger
@@ -680,7 +683,7 @@ export function JalanView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Tingkat Kerusakan*
+              Tingkat Kerusakan<span className="text-red-500">*</span>
             </label>
             <Select
               value={tingkatKerusakan}
@@ -710,13 +713,14 @@ export function JalanView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Panjang Kerusakan (m)*
+              Panjang Kerusakan (m)<span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={panjangKerusakan}
               onChange={(e) => setPanjangKerusakan(e.target.value)}
               placeholder="Contoh: 10"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
                 errors.panjangKerusakan
                   ? "border-red-500 focus:ring-red-500"
@@ -732,13 +736,14 @@ export function JalanView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Lebar Kerusakan (m)*
+              Lebar Kerusakan (m)<span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={lebarKerusakan}
               onChange={(e) => setLebarKerusakan(e.target.value)}
               placeholder="Contoh: 2"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
                 errors.lebarKerusakan
                   ? "border-red-500 focus:ring-red-500"
@@ -754,13 +759,14 @@ export function JalanView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Total Luas Kerusakan (m<sup>2</sup>)*
+              Total Luas Kerusakan (m<sup>2</sup>)<span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={totalLuasKerusakan}
               onChange={(e) => setTotalLuasKerusakan(e.target.value)}
               placeholder="Contoh: 20"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
                 errors.totalLuasKerusakan
                   ? "border-red-500 focus:ring-red-500"
@@ -784,7 +790,7 @@ export function JalanView() {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Kondisi Lalu Lintas Saat ini*
+              Kondisi Lalu Lintas Saat ini<span className="text-red-500">*</span>
             </label>
             <Select
               value={kondisiLaluLintas}
@@ -823,11 +829,12 @@ export function JalanView() {
               Volume Lalu Lintas Harian
               <span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={volumeLaluLintas}
               onChange={(e) => setVolumeLaluLintas(e.target.value)}
               placeholder="Contoh: 200"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
                 errors.volumeLaluLintas
                   ? "border-red-500 focus:ring-red-500"
@@ -843,7 +850,7 @@ export function JalanView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Kategori Prioritas Penanganan*
+              Kategori Prioritas Penanganan<span className="text-red-500">*</span>
             </label>
             <Select
               value={kategoriPrioritas}
@@ -874,7 +881,7 @@ export function JalanView() {
           {/* Foto Lokasi */}
           <div className="md:col-span-2">
             <Label className="text-sm font-semibold text-gray-700 mb-4">
-              Foto Lokasi/Kerusakan*
+              Foto Lokasi/Kerusakan<span className="text-red-500">*</span>
             </Label>
             <ImageUpload />
             {errors.fotoKerusakan && (

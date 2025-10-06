@@ -2,7 +2,8 @@ import z from "zod";
 import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
-import { Input } from "~/components/ui/input";
+import { InputWithMic } from "~/components/InputWithMic";
+import { TextareaWithMic } from "~/components/TextareaWithMic";
 import { Button } from "~/components/ui/button";
 import {
   Select,
@@ -383,8 +384,7 @@ export function TataBangunanView() {
               Nama Bangunan
               <span className="text-red-500">*</span>
             </label>
-            <Input
-              type="text"
+            <TextareaWithMic
               value={namaBangunan}
               onChange={(e) => setNamaBangunan(e.target.value)}
               placeholder="Contoh: SMA Negeri"
@@ -504,11 +504,12 @@ export function TataBangunanView() {
               Tahun Pembangunan/Rehabilitasi Terakhir
               <span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={tahunPembangunan}
               onChange={(e) => setTahunPembangunan(e.target.value)}
               placeholder="Contoh: 2010"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.tahunPembangunan
                   ? "border-red-500 focus:ring-red-500"
@@ -536,11 +537,10 @@ export function TataBangunanView() {
               Alamat Lengkap
               <span className="text-red-500">*</span>
             </label>
-            <Input
-              type="text"
+            <TextareaWithMic
               value={alamatLengkap}
               onChange={(e) => setAlamatLengkap(e.target.value)}
-              placeholder="Contoh: Jl. Al-Hilal No.13, Sobo, Banyuwangi"
+              placeholder="Contoh: Jl. Amba No.4 Desa Tukam Ngawi"
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.alamatLengkap
                   ? "border-red-500 focus:ring-red-500"
@@ -558,11 +558,12 @@ export function TataBangunanView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Luas Lantai (m<sup>2</sup>)<span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={luasLantai}
               onChange={(e) => setLuasLantai(e.target.value)}
               placeholder="Contoh: 500"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.luasLantai
                   ? "border-red-500 focus:ring-red-500"
@@ -621,9 +622,9 @@ export function TataBangunanView() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Latitude*
+                Latitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
@@ -633,6 +634,7 @@ export function TataBangunanView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="-7.4034"
+                enableVoice={false}
               />
               {errors.latitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
@@ -641,9 +643,9 @@ export function TataBangunanView() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Longitude*
+                Longitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
@@ -653,6 +655,7 @@ export function TataBangunanView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="111.4464"
+                enableVoice={false}
               />
               {errors.longitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>
@@ -695,7 +698,7 @@ export function TataBangunanView() {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Jenis Pekerjaan (jika rehabilitasi)*
+              Jenis Pekerjaan (jika rehabilitasi)<span className="text-red-500">*</span>
             </label>
             <Select value={jenisPekerjaan} onValueChange={setJenisPekerjaan}>
               <SelectTrigger
@@ -733,7 +736,7 @@ export function TataBangunanView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Kondisi Setelah Rehabilitasi*
+              Kondisi Setelah Rehabilitasi<span className="text-red-500">*</span>
             </label>
             <Select
               value={kondisiSetelahRehabilitasi}
@@ -768,7 +771,7 @@ export function TataBangunanView() {
           {/* Foto Lokasi */}
           <div className="md:col-span-2">
             <Label className="text-sm font-semibold text-gray-700 mb-4">
-              Foto Kerusakan*
+              Foto Kerusakan<span className="text-red-500">*</span>
             </Label>
             <ImageUpload />
             {errors.fotoKerusakan && (

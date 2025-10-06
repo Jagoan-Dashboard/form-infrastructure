@@ -2,7 +2,8 @@ import z from "zod";
 import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
-import { Input } from "~/components/ui/input";
+import { InputWithMic } from "~/components/InputWithMic";
+import { TextareaWithMic } from "~/components/TextareaWithMic";
 import { Button } from "~/components/ui/button";
 import {
   Select,
@@ -380,8 +381,7 @@ export function SumberDayaAirView() {
               Nama Daerah Irigasi
               <span className="text-red-500">*</span>
             </label>
-            <Input
-              type="text"
+            <TextareaWithMic
               value={namaDaerahIrigasi}
               onChange={(e) => setNamaDaerahIrigasi(e.target.value)}
               placeholder="Contoh: DI Sambi"
@@ -448,9 +448,9 @@ export function SumberDayaAirView() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Latitude*
+                Latitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
@@ -460,6 +460,7 @@ export function SumberDayaAirView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="-7.4034"
+                enableVoice={false}
               />
               {errors.latitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
@@ -468,9 +469,9 @@ export function SumberDayaAirView() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Longitude*
+                Longitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
@@ -480,6 +481,7 @@ export function SumberDayaAirView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="111.4464"
+                enableVoice={false}
               />
               {errors.longitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>
@@ -522,7 +524,7 @@ export function SumberDayaAirView() {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Jenis Kerusakan*
+              Jenis Kerusakan<span className="text-red-500">*</span>
             </label>
             <Select value={jenisKerusakan} onValueChange={setJenisKerusakan}>
               <SelectTrigger
@@ -566,7 +568,7 @@ export function SumberDayaAirView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Tingkat Kerusakan*
+              Tingkat Kerusakan<span className="text-red-500">*</span>
             </label>
             <Select
               value={tingkatKerusakan}
@@ -602,13 +604,14 @@ export function SumberDayaAirView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Perkiraan Panjang Kerusakan (m)*
+              Perkiraan Panjang Kerusakan (m)<span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={perkiraanPanjangKerusakan}
               onChange={(e) => setPerkiraanPanjangKerusakan(e.target.value)}
               placeholder="Contoh: 10"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.perkiraanPanjangKerusakan
                   ? "border-red-500 focus:ring-red-500"
@@ -624,13 +627,14 @@ export function SumberDayaAirView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Perkiraan Lebar Kerusakan (m)*
+              Perkiraan Lebar Kerusakan (m)<span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={perkiraanLebarKerusakan}
               onChange={(e) => setPerkiraanLebarKerusakan(e.target.value)}
               placeholder="Contoh: 2"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.perkiraanLebarKerusakan
                   ? "border-red-500 focus:ring-red-500"
@@ -646,13 +650,14 @@ export function SumberDayaAirView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Perkiraan Luas Kerusakan (m<sup>2</sup>)*
+              Perkiraan Luas Kerusakan (m<sup>2</sup>)<span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={perkiraanLuasKerusakan}
               onChange={(e) => setPerkiraanLuasKerusakan(e.target.value)}
               placeholder="Contoh: 20"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.perkiraanLuasKerusakan
                   ? "border-red-500 focus:ring-red-500"
@@ -669,7 +674,7 @@ export function SumberDayaAirView() {
           {/* Foto Lokasi */}
           <div className="md:col-span-2">
             <Label className="text-sm font-semibold text-gray-700 mb-4">
-              Foto Lokasi/Kerusakan*
+              Foto Lokasi/Kerusakan<span className="text-red-500">*</span>
             </Label>
             <ImageUpload />
             {errors.fotoKerusakan && (
@@ -692,11 +697,12 @@ export function SumberDayaAirView() {
               Area Sawah Terdampak (ha)
               <span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={areaSawahTerdampak}
               onChange={(e) => setAreaSawahTerdampak(e.target.value)}
               placeholder="Contoh: 10"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.areaSawahTerdampak
                   ? "border-red-500 focus:ring-red-500"
@@ -715,11 +721,12 @@ export function SumberDayaAirView() {
               Jumlah Petani Terdampak
               <span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={jumlahPetaniTerdampak}
               onChange={(e) => setJumlahPetaniTerdampak(e.target.value)}
               placeholder="Contoh: 5"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.jumlahPetaniTerdampak
                   ? "border-red-500 focus:ring-red-500"

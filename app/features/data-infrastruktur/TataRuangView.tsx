@@ -2,7 +2,8 @@ import z from "zod";
 import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
-import { Input } from "~/components/ui/input";
+import { InputWithMic } from "~/components/InputWithMic";
+import { TextareaWithMic } from "~/components/TextareaWithMic";
 import { Button } from "~/components/ui/button";
 import {
   Select,
@@ -443,8 +444,7 @@ export function TataRuangView() {
               Gambaran area lokasi / Kawasan
               <span className="text-red-500">*</span>
             </label>
-            <Input
-              type="text"
+            <TextareaWithMic
               value={gambaranAreaLokasi}
               onChange={(e) => setGambaranAreaLokasi(e.target.value)}
               placeholder="Contoh: Sempadan Sungai"
@@ -520,9 +520,9 @@ export function TataRuangView() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Latitude*
+                Latitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
@@ -532,6 +532,7 @@ export function TataRuangView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="-7.4034"
+                enableVoice={false}
               />
               {errors.latitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
@@ -540,9 +541,9 @@ export function TataRuangView() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Longitude*
+                Longitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
@@ -552,6 +553,7 @@ export function TataRuangView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="111.4464"
+                enableVoice={false}
               />
               {errors.longitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>
@@ -594,7 +596,7 @@ export function TataRuangView() {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Jenis Pelanggaran Tata Ruang*
+              Jenis Pelanggaran Tata Ruang<span className="text-red-500">*</span>
             </label>
             <Select
               value={jenisPelanggaran}
@@ -637,7 +639,7 @@ export function TataRuangView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Tingkat Pelanggaran*
+              Tingkat Pelanggaran<span className="text-red-500">*</span>
             </label>
             <Select
               value={tingkatPelanggaran}
@@ -673,7 +675,7 @@ export function TataRuangView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Dampak Lingkungan*
+              Dampak Lingkungan<span className="text-red-500">*</span>
             </label>
             <Select
               value={dampakLingkungan}
@@ -709,7 +711,7 @@ export function TataRuangView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Tingkat Urgensi Penanganan*
+              Tingkat Urgensi Penanganan<span className="text-red-500">*</span>
             </label>
             <Select value={tingkatUrgensi} onValueChange={setTingkatUrgensi}>
               <SelectTrigger
@@ -735,7 +737,7 @@ export function TataRuangView() {
 
           <div className="md:col-span-2">
             <Label className="text-sm font-semibold text-gray-700 mb-4">
-              Foto Lokasi/Kerusakan*
+              Foto Lokasi/Kerusakan<span className="text-red-500">*</span>
             </Label>
             <ImageUpload />
             {errors.fotoLokasi && (

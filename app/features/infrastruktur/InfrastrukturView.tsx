@@ -61,15 +61,10 @@ export default function InfrastrukturView() {
   ];
 
   const handleSelect = (infrastruktur: InfrastrukturType) => {
-    if (isMobile) {
-      // Mobile: toggle selection to show jenis & button
-      setSelectedInfrastruktur(
-        selectedInfrastruktur === infrastruktur.id ? null : infrastruktur.id
-      );
-    } else {
-      // Desktop: langsung navigate
-      navigate(infrastruktur.path);
-    }
+    // Both mobile and desktop: toggle selection
+    setSelectedInfrastruktur(
+      selectedInfrastruktur === infrastruktur.id ? null : infrastruktur.id
+    );
   };
 
   return (
@@ -79,7 +74,7 @@ export default function InfrastrukturView() {
       </h2>
 
       {/* Infrastruktur Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
         {infrastrukturList.map((infrastruktur) => {
           const isSelected = selectedInfrastruktur === infrastruktur.id;
 
@@ -113,7 +108,7 @@ export default function InfrastrukturView() {
                   {infrastruktur.name}
                 </p>
 
-                {/* Mobile: Show when selected */}
+                {/* Mobile: Show jenis and button when selected */}
                 {isMobile && isSelected && (
                   <>
                     <p className="mt-3 font-medium text-left">
@@ -140,19 +135,17 @@ export default function InfrastrukturView() {
                 )}
               </button>
 
-              {/* Desktop: Tooltip on hover */}
-              {!isMobile && (
-                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 bg-white border-2 border-gray-200 rounded-xl shadow-lg p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
-                  <p className="font-medium text-left mb-2">
-                    Jenis Infrastruktur
-                  </p>
-                  <ul className="list-disc list-inside text-sm text-gray-600 text-left">
-                    {infrastruktur.jenis.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {/* Desktop: Tooltip on hover - always show */}
+              <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 bg-white border-2 border-gray-200 rounded-xl shadow-lg p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 pointer-events-none">
+                <p className="font-medium text-left mb-2">
+                  Jenis Infrastruktur
+                </p>
+                <ul className="list-disc list-inside text-sm text-gray-600 text-left">
+                  {infrastruktur.jenis.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           );
         })}
@@ -163,10 +156,27 @@ export default function InfrastrukturView() {
         <Button
           onClick={() => navigate("/")}
           variant="outline"
-          className="px-8 py-6 rounded-xl cursor-pointer  border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
+          className="px-8 py-6 rounded-xl cursor-pointer border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
         >
           Kembali
         </Button>
+        {/* Desktop: Next button always visible, enabled when selected */}
+        {!isMobile && (
+          <Button
+            onClick={() => {
+              const selected = infrastrukturList.find(
+                (item) => item.id === selectedInfrastruktur
+              );
+              if (selected) {
+                navigate(selected.path);
+              }
+            }}
+            disabled={!selectedInfrastruktur}
+            className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white font-semibold px-8 py-6 rounded-xl transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Selanjutnya
+          </Button>
+        )}
       </div>
     </div>
   );

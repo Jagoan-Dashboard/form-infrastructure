@@ -2,8 +2,8 @@ import z from "zod";
 import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
+import { CalendarIcon } from "lucide-react";
 import Banner from "./components/Banner";
-import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import {
   Select,
@@ -23,6 +23,7 @@ import { Calendar } from "~/components/ui/calendar";
 import { useNavigate } from "react-router";
 import { indexViewSchema } from "./validation/validation";
 import { useFormDataStore } from "~/store/formDataStore";
+import { InputWithMic } from "~/components/InputWithMic";
 
 export function IndexView() {
   const [position, setPosition] = useState<[number, number]>([
@@ -38,7 +39,30 @@ export function IndexView() {
   const [date, setDate] = useState<Date>();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
-  const { setIndexData } = useFormDataStore();
+  const { setIndexData, getIndexData } = useFormDataStore();
+
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedData = getIndexData();
+    if (savedData) {
+      setLatitude(savedData.latitude || "-7.4034");
+      setLongitude(savedData.longitude || "111.4464");
+      setNamaPelapor(savedData.namaPelapor || "");
+      setNomorHP(savedData.nomorHP || "");
+      setPeranPelapor(savedData.peranPelapor || "");
+      setDesaKecamatan(savedData.desaKecamatan || "");
+      if (savedData.tanggalLaporan) {
+        setDate(new Date(savedData.tanggalLaporan));
+      }
+
+      // Update position from saved data
+      const lat = parseFloat(savedData.latitude);
+      const lng = parseFloat(savedData.longitude);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        setPosition([lat, lng]);
+      }
+    }
+  }, [getIndexData]);
 
   useEffect(() => {
     if (position) {
@@ -205,9 +229,9 @@ export function IndexView() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Latitude*
+                Latitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
@@ -217,6 +241,7 @@ export function IndexView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="-7.4034"
+                enableVoice={false}
               />
               {errors.latitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
@@ -225,9 +250,9 @@ export function IndexView() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Longitude*
+                Longitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
@@ -237,6 +262,7 @@ export function IndexView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="111.4464"
+                enableVoice={false}
               />
               {errors.longitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>
@@ -277,9 +303,9 @@ export function IndexView() {
         </h3>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <div>
+          {/* <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Nama Pelapor*
+              Nama Pelapor<span className="text-red-500">*</span>
             </label>
             <Input
               type="text"
@@ -295,13 +321,34 @@ export function IndexView() {
             {errors.namaPelapor && (
               <p className="text-red-500 text-sm mt-1">{errors.namaPelapor}</p>
             )}
+          </div> */}
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Nama Pelapor<span className="text-red-500">*</span>
+            </label>
+            <InputWithMic
+              type="text"
+              value={namaPelapor}
+              onChange={(e) => setNamaPelapor(e.target.value)}
+              placeholder="Contoh: Samsudin"
+              enableVoice={true}
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.namaPelapor
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
+            />
+            {errors.namaPelapor && (
+              <p className="text-red-500 text-sm mt-1">{errors.namaPelapor}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Nomor HP/WA*
+              Nomor HP/WA<span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={nomorHP}
               onChange={(e) => setNomorHP(e.target.value)}
@@ -319,7 +366,7 @@ export function IndexView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Tanggal Laporan*
+              Tanggal Laporan<span className="text-red-500">*</span>
             </label>
             <Popover>
               <PopoverTrigger asChild>
@@ -332,10 +379,7 @@ export function IndexView() {
                       : "border-gray-200 focus:ring-blue-500"
                   )}
                 >
-                  <Icon
-                    icon="material-symbols:calendar"
-                    className="mr-2 h-5 w-5 text-gray-400"
-                  />
+                  <CalendarIcon className="mr-2 h-5 w-5 text-gray-400" />
                   {date ? (
                     <span className="text-gray-900">
                       {formatIndonesianLong(date)}
@@ -371,7 +415,7 @@ export function IndexView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Peran Pelapor*
+              Peran Pelapor<span className="text-red-500">*</span>
             </label>
             <Select value={peranPelapor} onValueChange={setPeranPelapor}>
               <SelectTrigger
@@ -399,7 +443,7 @@ export function IndexView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Desa/Kecamatan*
+              Desa/Kecamatan<span className="text-red-500">*</span>
             </label>
             <Select value={desaKecamatan} onValueChange={setDesaKecamatan}>
               <SelectTrigger

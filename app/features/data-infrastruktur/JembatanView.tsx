@@ -2,7 +2,8 @@ import z from "zod";
 import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
-import { Input } from "~/components/ui/input";
+import { InputWithMic } from "~/components/InputWithMic";
+import { TextareaWithMic } from "~/components/TextareaWithMic";
 import { Button } from "~/components/ui/button";
 import {
   Select,
@@ -375,8 +376,7 @@ export function JembatanView() {
               Nama Jembatan/Kode Jembatan
               <span className="text-red-500">*</span>
             </label>
-            <Input
-              type="text"
+            <TextareaWithMic
               value={namaJembatan}
               onChange={(e) => setNamaJembatan(e.target.value)}
               placeholder="Contoh: Jembatan Mantingan"
@@ -507,9 +507,9 @@ export function JembatanView() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Latitude*
+                Latitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
@@ -519,6 +519,7 @@ export function JembatanView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="-7.4034"
+                enableVoice={false}
               />
               {errors.latitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
@@ -527,9 +528,9 @@ export function JembatanView() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Longitude*
+                Longitude<span className="text-red-500">*</span>
               </label>
-              <Input
+              <InputWithMic
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
@@ -539,6 +540,7 @@ export function JembatanView() {
                     : "border-gray-200 focus:ring-blue-500"
                 }`}
                 placeholder="111.4464"
+                enableVoice={false}
               />
               {errors.longitude && (
                 <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>
@@ -581,7 +583,7 @@ export function JembatanView() {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Kondisi Lalu Lintas Saat ini*
+              Kondisi Lalu Lintas Saat ini<span className="text-red-500">*</span>
             </label>
             <Select
               value={kondisiLaluLintas}
@@ -620,11 +622,12 @@ export function JembatanView() {
               Volume Lalu Lintas Harian
               <span className="text-red-500">*</span>
             </label>
-            <Input
+            <InputWithMic
               type="text"
               value={volumeLaluLintas}
               onChange={(e) => setVolumeLaluLintas(e.target.value)}
               placeholder="Contoh: 200"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.volumeLaluLintas
                   ? "border-red-500 focus:ring-red-500"
@@ -640,7 +643,7 @@ export function JembatanView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Kategori Prioritas Penanganan*
+              Kategori Prioritas Penanganan<span className="text-red-500">*</span>
             </label>
             <Select
               value={kategoriPrioritas}
@@ -671,7 +674,7 @@ export function JembatanView() {
           {/* Foto Lokasi */}
           <div className="md:col-span-2">
             <Label className="text-sm font-semibold text-gray-700 mb-4">
-              Foto Lokasi/Kerusakan*
+              Foto Lokasi/Kerusakan<span className="text-red-500">*</span>
             </Label>
             <ImageUpload />
             {errors.fotoKerusakan && (
