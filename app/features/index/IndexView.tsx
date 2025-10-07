@@ -41,28 +41,28 @@ export function IndexView() {
   const navigate = useNavigate();
   const { setIndexData, getIndexData } = useFormDataStore();
 
-  // Load data from localStorage on mount
-  useEffect(() => {
-    const savedData = getIndexData();
-    if (savedData) {
-      setLatitude(savedData.latitude || "-7.4034");
-      setLongitude(savedData.longitude || "111.4464");
-      setNamaPelapor(savedData.namaPelapor || "");
-      setNomorHP(savedData.nomorHP || "");
-      setPeranPelapor(savedData.peranPelapor || "");
-      setDesaKecamatan(savedData.desaKecamatan || "");
-      if (savedData.tanggalLaporan) {
-        setDate(new Date(savedData.tanggalLaporan));
+    // Load data from localStorage on mount
+    useEffect(() => {
+      const savedData = getIndexData();
+      if (savedData) {
+        setLatitude(savedData.latitude || "-7.4034");
+        setLongitude(savedData.longitude || "111.4464");
+        setNamaPelapor(savedData.namaPelapor || "");
+        setNomorHP(savedData.nomorHP || "");
+        setPeranPelapor(savedData.peranPelapor || "");
+        setDesaKecamatan(savedData.desaKecamatan || "");
+        if (savedData.tanggalLaporan) {
+          setDate(new Date(savedData.tanggalLaporan));
+        }
+  
+        // Update position from saved data
+        const lat = parseFloat(savedData.latitude);
+        const lng = parseFloat(savedData.longitude);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          setPosition([lat, lng]);
+        }
       }
-
-      // Update position from saved data
-      const lat = parseFloat(savedData.latitude);
-      const lng = parseFloat(savedData.longitude);
-      if (!isNaN(lat) && !isNaN(lng)) {
-        setPosition([lat, lng]);
-      }
-    }
-  }, [getIndexData]);
+    }, [getIndexData]);
 
   useEffect(() => {
     if (position) {
@@ -303,26 +303,6 @@ export function IndexView() {
         </h3>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Nama Pelapor<span className="text-red-500">*</span>
-            </label>
-            <Input
-              type="text"
-              value={namaPelapor}
-              onChange={(e) => setNamaPelapor(e.target.value)}
-              placeholder="Contoh: Samsudin"
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                errors.namaPelapor
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}
-            />
-            {errors.namaPelapor && (
-              <p className="text-red-500 text-sm mt-1">{errors.namaPelapor}</p>
-            )}
-          </div> */}
-
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Nama Pelapor<span className="text-red-500">*</span>
@@ -352,7 +332,7 @@ export function IndexView() {
               type="text"
               value={nomorHP}
               onChange={(e) => setNomorHP(e.target.value)}
-              placeholder="Contoh: 085179551746"
+              placeholder="Contoh: 08xx5xxxxxxx"
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.nomorHP
                   ? "border-red-500 focus:ring-red-500"

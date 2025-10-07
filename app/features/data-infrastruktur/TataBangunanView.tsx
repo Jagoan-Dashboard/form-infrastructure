@@ -554,7 +554,7 @@ export function TataBangunanView() {
             <TextareaWithMic
               value={alamatLengkap}
               onChange={(e) => setAlamatLengkap(e.target.value)}
-              placeholder="Contoh: Jl. Amba No.4 Desa Tukam Ngawi"
+              placeholder="Contoh: Jl. Teuku Umar 63211 Ngawi Jawa Timur"
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.alamatLengkap
                   ? "border-red-500 focus:ring-red-500"
