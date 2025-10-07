@@ -32,6 +32,7 @@ export interface TataRuangForm {
     violation_type: string;
     violation_level: string;
     environmental_impact: string;
+    urgency_level: string;
     latitude: number;
     longitude: number;
     address: string;

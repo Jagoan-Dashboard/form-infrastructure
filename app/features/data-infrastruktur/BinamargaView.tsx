@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router";
+import { useCheckIndexData } from "~/middleware/checkIndexData";
 
 interface BinamargaType {
   id: string;
@@ -11,6 +12,8 @@ interface BinamargaType {
 }
 
 export default function BinamargaView() {
+  useCheckIndexData();
+
   const [selectedBinamarga, setSelectedBinamarga] = useState<string | null>(
     null
   );

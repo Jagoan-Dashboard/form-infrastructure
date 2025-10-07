@@ -16,10 +16,15 @@ import { useNavigate } from "react-router";
 import { apiService } from "~/services/apiService";
 import type { TataBangunanForm } from "~/types/formData";
 import { Label } from "~/components/ui/label";
-import { tataBangunanSchema } from "./validation/tataBangunanValidation";
+import { tataBangunanSchema, tataBangunanRehabilitasiSchema } from "./validation/tataBangunanValidation";
 import { useFormDataStore } from "~/store/formDataStore";
+import { useCheckIndexData } from "~/middleware/checkIndexData";
+import { toast } from "sonner";
 
 export function TataBangunanView() {
+  // Check if IndexView data is filled
+  useCheckIndexData();
+
   const [position, setPosition] = useState<[number, number]>([
     -7.4034, 111.4464,
   ]); // Default: Ngawi
@@ -138,7 +143,13 @@ export function TataBangunanView() {
 
   const validateForm = () => {
     try {
-      tataBangunanSchema.parse({
+      // Use different schema based on status laporan
+      // Only "Pembangunan Baru" doesn't require detail kerusakan
+      const schema = statusLaporan === "pembangunan baru"
+        ? tataBangunanSchema
+        : tataBangunanRehabilitasiSchema;
+
+      schema.parse({
         latitude,
         longitude,
         namaBangunan,
@@ -229,6 +240,7 @@ export function TataBangunanView() {
       const response = await apiService.submitBuildingReport(apiData);
 
       if (response.data.success) {
+        toast.success("Data berhasil dikirim!");
         navigate("/success");
       } else {
         throw new Error(response.data.message || "Submission failed");
@@ -238,7 +250,9 @@ export function TataBangunanView() {
         error.response?.data?.message ||
         error.message ||
         "Terjadi kesalahan saat mengirim data";
-      setSubmitError(errorMessage);
+      toast.error("Gagal mengirim data", {
+        description: errorMessage,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -689,107 +703,113 @@ export function TataBangunanView() {
         </div>
       </div>
 
-      {/* Data Pelanggaran */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
-        <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          Detail Kerusakan
-        </h3>
+      {/* Detail Kerusakan - Hide only for "Pembangunan Baru" */}
+      {statusLaporan !== "pembangunan baru" && statusLaporan !== "" && (
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+          <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            Detail Kerusakan
+          </h3>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Jenis Pekerjaan (jika rehabilitasi)<span className="text-red-500">*</span>
-            </label>
-            <Select value={jenisPekerjaan} onValueChange={setJenisPekerjaan}>
-              <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.jenisPekerjaan
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Jenis Pekerjaan<span className="text-red-500">*</span>
+              </label>
+              <Select value={jenisPekerjaan} onValueChange={setJenisPekerjaan}>
+                <SelectTrigger
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                    errors.jenisPekerjaan
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-200 focus:ring-blue-500"
+                  }`}
+                >
+                  <SelectValue placeholder="Pilih Jenis Pekerjaan" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="perbaikan atap">Perbaikan Atap</SelectItem>
+                  <SelectItem value="perbaikan lantai">Perbaikan Lantai</SelectItem>
+                  <SelectItem value="perbaikan dinding/cat">
+                    Perbaikan Dinding/Cat
+                  </SelectItem>
+                  <SelectItem value="perbaikan pintu jendela">
+                    Perbaikan Pintu/Jendela
+                  </SelectItem>
+                  <SelectItem value="perbaikan sanitasi mck">
+                    Perbaikan Sanitasi/MCK
+                  </SelectItem>
+                  <SelectItem value="perbaikan listrik/air">
+                    Perbaikan Listrik/Air
+                  </SelectItem>
+                  <SelectItem value="lainnya">Lainnya</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.jenisPekerjaan && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.jenisPekerjaan}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Kondisi Setelah Rehabilitasi<span className="text-red-500">*</span>
+              </label>
+              <Select
+                value={kondisiSetelahRehabilitasi}
+                onValueChange={setKondisiSetelahRehabilitasi}
               >
-                <SelectValue placeholder="Pilih Jenis Pekerjaan" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="perbaikan atap">Perbaikan Atap</SelectItem>
-                <SelectItem value="perbaikan dinding/cat">
-                  Perbaikan Dinding/Cat
-                </SelectItem>
-                <SelectItem value="perbaikan pintu jendela">
-                  Perbaikan Pintu/Jendela
-                </SelectItem>
-                <SelectItem value="perbaikan sanitasi mck">
-                  Perbaikan Sanitasi/MCK
-                </SelectItem>
-                <SelectItem value="perbaikan listrik/air">
-                  Perbaikan Listrik/Air
-                </SelectItem>
-                <SelectItem value="lainnya">Lainnya</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.jenisPekerjaan && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.jenisPekerjaan}
-              </p>
-            )}
+                <SelectTrigger
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
+                    errors.kondisiSetelahRehabilitasi
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-200 focus:ring-blue-500"
+                  }`}
+                >
+                  <SelectValue placeholder="Pilih Kondisi Setelah Rehabilitasi" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="baik siap pakai">
+                    Baik & Siap Pakai
+                  </SelectItem>
+                  <SelectItem value="masih membutuhkan perbaikan tambahan">
+                    Masih Membutuhkan Perbaikan Tambahan
+                  </SelectItem>
+                  <SelectItem value="lainnya">Lainnya</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.kondisiSetelahRehabilitasi && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.kondisiSetelahRehabilitasi}
+                </p>
+              )}
+            </div>
+
+            {/* Foto Lokasi */}
+            <div className="md:col-span-2">
+              <Label className="text-sm font-semibold text-gray-700 mb-4">
+                Foto Kerusakan<span className="text-red-500">*</span>
+              </Label>
+              <ImageUpload />
+              {errors.fotoKerusakan && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.fotoKerusakan}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Kondisi Setelah Rehabilitasi<span className="text-red-500">*</span>
-            </label>
-            <Select
-              value={kondisiSetelahRehabilitasi}
-              onValueChange={setKondisiSetelahRehabilitasi}
-            >
-              <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.kondisiSetelahRehabilitasi
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
-              >
-                <SelectValue placeholder="Pilih Kondisi Setelah Rehabilitasi" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="baik siap pakai">
-                  Baik & Siap Pakai
-                </SelectItem>
-                <SelectItem value="masih membutuhkan perbaikan tambahan">
-                  Masih Membutuhkan Perbaikan Tambahan
-                </SelectItem>
-                <SelectItem value="lainnya">Lainnya</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.kondisiSetelahRehabilitasi && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.kondisiSetelahRehabilitasi}
-              </p>
-            )}
-          </div>
-
-          {/* Foto Lokasi */}
-          <div className="md:col-span-2">
-            <Label className="text-sm font-semibold text-gray-700 mb-4">
-              Foto Kerusakan<span className="text-red-500">*</span>
-            </Label>
-            <ImageUpload />
-            {errors.fotoKerusakan && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.fotoKerusakan}
-              </p>
-            )}
-          </div>
+          {/* Error Message */}
+          {submitError && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+              <p className="text-red-600 text-sm font-medium">{submitError}</p>
+            </div>
+          )}
         </div>
+      )}
 
-        {/* Error Message */}
-        {submitError && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-red-600 text-sm font-medium">{submitError}</p>
-          </div>
-        )}
-
-        <div className="mt-8 w-full flex flex-col md:flex-row md:justify-end gap-3">
+      {/* Action Buttons - Always visible */}
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+        <div className="w-full flex flex-col md:flex-row md:justify-end gap-3">
           <Button
             onClick={() => navigate("/infrastruktur")}
             variant="outline"

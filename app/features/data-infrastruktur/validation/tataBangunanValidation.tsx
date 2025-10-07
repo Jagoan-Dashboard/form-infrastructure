@@ -66,7 +66,31 @@ export const tataBangunanSchema = z.object({
     .string()
     .min(1, "Jumlah Lantai wajib dipilih"),
 
-  // Detail Kerusakan validation
+  // Detail Kerusakan validation - optional (only required if status is rehabilitasi)
+  jenisPekerjaan: z
+    .string()
+    .optional(),
+
+  kondisiSetelahRehabilitasi: z
+    .string()
+    .optional(),
+
+  // File upload validation - optional (only required if status is rehabilitasi)
+  fotoKerusakan: z
+    .array(z.instanceof(File))
+    .optional()
+    .refine((files) => {
+      if (!files || files.length === 0) return true;
+      return files.every(file => file.size <= 5 * 1024 * 1024); // 5MB max per file
+    }, "Setiap file tidak boleh lebih dari 5MB")
+    .refine((files) => {
+      if (!files || files.length === 0) return true;
+      return files.every(file => ["image/jpeg", "image/jpg", "image/png"].includes(file.type));
+    }, "Semua file harus berformat JPG, JPEG, atau PNG"),
+});
+
+// Validation schema untuk rehabilitasi/perbaikan
+export const tataBangunanRehabilitasiSchema = tataBangunanSchema.extend({
   jenisPekerjaan: z
     .string()
     .min(1, "Jenis Pekerjaan wajib dipilih"),
@@ -75,7 +99,6 @@ export const tataBangunanSchema = z.object({
     .string()
     .min(1, "Kondisi Setelah Rehabilitasi wajib dipilih"),
 
-  // File upload validation (minimum 1 file required, multiple files allowed)
   fotoKerusakan: z
     .array(z.instanceof(File))
     .min(1, "Minimal 1 foto harus diupload")

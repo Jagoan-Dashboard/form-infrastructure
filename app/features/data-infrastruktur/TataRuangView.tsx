@@ -18,8 +18,13 @@ import { tataRuangSchema } from "./validation/tataRuangValidation";
 import { useFormDataStore } from "~/store/formDataStore";
 import { apiService } from "~/services/apiService";
 import { peranPelaporToInstitution } from "~/utils/enumMapper";
+import { useCheckIndexData } from "~/middleware/checkIndexData";
+import { toast } from "sonner";
 
 export function TataRuangView() {
+  // Check if IndexView data is filled
+  useCheckIndexData();
+
   const [position, setPosition] = useState<[number, number]>([
     -7.4034, 111.4464,
   ]); // Default: Ngawi
@@ -248,7 +253,7 @@ export function TataRuangView() {
         violation_type: jenisPelanggaran,
         violation_level: getViolationLevel(tingkatPelanggaran), // Use mapped value
         environmental_impact: dampakLingkungan,
-        tingkatUrgensi: getUrgencyLevel(tingkatUrgensi), // Use mapped value
+        urgency_level: getUrgencyLevel(tingkatUrgensi), // Use mapped value
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         address: indexData.desaKecamatan,
@@ -282,6 +287,7 @@ export function TataRuangView() {
         // Clear stored data after successful submission
         clearAllData();
 
+        toast.success("Data berhasil dikirim!");
         // Navigate to success page
         navigate("/success");
       } else {
@@ -301,7 +307,9 @@ export function TataRuangView() {
         errorMessage += "Silakan coba lagi.";
       }
 
-      alert(errorMessage);
+      toast.error("Gagal mengirim data", {
+        description: errorMessage,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -441,7 +449,7 @@ export function TataRuangView() {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Gambaran area lokasi / Kawasan
+              Gambaran Area Lokasi / Kawasan
               <span className="text-red-500">*</span>
             </label>
             <TextareaWithMic
@@ -476,9 +484,6 @@ export function TataRuangView() {
                 <SelectValue placeholder="Pilih Kategori Kawasan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cagar-budaya">
-                  Kawasan Cagar Budaya
-                </SelectItem>
                 <SelectItem value="cagar budaya">Kawasan Cagar Budaya</SelectItem>
                 <SelectItem value="hutan">Kawasan Hutan</SelectItem>
                 <SelectItem value="pariwisata">Kawasan Pariwisata</SelectItem>

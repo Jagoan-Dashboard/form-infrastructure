@@ -3,6 +3,7 @@ import { SidebarMenu } from "~/components/SidebarMenu";
 import { useNavigate } from "react-router";
 import { useStepStore } from "~/store/stepStore";
 import { useEffect } from "react";
+import { Toaster } from "sonner";
 
 export function MainLayout() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export function MainLayout() {
 
   return (
     <div className="min-h-screen bg-[#F8F3F5]">
+      <Toaster position="top-right" richColors />
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="grid sm:grid-cols-4 gap-6 flex-row">
           {/* Sidebar Menu */}

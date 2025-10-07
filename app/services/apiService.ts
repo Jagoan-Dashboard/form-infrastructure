@@ -62,6 +62,7 @@ export const spatialPlanningApi = {
     formData.append('violation_type', data.violation_type);
     formData.append('violation_level', data.violation_level);
     formData.append('environmental_impact', data.environmental_impact);
+    formData.append('urgency_level', data.urgency_level);
 
     // Location
     appendLocationFields(formData, data.latitude, data.longitude);

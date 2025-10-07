@@ -19,8 +19,13 @@ import { apiService } from "~/services/apiService";
 import type { BinamargaJembatanForm } from "~/types/formData";
 import { useFormDataStore } from "~/store/formDataStore";
 import { peranPelaporToInstitution } from "~/utils/enumMapper";
+import { useCheckIndexData } from "~/middleware/checkIndexData";
+import { toast } from "sonner";
 
 export function JembatanView() {
+  // Check if IndexView data is filled
+  useCheckIndexData();
+
   const [position, setPosition] = useState<[number, number]>([
     -7.4034, 111.4464,
   ]); // Default: Ngawi
@@ -221,6 +226,7 @@ export function JembatanView() {
       const response = await apiService.submitBinamargaJembatan(apiData);
 
       if (response.data.success) {
+        toast.success("Data berhasil dikirim!");
         navigate("/success");
       } else {
         throw new Error(response.data.message || "Submission failed");
@@ -230,7 +236,9 @@ export function JembatanView() {
         error.response?.data?.message ||
         error.message ||
         "Terjadi kesalahan saat mengirim data";
-      setSubmitError(errorMessage);
+      toast.error("Gagal mengirim data", {
+        description: errorMessage,
+      });
     } finally {
       setIsSubmitting(false);
     }

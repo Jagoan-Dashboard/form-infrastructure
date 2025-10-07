@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router";
+import { useCheckIndexData } from "~/middleware/checkIndexData";
 
 interface InfrastrukturType {
   id: string;
@@ -17,6 +18,8 @@ export default function InfrastrukturView() {
   >(null);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+
+  useCheckIndexData();
 
   useEffect(() => {
     const checkMobile = () => {
