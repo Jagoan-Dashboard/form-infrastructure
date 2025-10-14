@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useNavigate } from "react-router";
-import { Label } from "~/components/ui/label";
 import { jalanSchema } from "./validation/jalanValidation";
 import { apiService } from "~/services/apiService";
 import type { BinamargaJalanForm } from "~/types/formData";
@@ -21,6 +20,7 @@ import { useFormDataStore } from "~/store/formDataStore";
 import { peranPelaporToInstitution } from "~/utils/enumMapper";
 import { useCheckIndexData } from "~/middleware/checkIndexData";
 import { toast } from "sonner";
+import ImageGPSUploader from "~/components/ImageGPSUploader";
 
 export function JalanView() {
   // Check if IndexView data is filled
@@ -289,132 +289,6 @@ export function JalanView() {
       setIsSubmitting(false);
     }
   };
-
-  function ImageUpload() {
-    const [isDragging, setIsDragging] = useState(false);
-
-    const handleDragOver = (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(true);
-    };
-
-    const handleDragLeave = () => {
-      setIsDragging(false);
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
-
-      const files = Array.from(e.dataTransfer.files).filter((file) =>
-        file.type.startsWith("image/")
-      );
-      if (files.length > 0) {
-        const newFiles = [...fotoKerusakan, ...files];
-        setFotoKerusakan(newFiles);
-
-        // Create preview URLs for new files
-        files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreviewUrls((prev) => [...prev, reader.result as string]);
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-    };
-
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(e.target.files || []).filter((file) =>
-        file.type.startsWith("image/")
-      );
-      if (files.length > 0) {
-        const newFiles = [...fotoKerusakan, ...files];
-        setFotoKerusakan(newFiles);
-
-        // Create preview URLs for new files
-        files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreviewUrls((prev) => [...prev, reader.result as string]);
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-    };
-
-    return (
-      <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={`relative border-2 border-dashed rounded-xl p-8 transition-all ${
-          isDragging
-            ? "border-blue-600 bg-blue-50"
-            : "border-gray-300 hover:border-blue-400"
-        }`}
-      >
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleFileSelect}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        />
-
-        {previewUrls.length > 0 ? (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              {previewUrls.map((url, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={url}
-                    alt={`Preview ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg"
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const newPreviewUrls = previewUrls.filter(
-                        (_, i) => i !== index
-                      );
-                      const newFiles = fotoKerusakan.filter(
-                        (_, i) => i !== index
-                      );
-                      setPreviewUrls(newPreviewUrls);
-                      setFotoKerusakan(newFiles);
-                    }}
-                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
-                  >
-                    <Icon icon="mdi:close" className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <p className="text-sm text-gray-600 text-center">
-              {fotoKerusakan.length} foto dipilih. Klik + untuk menambah foto
-              lagi.
-            </p>
-          </div>
-        ) : (
-          <div className="text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Icon icon="mdi:cloud-upload" className="w-8 h-8 text-blue-600" />
-            </div>
-            <p className="text-sm font-semibold text-gray-700 mb-1">
-              Upload Foto Kerusakan
-            </p>
-            <p className="text-xs text-gray-500">
-              Drag & drop atau klik untuk upload (minimal 1 foto)
-            </p>
-            <p className="text-xs text-gray-400 mt-2">
-              PNG, JPG, JPEG (Max 5MB per file)
-            </p>
-          </div>
-        )}
-      </div>
-    );
-  }
 
   return (
     <main className="space-y-6">
@@ -886,12 +760,27 @@ export function JalanView() {
             )}
           </div>
 
-          {/* Foto Lokasi */}
+          {/* Foto Lokasi dengan GPS */}
           <div className="md:col-span-2">
-            <Label className="text-sm font-semibold text-gray-700 mb-4">
-              Foto Lokasi/Kerusakan<span className="text-red-500">*</span>
-            </Label>
-            <ImageUpload />
+            <ImageGPSUploader
+              label="Foto Lokasi/Kerusakan"
+              onCoordinatesExtracted={(coords, index) => {
+                // Auto-update koordinat dari GPS foto pertama
+                if (index === 0) {
+                  setLatitude(coords.latitude.toString());
+                  setLongitude(coords.longitude.toString());
+                  setPosition([coords.latitude, coords.longitude]);
+                }
+              }}
+              onFilesSelected={(files) => {
+                setFotoKerusakan(files);
+              }}
+              onPreviewUrlsUpdated={(urls) => {
+                setPreviewUrls(urls);
+              }}
+              maxFiles={2}
+              required
+            />
             {errors.fotoKerusakan && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.fotoKerusakan}
