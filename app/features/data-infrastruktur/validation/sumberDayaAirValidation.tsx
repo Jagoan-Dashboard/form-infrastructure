@@ -56,6 +56,15 @@ export const sumberDayaAirSchema = z.object({
       return num > 0;
     }, "Lebar Kerusakan harus lebih dari 0"),
 
+  perkiraanKedalamanKerusakan: z
+    .string()
+    .min(1, "Perkiraan Kedalaman Kerusakan wajib diisi")
+    .regex(/^\d+(\.\d+)?$/, "Kedalaman Kerusakan harus berupa angka")
+    .refine((val) => {
+      const num = parseFloat(val);
+      return num > 0;
+    }, "Kedalaman Kerusakan harus lebih dari 0"),
+
   perkiraanLuasKerusakan: z
     .string()
     .min(1, "Perkiraan Luas Kerusakan wajib diisi")
@@ -64,6 +73,15 @@ export const sumberDayaAirSchema = z.object({
       const num = parseFloat(val);
       return num > 0;
     }, "Luas Kerusakan harus lebih dari 0"),
+
+  perkiraanVolumeKerusakan: z
+    .string()
+    .min(1, "Perkiraan Volume Kerusakan wajib diisi")
+    .regex(/^\d+(\.\d+)?$/, "Volume Kerusakan harus berupa angka")
+    .refine((val) => {
+      const num = parseFloat(val);
+      return num > 0;
+    }, "Volume Kerusakan harus lebih dari 0"),
 
   // Dampak validation
   areaSawahTerdampak: z

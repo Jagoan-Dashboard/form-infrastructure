@@ -370,7 +370,7 @@ export function TataBangunanView() {
               <Icon icon="mdi:cloud-upload" className="w-8 h-8 text-blue-600" />
             </div>
             <p className="text-sm font-semibold text-gray-700 mb-1">
-              Upload Foto Kerusakan
+              Upload Foto Bangunan
             </p>
             <p className="text-xs text-gray-500">
               Drag & drop atau klik untuk upload (minimal 1 foto)
@@ -787,7 +787,7 @@ export function TataBangunanView() {
             {/* Foto Lokasi */}
             <div className="md:col-span-2">
               <Label className="text-sm font-semibold text-gray-700 mb-4">
-                Foto Kerusakan<span className="text-red-500">*</span>
+                Foto Bangunan<span className="text-red-500">*</span>
               </Label>
               <ImageUpload />
               {errors.fotoKerusakan && (

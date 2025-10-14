@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
 import { InputWithMic } from "~/components/InputWithMic";
-import { TextareaWithMic } from "~/components/TextareaWithMic";
 import { Button } from "~/components/ui/button";
 import {
   Select,
@@ -18,9 +17,10 @@ import { sumberDayaAirSchema } from "./validation/sumberDayaAirValidation";
 import { apiService } from "~/services/apiService";
 import type { SumberDayaAirForm } from "~/types/formData";
 import { useFormDataStore } from "~/store/formDataStore";
-import { peranPelaporToInstitution } from "~/utils/enumMapper";
+import { peranPelaporToInstitution, toApiFormat } from "~/utils/enumMapper";
 import { useCheckIndexData } from "~/middleware/checkIndexData";
 import { toast } from "sonner";
+import { SearchSelect } from "~/components/search/SearchSelect";
 
 export function SumberDayaAirView() {
   // Check if IndexView data is filled
@@ -42,7 +42,10 @@ export function SumberDayaAirView() {
     useState("");
   const [perkiraanLebarKerusakan, setPerkiraanLebarKerusakan] = useState("");
   const [perkiraanLuasKerusakan, setPerkiraanLuasKerusakan] = useState("");
+  const [perkiraanVolumeKerusakan, setPerkiraanVolumeKerusakan] = useState("");
   const [areaSawahTerdampak, setAreaSawahTerdampak] = useState("");
+  const [perkiraanKedalamanKerusakan, setPerkiraanKedalamanKerusakan] =
+    useState("");
   const [jumlahPetaniTerdampak, setJumlahPetaniTerdampak] = useState("");
   const [kategoriUrgensi, setKategoriUrgensi] = useState("");
   const [fotoKerusakan, setFotoKerusakan] = useState<File[]>([]);
@@ -147,7 +150,9 @@ export function SumberDayaAirView() {
         tingkatKerusakan,
         perkiraanPanjangKerusakan,
         perkiraanLebarKerusakan,
+        perkiraanKedalamanKerusakan,
         perkiraanLuasKerusakan,
+        perkiraanVolumeKerusakan,
         areaSawahTerdampak,
         jumlahPetaniTerdampak,
         kategoriUrgensi,
@@ -189,25 +194,25 @@ export function SumberDayaAirView() {
 
       // Irrigation data
       irrigation_area_name: namaDaerahIrigasi,
-      irrigation_type: jenisIrigasi,
+      irrigation_type: toApiFormat(jenisIrigasi.replace(/[\s/]+/g, '-')),
 
       // Location data
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
 
       // Damage data
-      damage_type: jenisKerusakan,
-      damage_level: tingkatKerusakan,
+      damage_type: toApiFormat(jenisKerusakan.replace(/[\s/]+/g, '-')),
+      damage_level: toApiFormat(tingkatKerusakan),
 
       // Estimated measurements
       estimated_length: parseFloat(perkiraanPanjangKerusakan) || 0,
       estimated_width: parseFloat(perkiraanLebarKerusakan) || 0,
-      estimated_volume: parseFloat(perkiraanLuasKerusakan) || 0,
+      estimated_volume: parseFloat(perkiraanVolumeKerusakan) || 0,
 
       // Impact data
       affected_rice_field_area: parseFloat(areaSawahTerdampak) || 0,
       affected_farmers_count: parseInt(jumlahPetaniTerdampak) || 0,
-      urgency_category: kategoriUrgensi,
+      urgency_category: toApiFormat(kategoriUrgensi),
 
       // Photos as string array (base64 or URLs - but we'll use files)
       photos: previewUrls,
@@ -389,15 +394,15 @@ export function SumberDayaAirView() {
               Nama Daerah Irigasi
               <span className="text-red-500">*</span>
             </label>
-            <TextareaWithMic
+            <SearchSelect
+              url="/json/irigasi_name.json"
               value={namaDaerahIrigasi}
-              onChange={(e) => setNamaDaerahIrigasi(e.target.value)}
-              placeholder="Contoh: DI Sambi"
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                errors.namaDaerahIrigasi
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
+              onChange={setNamaDaerahIrigasi}
+              placeholder="Cari KODE atau NAMA DI"
+              inputClassName={`border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
+                errors.namaDaerahIrigasi ? "border-red-500 focus:ring-red-500" : "border-gray-200 focus:ring-blue-500"
               }`}
+              maxItems={5}
             />
             {errors.namaDaerahIrigasi && (
               <p className="text-red-500 text-sm mt-1">
@@ -553,8 +558,8 @@ export function SumberDayaAirView() {
                 <SelectItem value="tersumbat sampah">
                   Tersumbat Sampah
                 </SelectItem>
-                <SelectItem value="struktur beton rusak">
-                  Struktur Beton Rusak
+                <SelectItem value="struktur rusak">
+                  Struktur Rusak
                 </SelectItem>
                 <SelectItem value="pintu air macet">
                   Pintu Air Macet/Tidak Berfungsi
@@ -658,6 +663,29 @@ export function SumberDayaAirView() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Perkiraan Kedalaman Kerusakan (m)<span className="text-red-500">*</span>
+            </label>
+            <InputWithMic
+              type="text"
+              value={perkiraanKedalamanKerusakan}
+              onChange={(e) => setPerkiraanKedalamanKerusakan(e.target.value)}
+              placeholder="Contoh: 2"
+              enableVoice={false}
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.perkiraanKedalamanKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
+            />
+            {errors.perkiraanKedalamanKerusakan && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.perkiraanKedalamanKerusakan}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Perkiraan Luas Kerusakan (m<sup>2</sup>)<span className="text-red-500">*</span>
             </label>
             <InputWithMic
@@ -675,6 +703,29 @@ export function SumberDayaAirView() {
             {errors.perkiraanLuasKerusakan && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.perkiraanLuasKerusakan}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Perkiraan Volume Kerusakan (m<sup>3</sup>)<span className="text-red-500">*</span>
+            </label>
+            <InputWithMic
+              type="text"
+              value={perkiraanVolumeKerusakan}
+              onChange={(e) => setPerkiraanVolumeKerusakan(e.target.value)}
+              placeholder="Contoh: 20"
+              enableVoice={false}
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                errors.perkiraanVolumeKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+              }`}
+            />
+            {errors.perkiraanVolumeKerusakan && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.perkiraanVolumeKerusakan}
               </p>
             )}
           </div>
