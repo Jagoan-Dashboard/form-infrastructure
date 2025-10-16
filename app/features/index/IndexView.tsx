@@ -312,7 +312,7 @@ export function IndexView() {
               value={namaPelapor}
               onChange={(e) => setNamaPelapor(e.target.value)}
               placeholder="Contoh: Samsudin"
-              enableVoice={true}
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.namaPelapor
                   ? "border-red-500 focus:ring-red-500"
@@ -333,6 +333,7 @@ export function IndexView() {
               value={nomorHP}
               onChange={(e) => setNomorHP(e.target.value)}
               placeholder="Contoh: 08xx5xxxxxxx"
+              enableVoice={false}
               className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.nomorHP
                   ? "border-red-500 focus:ring-red-500"
