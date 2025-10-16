@@ -20,6 +20,14 @@ import { tataBangunanSchema, tataBangunanRehabilitasiSchema } from "./validation
 import { useFormDataStore } from "~/store/formDataStore";
 import { useCheckIndexData } from "~/middleware/checkIndexData";
 import { toast } from "sonner";
+import SmartImageUploader from "~/components/SmartImageUploader";
+import {
+  buildingTypeToApi,
+  reportStatusToApi,
+  fundingSourceToApi,
+  workTypeToApi,
+  conditionAfterRehabToApi
+} from "~/utils/enumMapper";
 
 export function TataBangunanView() {
   // Check if IndexView data is filled
@@ -145,7 +153,7 @@ export function TataBangunanView() {
     try {
       // Use different schema based on status laporan
       // Only "Pembangunan Baru" doesn't require detail kerusakan
-      const schema = statusLaporan === "pembangunan baru"
+      const schema = statusLaporan === "pembangunan-baru"
         ? tataBangunanSchema
         : tataBangunanRehabilitasiSchema;
 
@@ -200,11 +208,11 @@ export function TataBangunanView() {
       village: indexData?.desaKecamatan || "Default Village",
       district: indexData?.desaKecamatan || "Default District",
 
-      // Building identification
+      // Building identification - MAP TO API FORMAT
       building_name: namaBangunan,
-      building_type: jenisBangunan,
-      report_status: statusLaporan,
-      funding_source: sumberDana,
+      building_type: buildingTypeToApi(jenisBangunan),
+      report_status: reportStatusToApi(statusLaporan),
+      funding_source: fundingSourceToApi(sumberDana),
       last_year_construction: parseInt(tahunPembangunan),
 
       // Technical data
@@ -214,9 +222,9 @@ export function TataBangunanView() {
       floor_area: parseFloat(luasLantai),
       floor_count: jumlahLantai,
 
-      // Optional rehabilitation data
-      work_type: jenisPekerjaan || "",
-      condition_after_rehab: kondisiSetelahRehabilitasi || "",
+      // Optional rehabilitation data - MAP TO API FORMAT
+      work_type: jenisPekerjaan ? workTypeToApi(jenisPekerjaan) : "",
+      condition_after_rehab: kondisiSetelahRehabilitasi ? conditionAfterRehabToApi(kondisiSetelahRehabilitasi) : "",
 
       // Photos as string array (base64 or URLs - but we'll use files)
       photos: previewUrls,
@@ -258,131 +266,6 @@ export function TataBangunanView() {
     }
   };
 
-  function ImageUpload() {
-    const [isDragging, setIsDragging] = useState(false);
-
-    const handleDragOver = (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(true);
-    };
-
-    const handleDragLeave = () => {
-      setIsDragging(false);
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
-
-      const files = Array.from(e.dataTransfer.files).filter((file) =>
-        file.type.startsWith("image/")
-      );
-      if (files.length > 0) {
-        const newFiles = [...fotoKerusakan, ...files];
-        setFotoKerusakan(newFiles);
-
-        // Create preview URLs for new files
-        files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreviewUrls((prev) => [...prev, reader.result as string]);
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-    };
-
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(e.target.files || []).filter((file) =>
-        file.type.startsWith("image/")
-      );
-      if (files.length > 0) {
-        const newFiles = [...fotoKerusakan, ...files];
-        setFotoKerusakan(newFiles);
-
-        // Create preview URLs for new files
-        files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreviewUrls((prev) => [...prev, reader.result as string]);
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-    };
-
-    return (
-      <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={`relative border-2 border-dashed rounded-xl p-8 transition-all ${
-          isDragging
-            ? "border-blue-600 bg-blue-50"
-            : "border-gray-300 hover:border-blue-400"
-        }`}
-      >
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleFileSelect}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        />
-
-        {previewUrls.length > 0 ? (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              {previewUrls.map((url, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={url}
-                    alt={`Preview ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg"
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const newPreviewUrls = previewUrls.filter(
-                        (_, i) => i !== index
-                      );
-                      const newFiles = fotoKerusakan.filter(
-                        (_, i) => i !== index
-                      );
-                      setPreviewUrls(newPreviewUrls);
-                      setFotoKerusakan(newFiles);
-                    }}
-                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
-                  >
-                    <Icon icon="mdi:close" className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <p className="text-sm text-gray-600 text-center">
-              {fotoKerusakan.length} foto dipilih. Klik + untuk menambah foto
-              lagi.
-            </p>
-          </div>
-        ) : (
-          <div className="text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Icon icon="mdi:cloud-upload" className="w-8 h-8 text-blue-600" />
-            </div>
-            <p className="text-sm font-semibold text-gray-700 mb-1">
-              Upload Foto Bangunan
-            </p>
-            <p className="text-xs text-gray-500">
-              Drag & drop atau klik untuk upload (minimal 1 foto)
-            </p>
-            <p className="text-xs text-gray-400 mt-2">
-              PNG, JPG, JPEG (Max 5MB per file)
-            </p>
-          </div>
-        )}
-      </div>
-    );
-  }
 
   return (
     <main className="space-y-6">
@@ -429,18 +312,19 @@ export function TataBangunanView() {
                 <SelectValue placeholder="Pilih Jenis Bangunan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="kantor pemerintah">
+                <SelectItem value="kantor-pemerintah">
                   Kantor Pemerintah
                 </SelectItem>
                 <SelectItem value="sekolah">Sekolah</SelectItem>
-                <SelectItem value="puskesmas/posyandu">
+                <SelectItem value="puskesmas-posyandu">
                   Puskesmas/Posyandu
                 </SelectItem>
                 <SelectItem value="pasar">Pasar</SelectItem>
-                <SelectItem value="sarana olahraga/gedung serbaguna">Sarana Olahraga/Gedung Serbaguna</SelectItem>
-                <SelectItem value="fasilitas umum lainnya">
+                <SelectItem value="sarana-olahraga">Sarana Olahraga/Gedung Serbaguna</SelectItem>
+                <SelectItem value="fasilitas-umum">
                   Fasilitas Umum Lainnya
                 </SelectItem>
+                <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
             </Select>
             {errors.jenisBangunan && (
@@ -465,10 +349,10 @@ export function TataBangunanView() {
                 <SelectValue placeholder="Pilih Status Laporan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="rehabilitasi perbaikan">
+                <SelectItem value="rehabilitasi">
                   Rehabilitasi/Perbaikan
                 </SelectItem>
-                <SelectItem value="pembangunan baru">
+                <SelectItem value="pembangunan-baru">
                   Pembangunan Baru
                 </SelectItem>
                 <SelectItem value="lainnya">Lainnya</SelectItem>
@@ -496,11 +380,11 @@ export function TataBangunanView() {
                 <SelectValue placeholder="Pilih Sumber Dana" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="apbd kabupaten">APBD Kabupaten</SelectItem>
-                <SelectItem value="apbd provinsi">APBD Provinsi</SelectItem>
+                <SelectItem value="apbd-kabupaten">APBD Kabupaten</SelectItem>
+                <SelectItem value="apbd-provinsi">APBD Provinsi</SelectItem>
                 <SelectItem value="apbn">APBN</SelectItem>
-                <SelectItem value="dana desa">Dana Desa</SelectItem>
-                <SelectItem value="swadaya masyarakat">
+                <SelectItem value="dana-desa">Dana Desa</SelectItem>
+                <SelectItem value="swadaya-masyarakat">
                   Swadaya Masyarakat
                 </SelectItem>
                 <SelectItem value="lainnya">
@@ -704,7 +588,7 @@ export function TataBangunanView() {
       </div>
 
       {/* Detail Kerusakan - Hide only for "Pembangunan Baru" */}
-      {statusLaporan !== "pembangunan baru" && statusLaporan !== "" && (
+      {statusLaporan !== "pembangunan-baru" && statusLaporan !== "" && (
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
           <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             Detail Kerusakan
@@ -726,18 +610,18 @@ export function TataBangunanView() {
                   <SelectValue placeholder="Pilih Jenis Pekerjaan" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="perbaikan atap">Perbaikan Atap</SelectItem>
-                  <SelectItem value="perbaikan lantai">Perbaikan Lantai</SelectItem>
-                  <SelectItem value="perbaikan dinding/cat">
+                  <SelectItem value="perbaikan-atap">Perbaikan Atap</SelectItem>
+                  <SelectItem value="perbaikan-lantai">Perbaikan Lantai</SelectItem>
+                  <SelectItem value="perbaikan-dinding">
                     Perbaikan Dinding/Cat
                   </SelectItem>
-                  <SelectItem value="perbaikan pintu jendela">
+                  <SelectItem value="perbaikan-pintu-jendela">
                     Perbaikan Pintu/Jendela
                   </SelectItem>
-                  <SelectItem value="perbaikan sanitasi mck">
+                  <SelectItem value="perbaikan-sanitasi">
                     Perbaikan Sanitasi/MCK
                   </SelectItem>
-                  <SelectItem value="perbaikan listrik/air">
+                  <SelectItem value="perbaikan-listrik-air">
                     Perbaikan Listrik/Air
                   </SelectItem>
                   <SelectItem value="lainnya">Lainnya</SelectItem>
@@ -768,10 +652,10 @@ export function TataBangunanView() {
                   <SelectValue placeholder="Pilih Kondisi Setelah Rehabilitasi" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="baik siap pakai">
+                  <SelectItem value="baik-siap-pakai">
                     Baik & Siap Pakai
                   </SelectItem>
-                  <SelectItem value="masih membutuhkan perbaikan tambahan">
+                  <SelectItem value="butuh-perbaikan">
                     Masih Membutuhkan Perbaikan Tambahan
                   </SelectItem>
                   <SelectItem value="lainnya">Lainnya</SelectItem>
@@ -786,10 +670,28 @@ export function TataBangunanView() {
 
             {/* Foto Lokasi */}
             <div className="md:col-span-2">
-              <Label className="text-sm font-semibold text-gray-700 mb-4">
-                Foto Bangunan<span className="text-red-500">*</span>
-              </Label>
-              <ImageUpload />
+              <SmartImageUploader
+                label="Foto Bangunan"
+                onCoordinatesExtracted={(coords, index) => {
+                  // Auto-update koordinat dari GPS foto pertama
+                  if (index === 0) {
+                    setLatitude(coords.latitude.toString());
+                    setLongitude(coords.longitude.toString());
+                    setPosition([coords.latitude, coords.longitude]);
+                  }
+                }}
+                onFilesSelected={(files: File[]) => {
+                  setFotoKerusakan(files);
+                }}
+                onPreviewUrlsUpdated={(urls: string[]) => {
+                  setPreviewUrls(urls);
+                }}
+                maxFiles={2}
+                required
+                enableCamera={true}
+                enableGPSExtraction={true}
+                autoFillCoordinates={true}
+              />
               {errors.fotoKerusakan && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.fotoKerusakan}

@@ -17,10 +17,19 @@ import { jalanSchema } from "./validation/jalanValidation";
 import { apiService } from "~/services/apiService";
 import type { BinamargaJalanForm } from "~/types/formData";
 import { useFormDataStore } from "~/store/formDataStore";
-import { peranPelaporToInstitution } from "~/utils/enumMapper";
+import {
+  peranPelaporToInstitution,
+  roadTypeToApi,
+  roadClassToApi,
+  pavementTypeToApi,
+  roadDamageTypeToApi,
+  damageLevelToApi,
+  trafficConditionToApi,
+  urgencyLevelToApi
+} from "~/utils/enumMapper";
 import { useCheckIndexData } from "~/middleware/checkIndexData";
 import { toast } from "sonner";
-import ImageGPSUploader from "~/components/ImageGPSUploader";
+import SmartImageUploader from "~/components/SmartImageUploader";
 
 export function JalanView() {
   // Check if IndexView data is filled
@@ -181,46 +190,6 @@ export function JalanView() {
 
   // Map form values to API format
   const mapFormToApiData = (): BinamargaJalanForm & { photoFiles?: File[] } => {
-    // Map form values to backend field names
-    const getRoadTypeMapping = (formValue: string): string => {
-      const mapping: Record<string, string> = {
-        "jalan-nasional": "JALAN_NASIONAL",
-        "jalan-provinsi": "JALAN_PROVINSI",
-        "jalan-kabupaten": "JALAN_KABUPATEN",
-        "jalan-desa": "JALAN_DESA",
-      };
-      return mapping[formValue] || formValue.toUpperCase();
-    };
-
-    const getRoadClassMapping = (formValue: string): string => {
-      const mapping: Record<string, string> = {
-        arteri: "ARTERI",
-        kolektor: "KOLEKTOR",
-        lokal: "LOKAL",
-        lingkungan: "LINGKUNGAN",
-      };
-      return mapping[formValue] || formValue.toUpperCase();
-    };
-
-    const getPavementTypeMapping = (formValue: string): string => {
-      const mapping: Record<string, string> = {
-        aspal: "ASPAL_FLEXIBLE",
-        beton: "BETON_RIGID",
-        paving: "PAVING",
-        "jalan-tanah": "JALAN_TANAH",
-      };
-      return mapping[formValue] || formValue.toUpperCase();
-    };
-
-    const getUrgencyMapping = (formValue: string): string => {
-      const mapping: Record<string, string> = {
-        darurat: "DARURAT",
-        cepat: "CEPAT",
-        rutin: "RUTIN",
-      };
-      return mapping[formValue] || formValue.toUpperCase();
-    };
-
     return {
       // Reporter info from index form
       reporter_name: indexData?.namaPelapor || "Default Reporter",
@@ -231,26 +200,26 @@ export function JalanView() {
           ? indexData.tanggalLaporan.toISOString()
           : new Date().toISOString()),
 
-      // Road identification
+      // Road identification - MAP TO API FORMAT
       road_name: namaRuasJalan,
-      road_type: getRoadTypeMapping(jenisJalan),
-      road_class: getRoadClassMapping(klasifikasiFungsi),
+      road_type: roadTypeToApi(jenisJalan),
+      road_class: roadClassToApi(klasifikasiFungsi),
       segment_length: parseFloat(panjangSegmen) || 0,
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
 
-      // Damage details
-      pavement_type: getPavementTypeMapping(jenisPerkerasan),
-      damage_type: jenisKerusakan,
-      damage_level: tingkatKerusakan.toUpperCase(),
+      // Damage details - MAP TO API FORMAT
+      pavement_type: pavementTypeToApi(jenisPerkerasan),
+      damage_type: roadDamageTypeToApi(jenisKerusakan),
+      damage_level: damageLevelToApi(tingkatKerusakan),
       damaged_length: parseFloat(panjangKerusakan) || 0,
       damaged_width: parseFloat(lebarKerusakan) || 0,
       total_damaged_area: parseFloat(totalLuasKerusakan) || 0,
 
-      // Traffic impact
-      traffic_condition: kondisiLaluLintas,
+      // Traffic impact - MAP TO API FORMAT
+      traffic_condition: trafficConditionToApi(kondisiLaluLintas),
       daily_traffic_volume: parseInt(volumeLaluLintas) || 0,
-      urgency_level: getUrgencyMapping(kategoriPrioritas),
+      urgency_level: urgencyLevelToApi(kategoriPrioritas),
 
       // Photos
       photos: previewUrls,
@@ -541,14 +510,14 @@ export function JalanView() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="lubang">Lubang (Potholes)</SelectItem>
-                <SelectItem value="retak buaya">
+                <SelectItem value="retak-buaya">
                   Retak Buaya (Aligator Cracking)
                 </SelectItem>
-                <SelectItem value="amblas longsor">Amblas/Longsor</SelectItem>
-                <SelectItem value="permukaan aus">
+                <SelectItem value="amblas-longsor">Amblas/Longsor</SelectItem>
+                <SelectItem value="permukaan-aus">
                   Permukaan Aus/Raveling
                 </SelectItem>
-                <SelectItem value="genangan air">
+                <SelectItem value="genangan-air">
                   Genangan Air/Drainase Buruk
                 </SelectItem>
                 <SelectItem value="lainnya">
@@ -688,13 +657,13 @@ export function JalanView() {
                 <SelectValue placeholder="Pilih Kondisi Lalu Lintas Saat ini" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="masih bisa dilalui">
+                <SelectItem value="masih-bisa-dilalui">
                   Masih Bisa Dilalui
                 </SelectItem>
-                <SelectItem value="satu jalur">
+                <SelectItem value="satu-jalur">
                   Hanya Satu Jalur Bisa Dilalui
                 </SelectItem>
-                <SelectItem value="tidak bisa dilalui">
+                <SelectItem value="tidak-bisa-dilalui">
                   Tidak Bisa Dilalui/Jalan Putus
                 </SelectItem>
               </SelectContent>
@@ -762,7 +731,7 @@ export function JalanView() {
 
           {/* Foto Lokasi dengan GPS */}
           <div className="md:col-span-2">
-            <ImageGPSUploader
+            <SmartImageUploader
               label="Foto Lokasi/Kerusakan"
               onCoordinatesExtracted={(coords, index) => {
                 // Auto-update koordinat dari GPS foto pertama
@@ -772,14 +741,17 @@ export function JalanView() {
                   setPosition([coords.latitude, coords.longitude]);
                 }
               }}
-              onFilesSelected={(files) => {
+              onFilesSelected={(files: File[]) => {
                 setFotoKerusakan(files);
               }}
-              onPreviewUrlsUpdated={(urls) => {
+              onPreviewUrlsUpdated={(urls: string[]) => {
                 setPreviewUrls(urls);
               }}
               maxFiles={2}
               required
+              enableCamera={true}
+              enableGPSExtraction={true}
+              autoFillCoordinates={true}
             />
             {errors.fotoKerusakan && (
               <p className="text-red-500 text-sm mt-1">

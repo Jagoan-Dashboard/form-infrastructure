@@ -14,6 +14,11 @@ import {
   PAVEMENT_TYPE_OPTIONS,
   DAMAGE_LEVEL_OPTIONS,
   URGENCY_LEVEL_OPTIONS,
+  ROAD_DAMAGE_TYPE_OPTIONS,
+  TRAFFIC_CONDITION_OPTIONS,
+  BRIDGE_STRUCTURE_TYPE_OPTIONS,
+  BRIDGE_DAMAGE_TYPE_OPTIONS,
+  BRIDGE_DAMAGE_LEVEL_OPTIONS,
   AREA_CATEGORY_OPTIONS,
   VIOLATION_TYPE_OPTIONS,
   VIOLATION_LEVEL_OPTIONS,
@@ -75,6 +80,26 @@ export const damageLevelToApi = (uiValue: string): string => {
 
 export const urgencyLevelToApi = (uiValue: string): string => {
   return getApiValue(URGENCY_LEVEL_OPTIONS, uiValue);
+};
+
+export const roadDamageTypeToApi = (uiValue: string): string => {
+  return getApiValue(ROAD_DAMAGE_TYPE_OPTIONS, uiValue);
+};
+
+export const trafficConditionToApi = (uiValue: string): string => {
+  return getApiValue(TRAFFIC_CONDITION_OPTIONS, uiValue);
+};
+
+export const bridgeStructureTypeToApi = (uiValue: string): string => {
+  return getApiValue(BRIDGE_STRUCTURE_TYPE_OPTIONS, uiValue);
+};
+
+export const bridgeDamageTypeToApi = (uiValue: string): string => {
+  return getApiValue(BRIDGE_DAMAGE_TYPE_OPTIONS, uiValue);
+};
+
+export const bridgeDamageLevelToApi = (uiValue: string): string => {
+  return getApiValue(BRIDGE_DAMAGE_LEVEL_OPTIONS, uiValue);
 };
 
 // ============================================

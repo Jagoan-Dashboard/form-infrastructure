@@ -19,6 +19,8 @@ import {
   BRIDGE_STRUCTURE_TYPE,
   BRIDGE_DAMAGE_TYPE,
   BRIDGE_DAMAGE_LEVEL,
+  ROAD_DAMAGE_TYPE,
+  TRAFFIC_CONDITION,
   AREA_CATEGORY,
   VIOLATION_TYPE,
   VIOLATION_LEVEL,
@@ -334,6 +336,121 @@ export const URGENCY_LEVEL_OPTIONS: SelectOption[] = [
     value: 'rutin',
     label: 'Rutin',
     apiValue: URGENCY_LEVEL.RUTIN,
+  },
+];
+
+export const ROAD_DAMAGE_TYPE_OPTIONS: SelectOption[] = [
+  {
+    value: 'lubang',
+    label: 'Lubang (Potholes)',
+    apiValue: ROAD_DAMAGE_TYPE.LUBANG_POTHOLES,
+  },
+  {
+    value: 'retak-buaya',
+    label: 'Retak Buaya (Aligator Cracking)',
+    apiValue: ROAD_DAMAGE_TYPE.RETAK_KULIT_BUAYA,
+  },
+  {
+    value: 'amblas-longsor',
+    label: 'Amblas/Longsor',
+    apiValue: ROAD_DAMAGE_TYPE.AMBLAS_LONGSOR,
+  },
+  {
+    value: 'permukaan-aus',
+    label: 'Permukaan Aus/Raveling',
+    apiValue: ROAD_DAMAGE_TYPE.PERMUKAAN_AUS_RAVELING,
+  },
+  {
+    value: 'genangan-air',
+    label: 'Genangan Air/Drainase Buruk',
+    apiValue: ROAD_DAMAGE_TYPE.GENANGAN_AIR_DRAINASE_BURUK,
+  },
+  {
+    value: 'lainnya',
+    label: 'Lainnya',
+    apiValue: ROAD_DAMAGE_TYPE.LAINNYA,
+  },
+];
+
+export const TRAFFIC_CONDITION_OPTIONS: SelectOption[] = [
+  {
+    value: 'masih-bisa-dilalui',
+    label: 'Masih Bisa Dilalui',
+    apiValue: TRAFFIC_CONDITION.MASIH_BISA_DILALUI,
+  },
+  {
+    value: 'satu-jalur',
+    label: 'Hanya Satu Jalur Bisa Dilalui',
+    apiValue: TRAFFIC_CONDITION.HANYA_SATU_LAJUR_BISA_DILALUI,
+  },
+  {
+    value: 'tidak-bisa-dilalui',
+    label: 'Tidak Bisa Dilalui/Jalan Putus',
+    apiValue: TRAFFIC_CONDITION.TIDAK_BISA_DILALUI_PUTUS,
+  },
+];
+
+export const BRIDGE_STRUCTURE_TYPE_OPTIONS: SelectOption[] = [
+  {
+    value: 'beton-bertulang',
+    label: 'Beton Bertulang',
+    apiValue: BRIDGE_STRUCTURE_TYPE.BETON_BERTULANG,
+  },
+  {
+    value: 'baja',
+    label: 'Baja',
+    apiValue: BRIDGE_STRUCTURE_TYPE.BAJA,
+  },
+  {
+    value: 'kayu',
+    label: 'Kayu',
+    apiValue: BRIDGE_STRUCTURE_TYPE.KAYU,
+  },
+];
+
+export const BRIDGE_DAMAGE_TYPE_OPTIONS: SelectOption[] = [
+  {
+    value: 'lantai-jembatan-retak',
+    label: 'Lantai Jembatan Retak/Rusak',
+    apiValue: BRIDGE_DAMAGE_TYPE.LANTAI_JEMBATAN_RETAK_RUSAK,
+  },
+  {
+    value: 'oprit-abutment-amblas',
+    label: 'Oprit/Abutment Amblas',
+    apiValue: BRIDGE_DAMAGE_TYPE.OPRIT_ABUTMENT_AMBLAS,
+  },
+  {
+    value: 'rangka-utama-retak',
+    label: 'Rangka Utama Retak',
+    apiValue: BRIDGE_DAMAGE_TYPE.RANGKA_UTAMA_RETAK,
+  },
+  {
+    value: 'pondasi-terseret-arus',
+    label: 'Pondasi Terseret Arus',
+    apiValue: BRIDGE_DAMAGE_TYPE.PONDASI_TERSERET_ARUS,
+  },
+  {
+    value: 'lainnya',
+    label: 'Lainnya',
+    apiValue: BRIDGE_DAMAGE_TYPE.LAINNYA,
+  },
+];
+
+export const BRIDGE_DAMAGE_LEVEL_OPTIONS: SelectOption[] = [
+  {
+    value: 'ringan',
+    label: 'Ringan',
+    apiValue: BRIDGE_DAMAGE_LEVEL.RINGAN,
+  },
+  {
+    value: 'sedang',
+    label: 'Sedang',
+    apiValue: BRIDGE_DAMAGE_LEVEL.SEDANG,
+  },
+  {
+    value: 'berat',
+    label: 'Berat/Tidak Layak',
+    apiValue: BRIDGE_DAMAGE_LEVEL.BERAT_TIDAK_LAYAK,
   },
 ];
 

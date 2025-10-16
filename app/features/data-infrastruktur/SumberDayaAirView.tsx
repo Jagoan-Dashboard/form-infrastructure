@@ -17,10 +17,17 @@ import { sumberDayaAirSchema } from "./validation/sumberDayaAirValidation";
 import { apiService } from "~/services/apiService";
 import type { SumberDayaAirForm } from "~/types/formData";
 import { useFormDataStore } from "~/store/formDataStore";
-import { peranPelaporToInstitution, toApiFormat } from "~/utils/enumMapper";
+import {
+  peranPelaporToInstitution,
+  irrigationTypeToApi,
+  waterDamageTypeToApi,
+  damageLevelToApi,
+  urgencyCategoryToApi
+} from "~/utils/enumMapper";
 import { useCheckIndexData } from "~/middleware/checkIndexData";
 import { toast } from "sonner";
 import { SearchSelect } from "~/components/search/SearchSelect";
+import SmartImageUploader from "~/components/SmartImageUploader";
 
 export function SumberDayaAirView() {
   // Check if IndexView data is filled
@@ -181,7 +188,6 @@ export function SumberDayaAirView() {
 
   // Map form values to API format
   const mapFormToApiData = (): SumberDayaAirForm & { photoFiles?: File[] } => {
-    // Map peran pelapor to institution - API expects: DINAS, DESA, KECAMATAN
     return {
       // Reporter info from index form
       reporter_name: indexData?.namaPelapor || "Default Reporter",
@@ -192,27 +198,27 @@ export function SumberDayaAirView() {
           ? indexData.tanggalLaporan.toISOString()
           : new Date().toISOString()),
 
-      // Irrigation data
+      // Irrigation data - MAP TO API FORMAT
       irrigation_area_name: namaDaerahIrigasi,
-      irrigation_type: toApiFormat(jenisIrigasi.replace(/[\s/]+/g, '-')),
+      irrigation_type: irrigationTypeToApi(jenisIrigasi),
 
       // Location data
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
 
-      // Damage data
-      damage_type: toApiFormat(jenisKerusakan.replace(/[\s/]+/g, '-')),
-      damage_level: toApiFormat(tingkatKerusakan),
+      // Damage data - MAP TO API FORMAT
+      damage_type: waterDamageTypeToApi(jenisKerusakan),
+      damage_level: damageLevelToApi(tingkatKerusakan),
 
       // Estimated measurements
       estimated_length: parseFloat(perkiraanPanjangKerusakan) || 0,
       estimated_width: parseFloat(perkiraanLebarKerusakan) || 0,
       estimated_volume: parseFloat(perkiraanVolumeKerusakan) || 0,
 
-      // Impact data
+      // Impact data - MAP TO API FORMAT
       affected_rice_field_area: parseFloat(areaSawahTerdampak) || 0,
       affected_farmers_count: parseInt(jumlahPetaniTerdampak) || 0,
-      urgency_category: toApiFormat(kategoriUrgensi),
+      urgency_category: urgencyCategoryToApi(kategoriUrgensi),
 
       // Photos as string array (base64 or URLs - but we'll use files)
       photos: previewUrls,
@@ -256,6 +262,7 @@ export function SumberDayaAirView() {
 
   function ImageUpload() {
     const [isDragging, setIsDragging] = useState(false);
+    const MAX_FILES = 2;
 
     const handleDragOver = (e: React.DragEvent) => {
       e.preventDefault();
@@ -273,18 +280,28 @@ export function SumberDayaAirView() {
       const files = Array.from(e.dataTransfer.files).filter((file) =>
         file.type.startsWith("image/")
       );
-      if (files.length > 0) {
-        const newFiles = [...fotoKerusakan, ...files];
-        setFotoKerusakan(newFiles);
+      if (files.length === 0) return;
 
-        // Create preview URLs for new files
-        files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreviewUrls((prev) => [...prev, reader.result as string]);
-          };
-          reader.readAsDataURL(file);
-        });
+      const availableSlots = MAX_FILES - fotoKerusakan.length;
+      if (availableSlots <= 0) {
+        toast.warning(`Maksimal ${MAX_FILES} foto`);
+        return;
+      }
+
+      const accepted = files.slice(0, availableSlots);
+      const newFiles = [...fotoKerusakan, ...accepted];
+      setFotoKerusakan(newFiles);
+
+      accepted.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewUrls((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      if (files.length > accepted.length) {
+        toast.warning(`Maksimal ${MAX_FILES} foto`);
       }
     };
 
@@ -292,18 +309,28 @@ export function SumberDayaAirView() {
       const files = Array.from(e.target.files || []).filter((file) =>
         file.type.startsWith("image/")
       );
-      if (files.length > 0) {
-        const newFiles = [...fotoKerusakan, ...files];
-        setFotoKerusakan(newFiles);
+      if (files.length === 0) return;
 
-        // Create preview URLs for new files
-        files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreviewUrls((prev) => [...prev, reader.result as string]);
-          };
-          reader.readAsDataURL(file);
-        });
+      const availableSlots = MAX_FILES - fotoKerusakan.length;
+      if (availableSlots <= 0) {
+        toast.warning(`Maksimal ${MAX_FILES} foto`);
+        return;
+      }
+
+      const accepted = files.slice(0, availableSlots);
+      const newFiles = [...fotoKerusakan, ...accepted];
+      setFotoKerusakan(newFiles);
+
+      accepted.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewUrls((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      if (files.length > accepted.length) {
+        toast.warning(`Maksimal ${MAX_FILES} foto`);
       }
     };
 
@@ -323,7 +350,8 @@ export function SumberDayaAirView() {
           accept="image/*"
           multiple
           onChange={handleFileSelect}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          disabled={fotoKerusakan.length >= MAX_FILES}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
         />
 
         {previewUrls.length > 0 ? (
@@ -356,8 +384,7 @@ export function SumberDayaAirView() {
               ))}
             </div>
             <p className="text-sm text-gray-600 text-center">
-              {fotoKerusakan.length} foto dipilih. Klik + untuk menambah foto
-              lagi.
+              {fotoKerusakan.length} foto dipilih. {fotoKerusakan.length < MAX_FILES && "Klik + untuk menambah foto lagi."}
             </p>
           </div>
         ) : (
@@ -426,12 +453,12 @@ export function SumberDayaAirView() {
                 <SelectValue placeholder="Pilih Jenis Irigasi" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="saluran sekunder">
+                <SelectItem value="saluran-sekunder">
                   Saluran Sekunder
                 </SelectItem>
                 <SelectItem value="bendung">Bendung</SelectItem>
-                <SelectItem value="embung/dam">Embung/Dam</SelectItem>
-                <SelectItem value="pintu air">Pintu Air</SelectItem>
+                <SelectItem value="embung-dam">Embung/Dam</SelectItem>
+                <SelectItem value="pintu-air">Pintu Air</SelectItem>
                 <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
             </Select>
@@ -550,21 +577,21 @@ export function SumberDayaAirView() {
                 <SelectValue placeholder="Pilih Jenis Kerusakan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="retak/bocor">Retak/Bocor</SelectItem>
-                <SelectItem value="longsor/ambrol">Longsor/Ambrol</SelectItem>
-                <SelectItem value="sedimentasi tinggi">
+                <SelectItem value="retak-bocor">Retak/Bocor</SelectItem>
+                <SelectItem value="longsor-ambrol">Longsor/Ambrol</SelectItem>
+                <SelectItem value="sedimentasi">
                   Sedimentasi Tinggi
                 </SelectItem>
-                <SelectItem value="tersumbat sampah">
+                <SelectItem value="tersumbat">
                   Tersumbat Sampah
                 </SelectItem>
-                <SelectItem value="struktur rusak">
-                  Struktur Rusak
+                <SelectItem value="beton-rusak">
+                  Struktur Beton Rusak
                 </SelectItem>
-                <SelectItem value="pintu air macet">
+                <SelectItem value="pintu-macet">
                   Pintu Air Macet/Tidak Berfungsi
                 </SelectItem>
-                <SelectItem value="tanggul jebol">
+                <SelectItem value="tanggul-jebol">
                   Tanggul Jebol
                 </SelectItem>
                 <SelectItem value="lainnya">
@@ -735,7 +762,27 @@ export function SumberDayaAirView() {
             <Label className="text-sm font-semibold text-gray-700 mb-4">
               Foto Lokasi/Kerusakan<span className="text-red-500">*</span>
             </Label>
-            <ImageUpload />
+            <SmartImageUploader
+              label="Foto Lokasi/Kerusakan"
+              onCoordinatesExtracted={(coords, index) => {
+                if (index === 0) {
+                  setLatitude(coords.latitude.toString());
+                  setLongitude(coords.longitude.toString());
+                  setPosition([coords.latitude, coords.longitude]);
+                }
+              }}
+              onFilesSelected={(files: File[]) => {
+                setFotoKerusakan(files);
+              }}
+              onPreviewUrlsUpdated={(urls: string[]) => {
+                setPreviewUrls(urls);
+              }}
+              maxFiles={2}
+              required
+              enableCamera={true}
+              enableGPSExtraction={true}
+              autoFillCoordinates={true}
+            />
             {errors.fotoKerusakan && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.fotoKerusakan}

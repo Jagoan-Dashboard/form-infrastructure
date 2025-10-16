@@ -17,10 +17,17 @@ import { jembatanSchema } from "./validation/jembatanValidation";
 import { apiService } from "~/services/apiService";
 import type { BinamargaJembatanForm } from "~/types/formData";
 import { useFormDataStore } from "~/store/formDataStore";
-import { peranPelaporToInstitution } from "~/utils/enumMapper";
+import {
+  peranPelaporToInstitution,
+  bridgeStructureTypeToApi,
+  bridgeDamageTypeToApi,
+  bridgeDamageLevelToApi,
+  trafficConditionToApi,
+  urgencyLevelToApi
+} from "~/utils/enumMapper";
 import { useCheckIndexData } from "~/middleware/checkIndexData";
 import { toast } from "sonner";
-import ImageGPSUploader from "~/components/ImageGPSUploader";
+import SmartImageUploader from "~/components/SmartImageUploader";
 
 export function JembatanView() {
   // Check if IndexView data is filled
@@ -171,16 +178,6 @@ export function JembatanView() {
   const mapFormToApiData = (): BinamargaJembatanForm & {
     photoFiles?: File[];
   } => {
-    const getUrgencyMapping = (formValue: string): string => {
-      const mapping: Record<string, string> = {
-        darurat: "DARURAT",
-        cepat: "CEPAT",
-        rutin: "RUTIN",
-      };
-      return mapping[formValue] || formValue.toUpperCase();
-    };
-
-    // Map peran pelapor to institution - API expects: DINAS, DESA, KECAMATAN
     return {
       // Reporter info from index form
       reporter_name: indexData?.namaPelapor || "Default Reporter",
@@ -191,20 +188,20 @@ export function JembatanView() {
           ? indexData.tanggalLaporan.toISOString()
           : new Date().toISOString()),
 
-      // Bridge identification
+      // Bridge identification - MAP TO API FORMAT
       bridge_name: namaJembatan,
-      bridge_structure_type: jenisStruktur,
+      bridge_structure_type: bridgeStructureTypeToApi(jenisStruktur),
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
 
-      // Damage details
-      bridge_damage_type: jenisKerusakan,
-      bridge_damage_level: tingkatKerusakan,
+      // Damage details - MAP TO API FORMAT
+      bridge_damage_type: bridgeDamageTypeToApi(jenisKerusakan),
+      bridge_damage_level: bridgeDamageLevelToApi(tingkatKerusakan),
 
-      // Traffic impact
-      traffic_condition: kondisiLaluLintas,
+      // Traffic impact - MAP TO API FORMAT
+      traffic_condition: trafficConditionToApi(kondisiLaluLintas),
       daily_traffic_volume: parseInt(volumeLaluLintas) || 0,
-      urgency_level: getUrgencyMapping(kategoriPrioritas),
+      urgency_level: urgencyLevelToApi(kategoriPrioritas),
 
       // Photos
       photos: previewUrls,
@@ -288,7 +285,7 @@ export function JembatanView() {
                 <SelectValue placeholder="Pilih Jenis Struktur" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="beton bertulang">Beton Bertulang</SelectItem>
+                <SelectItem value="beton-bertulang">Beton Bertulang</SelectItem>
                 <SelectItem value="baja">Baja</SelectItem>
                 <SelectItem value="kayu">Kayu</SelectItem>
               </SelectContent>
@@ -315,18 +312,19 @@ export function JembatanView() {
                 <SelectValue placeholder="Pilih Jenis Kerusakan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="lantai jembatan retak">
+                <SelectItem value="lantai-jembatan-retak">
                   Lantai Jembatan Retak/Rusak
                 </SelectItem>
-                <SelectItem value="oprit/abutment amblas">
+                <SelectItem value="oprit-abutment-amblas">
                   Oprit/Abutment Amblas
                 </SelectItem>
-                <SelectItem value="rangka utama retak">
+                <SelectItem value="rangka-utama-retak">
                   Rangka Utama Retak
                 </SelectItem>
-                <SelectItem value="pondasi terseret arus">
+                <SelectItem value="pondasi-terseret-arus">
                   Pondasi Terseret Arus
                 </SelectItem>
+                <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
             </Select>
             {errors.jenisKerusakan && (
@@ -481,13 +479,13 @@ export function JembatanView() {
                 <SelectValue placeholder="Pilih Kondisi Lalu Lintas Saat ini" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="masih bisa dilalui">
+                <SelectItem value="masih-bisa-dilalui">
                   Masih Bisa Dilalui
                 </SelectItem>
-                <SelectItem value="satu jalur bisa dilalui">
+                <SelectItem value="satu-jalur">
                   Hanya Satu Jalur Bisa Dilalui
                 </SelectItem>
-                <SelectItem value="tidak bisa dilalui">
+                <SelectItem value="tidak-bisa-dilalui">
                   Tidak Bisa Dilalui(Jembatan Putus)
                 </SelectItem>
               </SelectContent>
@@ -555,7 +553,7 @@ export function JembatanView() {
 
           {/* Foto Lokasi dengan GPS */}
           <div className="md:col-span-2">
-            <ImageGPSUploader
+            <SmartImageUploader
               label="Foto Lokasi/Kerusakan"
               onCoordinatesExtracted={(coords, index) => {
                 // Auto-update koordinat dari GPS foto pertama
@@ -565,14 +563,17 @@ export function JembatanView() {
                   setPosition([coords.latitude, coords.longitude]);
                 }
               }}
-              onFilesSelected={(files) => {
+              onFilesSelected={(files: File[]) => {
                 setFotoKerusakan(files);
               }}
-              onPreviewUrlsUpdated={(urls) => {
+              onPreviewUrlsUpdated={(urls: string[]) => {
                 setPreviewUrls(urls);
               }}
               maxFiles={2}
               required
+              enableCamera={true}
+              enableGPSExtraction={true}
+              autoFillCoordinates={true}
             />
             {errors.fotoKerusakan && (
               <p className="text-red-500 text-sm mt-1">

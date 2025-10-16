@@ -120,6 +120,23 @@ export const BRIDGE_DAMAGE_LEVEL = {
   BERAT_TIDAK_LAYAK: 'BERAT_TIDAK_LAYAK',
 } as const;
 
+// Road damage types
+export const ROAD_DAMAGE_TYPE = {
+  LUBANG_POTHOLES: 'LUBANG_POTHOLES',
+  RETAK_KULIT_BUAYA: 'RETAK_KULIT_BUAYA',
+  AMBLAS_LONGSOR: 'AMBLAS_LONGSOR',
+  PERMUKAAN_AUS_RAVELING: 'PERMUKAAN_AUS_RAVELING',
+  GENANGAN_AIR_DRAINASE_BURUK: 'GENANGAN_AIR_DRAINASE_BURUK',
+  LAINNYA: 'LAINNYA',
+} as const;
+
+// Traffic conditions (used by both road and bridge)
+export const TRAFFIC_CONDITION = {
+  MASIH_BISA_DILALUI: 'MASIH_BISA_DILALUI',
+  HANYA_SATU_LAJUR_BISA_DILALUI: 'HANYA_SATU_LAJUR_BISA_DILALUI',
+  TIDAK_BISA_DILALUI_PUTUS: 'TIDAK_BISA_DILALUI_PUTUS',
+} as const;
+
 // ============================================
 // TATA RUANG (Spatial Planning) ENUMS
 // ============================================
@@ -207,6 +224,8 @@ export type UrgencyLevel = (typeof URGENCY_LEVEL)[keyof typeof URGENCY_LEVEL];
 export type BridgeStructureType = (typeof BRIDGE_STRUCTURE_TYPE)[keyof typeof BRIDGE_STRUCTURE_TYPE];
 export type BridgeDamageType = (typeof BRIDGE_DAMAGE_TYPE)[keyof typeof BRIDGE_DAMAGE_TYPE];
 export type BridgeDamageLevel = (typeof BRIDGE_DAMAGE_LEVEL)[keyof typeof BRIDGE_DAMAGE_LEVEL];
+export type RoadDamageType = (typeof ROAD_DAMAGE_TYPE)[keyof typeof ROAD_DAMAGE_TYPE];
+export type TrafficCondition = (typeof TRAFFIC_CONDITION)[keyof typeof TRAFFIC_CONDITION];
 
 export type AreaCategory = (typeof AREA_CATEGORY)[keyof typeof AREA_CATEGORY];
 export type ViolationType = (typeof VIOLATION_TYPE)[keyof typeof VIOLATION_TYPE];

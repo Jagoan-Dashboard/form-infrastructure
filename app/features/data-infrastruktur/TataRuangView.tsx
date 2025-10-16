@@ -17,9 +17,17 @@ import { Label } from "~/components/ui/label";
 import { tataRuangSchema } from "./validation/tataRuangValidation";
 import { useFormDataStore } from "~/store/formDataStore";
 import { apiService } from "~/services/apiService";
-import { peranPelaporToInstitution } from "~/utils/enumMapper";
+import {
+  peranPelaporToInstitution,
+  areaCategoryToApi,
+  violationTypeToApi,
+  violationLevelToApi,
+  environmentalImpactToApi,
+  urgencyCategoryToApi
+} from "~/utils/enumMapper";
 import { useCheckIndexData } from "~/middleware/checkIndexData";
 import { toast } from "sonner";
+import SmartImageUploader from "~/components/SmartImageUploader";
 
 export function TataRuangView() {
   // Check if IndexView data is filled
@@ -185,32 +193,6 @@ export function TataRuangView() {
       }
       // Map peran pelapor to institution - API expects: DINAS, DESA, KECAMATAN
 
-      // Map violation level to API format - API expects: RINGAN, SEDANG, BERAT
-      const getViolationLevel = (level: string) => {
-        switch (level) {
-          case "ringan":
-            return "RINGAN";
-          case "sedang":
-            return "SEDANG";
-          case "berat":
-            return "BERAT";
-          default:
-            return level.toUpperCase();
-        }
-      };
-
-      // Map urgency level to API format - API expects: MENDESAK, BIASA
-      const getUrgencyLevel = (urgency: string) => {
-        switch (urgency) {
-          case "mendesak":
-            return "MENDESAK";
-          case "biasa":
-            return "BIASA";
-          default:
-            return urgency.toUpperCase();
-        }
-      };
-
       // Format datetime properly - API expects "2024-01-15T10:30:00Z" format
       const formatDateTime = (date: Date | null): string => {
         let dateObj: Date;
@@ -249,11 +231,11 @@ export function TataRuangView() {
         phone_number: indexData.nomorHP,
         report_datetime: formattedDateTime,
         area_description: gambaranAreaLokasi,
-        area_category: kategoriKawasan,
-        violation_type: jenisPelanggaran,
-        violation_level: getViolationLevel(tingkatPelanggaran), // Use mapped value
-        environmental_impact: dampakLingkungan,
-        urgency_level: getUrgencyLevel(tingkatUrgensi), // Use mapped value
+        area_category: areaCategoryToApi(kategoriKawasan), // MAP TO API FORMAT
+        violation_type: violationTypeToApi(jenisPelanggaran), // MAP TO API FORMAT
+        violation_level: violationLevelToApi(tingkatPelanggaran), // MAP TO API FORMAT
+        environmental_impact: environmentalImpactToApi(dampakLingkungan), // MAP TO API FORMAT
+        urgency_level: urgencyCategoryToApi(tingkatUrgensi), // MAP TO API FORMAT
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         address: indexData.desaKecamatan,
@@ -317,6 +299,7 @@ export function TataRuangView() {
 
   function ImageUpload() {
     const [isDragging, setIsDragging] = useState(false);
+    const MAX_FILES = 2;
 
     const handleDragOver = (e: React.DragEvent) => {
       e.preventDefault();
@@ -334,18 +317,28 @@ export function TataRuangView() {
       const files = Array.from(e.dataTransfer.files).filter((file) =>
         file.type.startsWith("image/")
       );
-      if (files.length > 0) {
-        const newFiles = [...fotoLokasi, ...files];
-        setFotoLokasi(newFiles);
+      if (files.length === 0) return;
 
-        // Create preview URLs for new files
-        files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreviewUrls((prev) => [...prev, reader.result as string]);
-          };
-          reader.readAsDataURL(file);
-        });
+      const availableSlots = MAX_FILES - fotoLokasi.length;
+      if (availableSlots <= 0) {
+        toast.warning(`Maksimal ${MAX_FILES} foto`);
+        return;
+      }
+
+      const accepted = files.slice(0, availableSlots);
+      const newFiles = [...fotoLokasi, ...accepted];
+      setFotoLokasi(newFiles);
+
+      accepted.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewUrls((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      if (files.length > accepted.length) {
+        toast.warning(`Maksimal ${MAX_FILES} foto`);
       }
     };
 
@@ -353,18 +346,28 @@ export function TataRuangView() {
       const files = Array.from(e.target.files || []).filter((file) =>
         file.type.startsWith("image/")
       );
-      if (files.length > 0) {
-        const newFiles = [...fotoLokasi, ...files];
-        setFotoLokasi(newFiles);
+      if (files.length === 0) return;
 
-        // Create preview URLs for new files
-        files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreviewUrls((prev) => [...prev, reader.result as string]);
-          };
-          reader.readAsDataURL(file);
-        });
+      const availableSlots = MAX_FILES - fotoLokasi.length;
+      if (availableSlots <= 0) {
+        toast.warning(`Maksimal ${MAX_FILES} foto`);
+        return;
+      }
+
+      const accepted = files.slice(0, availableSlots);
+      const newFiles = [...fotoLokasi, ...accepted];
+      setFotoLokasi(newFiles);
+
+      accepted.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewUrls((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      if (files.length > accepted.length) {
+        toast.warning(`Maksimal ${MAX_FILES} foto`);
       }
     };
 
@@ -384,7 +387,8 @@ export function TataRuangView() {
           accept="image/*"
           multiple
           onChange={handleFileSelect}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          disabled={fotoLokasi.length >= MAX_FILES}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
         />
 
         {previewUrls.length > 0 ? (
@@ -415,7 +419,7 @@ export function TataRuangView() {
               ))}
             </div>
             <p className="text-sm text-gray-600 text-center">
-              {fotoLokasi.length} foto dipilih. Klik + untuk menambah foto lagi.
+              {fotoLokasi.length} foto dipilih. {fotoLokasi.length < MAX_FILES && "Klik + untuk menambah foto lagi."}
             </p>
           </div>
         ) : (
@@ -484,15 +488,15 @@ export function TataRuangView() {
                 <SelectValue placeholder="Pilih Kategori Kawasan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cagar budaya">Kawasan Cagar Budaya</SelectItem>
+                <SelectItem value="cagar-budaya">Kawasan Cagar Budaya</SelectItem>
                 <SelectItem value="hutan">Kawasan Hutan</SelectItem>
                 <SelectItem value="pariwisata">Kawasan Pariwisata</SelectItem>
                 <SelectItem value="perkebunan">Kawasan Perkebunan</SelectItem>
                 <SelectItem value="permukiman">Kawasan Permukiman</SelectItem>
-                <SelectItem value="pertahanan dan keamanan">Kawasan Pertahanan dan Keamanan</SelectItem>
-                <SelectItem value="peruntukan industri">Kawasan Peruntukan Industri</SelectItem>
-                <SelectItem value="peruntukan pertambangan batuan">Kawasan Peruntukan Pertambangan Batuan</SelectItem>
-                <SelectItem value="tanaman pangan">Kawasan Tanaman Pangan</SelectItem>
+                <SelectItem value="pertahanan-keamanan">Kawasan Pertahanan dan Keamanan</SelectItem>
+                <SelectItem value="peruntukan-industri">Kawasan Peruntukan Industri</SelectItem>
+                <SelectItem value="peruntukan-pertambangan">Kawasan Peruntukan Pertambangan Batuan</SelectItem>
+                <SelectItem value="tanaman-pangan">Kawasan Tanaman Pangan</SelectItem>
                 <SelectItem value="transportasi">Kawasan Transportasi</SelectItem>
                 <SelectItem value="lainnya">Lainnya</SelectItem>
               </SelectContent>
@@ -617,19 +621,19 @@ export function TataRuangView() {
                 <SelectValue placeholder="Pilih Jenis Pelanggaran" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="bangunan sempadan sungai">
+                <SelectItem value="bangunan-sempadan-sungai">
                   Bangunan di sempadan sungai/waduk/bendungan
                 </SelectItem>
-                <SelectItem value="bangunan sempadan jalan">
+                <SelectItem value="bangunan-sempadan-jalan">
                   Bangunan di sempadan jalan
                 </SelectItem>
-                <SelectItem value="alih fungsi lahan pertanian">
+                <SelectItem value="alih-fungsi-pertanian">
                   Alih fungsi lahan pertanian
                 </SelectItem>
-                <SelectItem value="alih fungsi ruang terbuka hijau">
+                <SelectItem value="alih-fungsi-rth">
                   Alih fungsi ruang terbuka hijau
                 </SelectItem>
-                <SelectItem value="pembangunan tanpa izin pemanfaatan ruang">
+                <SelectItem value="pembangunan-tanpa-izin">
                   Pembangunan tanpa izin pemanfaatan ruang
                 </SelectItem>
                 <SelectItem value="lainnya">Lainnya</SelectItem>
@@ -696,13 +700,13 @@ export function TataRuangView() {
                 <SelectValue placeholder="Pilih Dampak Lingkungan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="menurunnya kualitas ruang">
+                <SelectItem value="menurun-kualitas">
                   Menurunnya kualitas ruang / ekosistem
                 </SelectItem>
-                <SelectItem value="potensi banjir longsor">
+                <SelectItem value="potensi-bencana">
                   Potensi banjir / longsor
                 </SelectItem>
-                <SelectItem value="mengganggu aktivitas warga">
+                <SelectItem value="ganggu-warga">
                   Mengganggu aktivitas warga
                 </SelectItem>
               </SelectContent>
@@ -741,10 +745,27 @@ export function TataRuangView() {
           </div>
 
           <div className="md:col-span-2">
-            <Label className="text-sm font-semibold text-gray-700 mb-4">
-              Foto Lokasi/Kerusakan<span className="text-red-500">*</span>
-            </Label>
-            <ImageUpload />
+            <SmartImageUploader
+              label="Foto Lokasi/Kerusakan"
+              onCoordinatesExtracted={(coords, index) => {
+                if (index === 0) {
+                  setLatitude(coords.latitude.toString());
+                  setLongitude(coords.longitude.toString());
+                  setPosition([coords.latitude, coords.longitude]);
+                }
+              }}
+              onFilesSelected={(files: File[]) => {
+                setFotoLokasi(files);
+              }}
+              onPreviewUrlsUpdated={(urls: string[]) => {
+                setPreviewUrls(urls);
+              }}
+              maxFiles={2}
+              required
+              enableCamera={true}
+              enableGPSExtraction={true}
+              autoFillCoordinates={true}
+            />
             {errors.fotoLokasi && (
               <p className="text-red-500 text-sm mt-1">{errors.fotoLokasi}</p>
             )}
