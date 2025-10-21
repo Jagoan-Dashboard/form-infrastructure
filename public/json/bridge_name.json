@@ -1,0 +1,902 @@
+[
+  {
+    "district": "BRINGIN",
+    "bridge_name": "RANDU",
+    "section_name": "BANGUNREJOLOR - RANDUBLATUNG"
+  },
+  {
+    "district": "BRINGIN",
+    "bridge_name": "BANGUNREJO LOR",
+    "section_name": "BANJAREJO - BANGUNREJOLOR"
+  },
+  {
+    "district": "BRINGIN",
+    "bridge_name": "BANJARBANGGI",
+    "section_name": "BANJAREJO - BANGUNREJOLOR"
+  },
+  {
+    "district": "BRINGIN",
+    "bridge_name": "SONDE",
+    "section_name": "BANJAREJO - BANGUNREJOLOR"
+  },
+  {
+    "district": "BRINGIN",
+    "bridge_name": "KARETAN (BANYUBIRU)",
+    "section_name": "BANYUBIRU - KETANGGUNG"
+  },
+  {
+    "district": "BRINGIN",
+    "bridge_name": "TRETES",
+    "section_name": "BANYUBIRU - KETANGGUNG"
+  },
+  {
+    "district": "BRINGIN",
+    "bridge_name": "KIYONTEN",
+    "section_name": "BANYUURIP - GUNUNGSARI"
+  },
+  {
+    "district": "BRINGIN",
+    "bridge_name": "DAWUNG",
+    "section_name": "BEGAL - JOGOROGO"
+  },
+  {
+    "district": "BRINGIN",
+    "bridge_name": "GELUNG BARAT",
+    "section_name": "BLEGO - GELUNG"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "BOK DOWO",
+    "section_name": "BRINGIN - BOAN BARAT"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "BRINGIN",
+    "section_name": "BRINGIN - BOAN BARAT"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "KETANGGUNG",
+    "section_name": "BULAK TIMUN - KETANGGUNG"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "GEMPOL",
+    "section_name": "CAMPURASRI - SEMBUNG"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "KARANGMALANG",
+    "section_name": "CANGAKAN - KASREMAN"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "GONDANGAN I",
+    "section_name": "DADAPAN - KENDAL"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "GONDANGAN II (KENDAL II)",
+    "section_name": "DADAPAN - KENDAL"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "PUTAT",
+    "section_name": "DERO - MOJO"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "NGLARANGAN",
+    "section_name": "DUNGUS - KANDANGAN"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "KEDUNG BOYO",
+    "section_name": "DUWET - GEMBOL"
+  },
+  {
+    "district": "GENENG",
+    "bridge_name": "DAMPIT",
+    "section_name": "GANDONG - KENONGOREJO"
+  },
+  {
+    "district": "GERIH",
+    "bridge_name": "TURI",
+    "section_name": "GANDRI - KARANGSONO"
+  },
+  {
+    "district": "GERIH",
+    "bridge_name": "KAUMAN",
+    "section_name": "GEDORO - JAGIR"
+  },
+  {
+    "district": "GERIH",
+    "bridge_name": "SARIREJO I",
+    "section_name": "GEDORO - JAGIR"
+  },
+  {
+    "district": "GERIH",
+    "bridge_name": "SARIREJO II",
+    "section_name": "GEDORO - JAGIR"
+  },
+  {
+    "district": "GERIH",
+    "bridge_name": "PAYAK",
+    "section_name": "GENDINGAN - PAYAK"
+  },
+  {
+    "district": "GERIH",
+    "bridge_name": "WALIKUKUN",
+    "section_name": "GENDINGAN - WALIKUKUN"
+  },
+  {
+    "district": "GERIH",
+    "bridge_name": "MENGGEH BARU B",
+    "section_name": "GENENG - KEDUNGPUTRI"
+  },
+  {
+    "district": "GERIH",
+    "bridge_name": "MENGGEH LAMA A",
+    "section_name": "GENENG - KEDUNGPUTRI"
+  },
+  {
+    "district": "JOGOROGO",
+    "bridge_name": "KLAMPISAN",
+    "section_name": "GENENG - POJOK"
+  },
+  {
+    "district": "JOGOROGO",
+    "bridge_name": "SIDOREJO",
+    "section_name": "GENENG - POJOK"
+  },
+  {
+    "district": "JOGOROGO",
+    "bridge_name": "GONDANGLEGI",
+    "section_name": "GONDANGLEGI - DADAPAN"
+  },
+  {
+    "district": "JOGOROGO",
+    "bridge_name": "TULAKAN I",
+    "section_name": "JAGIR - TULAKAN"
+  },
+  {
+    "district": "JOGOROGO",
+    "bridge_name": "TULAKAN II",
+    "section_name": "JAGIR - TULAKAN"
+  },
+  {
+    "district": "JOGOROGO",
+    "bridge_name": "HARGOMULYO",
+    "section_name": "JAMUS - HARGOMULYO"
+  },
+  {
+    "district": "JOGOROGO",
+    "bridge_name": "BEGAL",
+    "section_name": "JATIGEMBOL - BEGAL"
+  },
+  {
+    "district": "JOGOROGO",
+    "bridge_name": "PILANGREJO",
+    "section_name": "JATIGEMBOL - SEKARPUTIH"
+  },
+  {
+    "district": "JOGOROGO",
+    "bridge_name": "JATIMULYO",
+    "section_name": "JATIMULYO - PANDEAN"
+  },
+  {
+    "district": "JOGOROGO",
+    "bridge_name": "BANARAN",
+    "section_name": "JATIMULYO - SRIWEDARI"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "DONDONG",
+    "section_name": "JATIMULYO - SRIWEDARI"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "SORENG",
+    "section_name": "JATIMULYO - SRIWEDARI"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "PELANG KIDUL",
+    "section_name": "JEBLOGAN - PELANGKIDUL"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "RONDO KUNING",
+    "section_name": "JL. BLEKOK - DAWU"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "CENDRAWASIH",
+    "section_name": "JL. CENDRAWASIH I"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "JAWA",
+    "section_name": "JL. JAWA"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "CUPO",
+    "section_name": "JL. M. DURYAT"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "DUNGUS",
+    "section_name": "JL. MOH. THAMRIN"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "JRUBONG (NASIONAL)",
+    "section_name": "JL. PB. SUDIRMAN JALUR LAMBAT A"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "NGUNENGAN (PITU)",
+    "section_name": "JL. PGT. NGUNENGAN"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "SUNAN KALIJAGA",
+    "section_name": "JL. SUNAN KALIJAGA"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "SUPRIADI",
+    "section_name": "JL. SUPRIADI"
+  },
+  {
+    "district": "KARANGANYAR",
+    "bridge_name": "ANDONG",
+    "section_name": "JOGOROGO - DADAPAN"
+  },
+  {
+    "district": "KARANGJATI",
+    "bridge_name": "GOROK",
+    "section_name": "JOGOROGO - DADAPAN"
+  },
+  {
+    "district": "KARANGJATI",
+    "bridge_name": "KARANGNONGKO",
+    "section_name": "JOGOROGO - DADAPAN"
+  },
+  {
+    "district": "KARANGJATI",
+    "bridge_name": "MACANAN",
+    "section_name": "JOGOROGO - DADAPAN"
+  },
+  {
+    "district": "KARANGJATI",
+    "bridge_name": "BRUBUH",
+    "section_name": "JOGOROGO - JATEN"
+  },
+  {
+    "district": "KARANGJATI",
+    "bridge_name": "GONDANG SARI",
+    "section_name": "JOGOROGO - NGRAMBE"
+  },
+  {
+    "district": "KARANGJATI",
+    "bridge_name": "JURANG KALONG",
+    "section_name": "JOGOROGO - NGRAMBE"
+  },
+  {
+    "district": "KARANGJATI",
+    "bridge_name": "MANGLENG",
+    "section_name": "JOGOROGO - NGRAMBE"
+  },
+  {
+    "district": "KARANGJATI",
+    "bridge_name": "NGLENCONG",
+    "section_name": "JOGOROGO - NGRAMBE"
+  },
+  {
+    "district": "KASREMAN",
+    "bridge_name": "PULE",
+    "section_name": "JOGOROGO - NGRAMBE"
+  },
+  {
+    "district": "KASREMAN",
+    "bridge_name": "SOKO",
+    "section_name": "JOGOROGO - NGRAMBE"
+  },
+  {
+    "district": "KASREMAN",
+    "bridge_name": "TRINIL",
+    "section_name": "JOGOROGO - NGRAMBE"
+  },
+  {
+    "district": "KASREMAN",
+    "bridge_name": "PASAR KANDANGAN",
+    "section_name": "KANDANGAN - PLOSO"
+  },
+  {
+    "district": "KASREMAN",
+    "bridge_name": "PUTIH",
+    "section_name": "KANDANGAN - PLOSO"
+  },
+  {
+    "district": "KEDUNGGALAR",
+    "bridge_name": "BANGKLEAN",
+    "section_name": "KARANGANYAR - BANGKLEAN"
+  },
+  {
+    "district": "KEDUNGGALAR",
+    "bridge_name": "WATUTINATA",
+    "section_name": "KARANGANYAR - BANGKLEAN"
+  },
+  {
+    "district": "KEDUNGGALAR",
+    "bridge_name": "NGGOWOK",
+    "section_name": "KARANGGUPITO - NGRAYUDAN"
+  },
+  {
+    "district": "KEDUNGGALAR",
+    "bridge_name": "NGLOROG",
+    "section_name": "KARANGGUPITO - NGRAYUDAN"
+  },
+  {
+    "district": "KEDUNGGALAR",
+    "bridge_name": "LEGUNDI",
+    "section_name": "KARANGJATI - PILANGKENCENG"
+  },
+  {
+    "district": "KEDUNGGALAR",
+    "bridge_name": "SEPREH",
+    "section_name": "KARANGJATI - PILANGKENCENG"
+  },
+  {
+    "district": "KENDAL",
+    "bridge_name": "KLENTENG",
+    "section_name": "KARANGJATI - REJUNO"
+  },
+  {
+    "district": "KENDAL",
+    "bridge_name": "KWADUNGAN",
+    "section_name": "KARANGSONO - KWADUNGAN"
+  },
+  {
+    "district": "KENDAL",
+    "bridge_name": "KASREMAN",
+    "section_name": "KASREMAN - PACING"
+  },
+  {
+    "district": "KENDAL",
+    "bridge_name": "BRINGIN",
+    "section_name": "KASREMAN - PUCUNG"
+  },
+  {
+    "district": "KENDAL",
+    "bridge_name": "KALI KUKUR",
+    "section_name": "KEDUNGGLAGAH - KENDUNG"
+  },
+  {
+    "district": "KENDAL",
+    "bridge_name": "KASREMAN",
+    "section_name": "KEDUNGGLAGAH - KENDUNG"
+  },
+  {
+    "district": "KENDAL",
+    "bridge_name": "BANYUBIRU",
+    "section_name": "KEDUNGGUDEL - BANYUBIRU"
+  },
+  {
+    "district": "KENDAL",
+    "bridge_name": "KEB. TRETES",
+    "section_name": "KEDUNGGUDEL - BANYUBIRU"
+  },
+  {
+    "district": "KWADUNGAN",
+    "bridge_name": "LETER S",
+    "section_name": "KEDUNGGUDEL - BANYUBIRU"
+  },
+  {
+    "district": "KWADUNGAN",
+    "bridge_name": "DAWUNG(BARJING)",
+    "section_name": "KEDUNGGUDEL - TANJUNG"
+  },
+  {
+    "district": "KWADUNGAN",
+    "bridge_name": "SEKARALAS",
+    "section_name": "KEDUNGGUDEL - TANJUNG"
+  },
+  {
+    "district": "KWADUNGAN",
+    "bridge_name": "GARJO",
+    "section_name": "KEDUNGPRAHU - BINTOYO"
+  },
+  {
+    "district": "KWADUNGAN",
+    "bridge_name": "NONGKOREJO",
+    "section_name": "KEDUNGPUTRI - PARON"
+  },
+  {
+    "district": "MANTINGAN",
+    "bridge_name": "PLERET",
+    "section_name": "KEDUNGPUTRI - PARON"
+  },
+  {
+    "district": "MANTINGAN",
+    "bridge_name": "KEDUNG PUTRI",
+    "section_name": "KEDUNGPUTRI - TEGUHAN"
+  },
+  {
+    "district": "MANTINGAN",
+    "bridge_name": "PASAR KEMBANGAN",
+    "section_name": "KEDUNGPUTRI - TEGUHAN"
+  },
+  {
+    "district": "MANTINGAN",
+    "bridge_name": "PASAR SEMEN",
+    "section_name": "KEDUNGPUTRI - TEGUHAN"
+  },
+  {
+    "district": "MANTINGAN",
+    "bridge_name": "KATIKAN",
+    "section_name": "KEDUNGWARU - DURENAN"
+  },
+  {
+    "district": "MANTINGAN",
+    "bridge_name": "GILIS",
+    "section_name": "KENDAL - SIMO"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "KENDUNG",
+    "section_name": "KENDUNG - KWADUNGAN"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "PURWOSARI",
+    "section_name": "KENDUNG - KWADUNGAN"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "SIMO",
+    "section_name": "KENDUNG - KWADUNGAN"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "MLARIK",
+    "section_name": "KENITEN - POJOK"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "GAGAN",
+    "section_name": "KENONGOREJO - BOAN BARAT"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "KALI BUNTUNG",
+    "section_name": "KERAS - KAYUT"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "KEDUNG GONDANG",
+    "section_name": "KERAS - KAYUT"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "TEGALREJO",
+    "section_name": "KERAS - KAYUT"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "BREBES",
+    "section_name": "KLITIK - KERSIKAN"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "BLIMBING",
+    "section_name": "KLITIK - PARON"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "PASAR PARON",
+    "section_name": "KLITIK - PARON"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "SUKOREJO",
+    "section_name": "KLITIK - PARON"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "SENDANG KLAMPIS",
+    "section_name": "KRAWUT - TAMBAKROMO"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "NGAMPEL",
+    "section_name": "MAJASEM - KENDAL"
+  },
+  {
+    "district": "NGAWI",
+    "bridge_name": "MANTINGAN",
+    "section_name": "MANTINGAN - JATIMULYO"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "SRIWEDARI",
+    "section_name": "MANTINGAN - SRIWEDARI"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "KALI LANGIT(KALI SANGIT)",
+    "section_name": "MANTINGAN - TEMPURSARI"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "KEDUNG LUMBU",
+    "section_name": "MANTINGAN - TEMPURSARI"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "KEDUNG OMBO",
+    "section_name": "MANTINGAN - TEMPURSARI"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "SUKOREJO",
+    "section_name": "MANTINGAN - TEMPURSARI"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "PAYAK (PAYAK II)",
+    "section_name": "MENGGER - DUWET"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "NANAS",
+    "section_name": "MENGGER - KARANGANYAR"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "DUNGBLONG",
+    "section_name": "MENGGER - SRIWEDARI"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "SELAJONG",
+    "section_name": "MENGGER - SRIWEDARI"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "TELKOM",
+    "section_name": "MOJO - BRINGIN"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "GENDOL",
+    "section_name": "MOJO - SUMBER BENING"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "MOJO",
+    "section_name": "MOJO - SUMBER BENING"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "MUNGGUT",
+    "section_name": "MUNGGUT - BENDO"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "PAPUNGAN",
+    "section_name": "NGANCAR - PAPUNGAN"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "KALI BANGER",
+    "section_name": "NGAWI - PITU"
+  },
+  {
+    "district": "NGRAMBE",
+    "bridge_name": "KALI KATHOK",
+    "section_name": "NGAWI - PITU"
+  },
+  {
+    "district": "PADAS",
+    "bridge_name": "PRANDON",
+    "section_name": "NGAWI PURBA - TAWUN"
+  },
+  {
+    "district": "PADAS",
+    "bridge_name": "BASAK (PASAK 1956)",
+    "section_name": "NGLONDAN - MENGGER"
+  },
+  {
+    "district": "PADAS",
+    "bridge_name": "BARON",
+    "section_name": "NGRAMBE - SAMBIREJO"
+  },
+  {
+    "district": "PADAS",
+    "bridge_name": "KAJAR",
+    "section_name": "NGRAYUDAN - GIRIMULYO"
+  },
+  {
+    "district": "PADAS",
+    "bridge_name": "MBOTO LEMAH PUTIH",
+    "section_name": "PACING - DERO"
+  },
+  {
+    "district": "PADAS",
+    "bridge_name": "PACING",
+    "section_name": "PADAS - PUCUNG"
+  },
+  {
+    "district": "PADAS",
+    "bridge_name": "PUCUNG",
+    "section_name": "PADAS - PUCUNG"
+  },
+  {
+    "district": "PANGKUR",
+    "bridge_name": "PAPU",
+    "section_name": "PAPUNGAN - BANGUNREJOLOR"
+  },
+  {
+    "district": "PANGKUR",
+    "bridge_name": "WESI",
+    "section_name": "PARAS - GANDRI"
+  },
+  {
+    "district": "PANGKUR",
+    "bridge_name": "POH KONYAL",
+    "section_name": "PARAS - RINGINANOM"
+  },
+  {
+    "district": "PANGKUR",
+    "bridge_name": "KALI ANDONG",
+    "section_name": "PARON - JEBLOGAN"
+  },
+  {
+    "district": "PANGKUR",
+    "bridge_name": "PILANG BANGO",
+    "section_name": "PARON - JEBLOGAN"
+  },
+  {
+    "district": "PANGKUR",
+    "bridge_name": "BANGSAL",
+    "section_name": "PATALAN - WIDODAREN"
+  },
+  {
+    "district": "PANGKUR",
+    "bridge_name": "DONDANG",
+    "section_name": "PATALAN - WIDODAREN"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "PATALAN",
+    "section_name": "PATALAN - WIDODAREN"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "GEBUNG I",
+    "section_name": "PELANGKIDUL - JATIGEMBOL"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "GEBUNG II",
+    "section_name": "PELANGKIDUL - JATIGEMBOL"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "GEBUNG III (GEBUNG)",
+    "section_name": "PELANGKIDUL - JATIGEMBOL"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "RECO BANTENG",
+    "section_name": "PELANGKIDUL - JATIGEMBOL"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "GRUJUGAN",
+    "section_name": "PITU - NGANGAR"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "KENDUNG",
+    "section_name": "PLOSO - KENDUNG"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "BLAKRAK",
+    "section_name": "PLOSO - TAPEN"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "PILANG",
+    "section_name": "PLOSO - TAPEN"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "JATISARI",
+    "section_name": "RANDUSONGO - MAJASEM"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "KALISUKO",
+    "section_name": "REJUNO - PAKOLAN"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "PAKOLAN",
+    "section_name": "REJUNO - PAKOLAN"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "PUNGON",
+    "section_name": "RINGINANOM - SEMBUNG"
+  },
+  {
+    "district": "PARON",
+    "bridge_name": "BAGAN",
+    "section_name": "SAMBIREJO - SINE"
+  },
+  {
+    "district": "PITU",
+    "bridge_name": "PETUNG",
+    "section_name": "SAMBIREJO - SINE"
+  },
+  {
+    "district": "PITU",
+    "bridge_name": "SUMBER LANANG",
+    "section_name": "SAMBIREJO - SINE"
+  },
+  {
+    "district": "PITU",
+    "bridge_name": "SUMBEREJO",
+    "section_name": "SAMBIREJO - SINE"
+  },
+  {
+    "district": "PITU",
+    "bridge_name": "GADANGAN",
+    "section_name": "SEKARPUTIH - WALIKUKUN"
+  },
+  {
+    "district": "PITU",
+    "bridge_name": "GEBANG",
+    "section_name": "SEKARPUTIH - WALIKUKUN"
+  },
+  {
+    "district": "PITU",
+    "bridge_name": "TAWUN",
+    "section_name": "SELO - TAWUN"
+  },
+  {
+    "district": "PITU",
+    "bridge_name": "MLATI",
+    "section_name": "SIMO - MLATI"
+  },
+  {
+    "district": "PITU",
+    "bridge_name": "GUNUNG TANGIS",
+    "section_name": "SINE - POCOL"
+  },
+  {
+    "district": "PITU",
+    "bridge_name": "MBACAK I",
+    "section_name": "SINE - POCOL"
+  },
+  {
+    "district": "PITU",
+    "bridge_name": "MBACAK II",
+    "section_name": "SINE - POCOL"
+  },
+  {
+    "district": "SINE",
+    "bridge_name": "SUKOREJO",
+    "section_name": "SINE - SUKOREJO"
+  },
+  {
+    "district": "SINE",
+    "bridge_name": "SOCO I",
+    "section_name": "SOCO - GONDANGLEGI"
+  },
+  {
+    "district": "SINE",
+    "bridge_name": "SOCO II",
+    "section_name": "SOCO - GONDANGLEGI"
+  },
+  {
+    "district": "SINE",
+    "bridge_name": "RANGKA",
+    "section_name": "SOKO - NGANCAR"
+  },
+  {
+    "district": "SINE",
+    "bridge_name": "PANDEAN",
+    "section_name": "SRIWEDARI - PANDEAN"
+  },
+  {
+    "district": "SINE",
+    "bridge_name": "SUMBERBENING",
+    "section_name": "SUMBER BENING - PLOSOLOR"
+  },
+  {
+    "district": "SINE",
+    "bridge_name": "TUNGKULREJO",
+    "section_name": "TAMBAKROMO - CAMPURASRI"
+  },
+  {
+    "district": "SINE",
+    "bridge_name": "TAMBAKROMO",
+    "section_name": "TAMBAKROMO - TAPEN"
+  },
+  {
+    "district": "SINE",
+    "bridge_name": "MANGGONG",
+    "section_name": "TAPEN - PARAS"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "PANGKUR",
+    "section_name": "TAPEN - PARAS"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "SAMBIROBYONG",
+    "section_name": "TAPEN - PARAS"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "KLAGEN",
+    "section_name": "TEGUHAN - PELANGKIDUL"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "SIRIGAN",
+    "section_name": "TEGUHAN - PELANGKIDUL"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "PEH NONGKO",
+    "section_name": "TEGUHAN - SOCO"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "TEMPURAN",
+    "section_name": "TEMPURAN - KEDUNGPUTRI"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "BALONG",
+    "section_name": "TEPAS - KAYUT"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "GUYUNG",
+    "section_name": "TEPAS - KAYUT"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "WINONG",
+    "section_name": "TULAKAN - WINONG"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "PEH MILENG",
+    "section_name": "WALIKUKUN - KEDUNGGUDEL"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "WOT GALIH",
+    "section_name": "WALIKUKUN - KEDUNGGUDEL"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "HARGOMULYO",
+    "section_name": "WARU - HARGOMULYO"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "WATUALANG",
+    "section_name": "WATUALANG - PITU"
+  }
+]

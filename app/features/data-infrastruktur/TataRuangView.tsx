@@ -747,13 +747,6 @@ export function TataRuangView() {
           <div className="md:col-span-2">
             <SmartImageUploader
               label="Foto Lokasi/Kerusakan"
-              onCoordinatesExtracted={(coords, index) => {
-                if (index === 0) {
-                  setLatitude(coords.latitude.toString());
-                  setLongitude(coords.longitude.toString());
-                  setPosition([coords.latitude, coords.longitude]);
-                }
-              }}
               onFilesSelected={(files: File[]) => {
                 setFotoLokasi(files);
               }}
@@ -762,9 +755,6 @@ export function TataRuangView() {
               }}
               maxFiles={2}
               required
-              enableCamera={true}
-              enableGPSExtraction={true}
-              autoFillCoordinates={true}
             />
             {errors.fotoLokasi && (
               <p className="text-red-500 text-sm mt-1">{errors.fotoLokasi}</p>

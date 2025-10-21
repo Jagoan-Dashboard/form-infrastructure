@@ -69,8 +69,6 @@ export interface BinamargaJalanForm {
     report_datetime: string;
 
     road_name: string;
-    road_type: string;
-    road_class: string;
     segment_length: number;
     latitude: number;
     longitude: number;

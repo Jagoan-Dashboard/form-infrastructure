@@ -19,8 +19,6 @@ import type { BinamargaJalanForm } from "~/types/formData";
 import { useFormDataStore } from "~/store/formDataStore";
 import {
   peranPelaporToInstitution,
-  roadTypeToApi,
-  roadClassToApi,
   pavementTypeToApi,
   roadDamageTypeToApi,
   damageLevelToApi,
@@ -30,6 +28,8 @@ import {
 import { useCheckIndexData } from "~/middleware/checkIndexData";
 import { toast } from "sonner";
 import SmartImageUploader from "~/components/SmartImageUploader";
+import SearchableSelect from "~/components/search/SearchableSelect";
+import { getDistricts, getRoadsByDistrict, searchRoads } from "~/utils/roadUtils";
 
 export function JalanView() {
   // Check if IndexView data is filled
@@ -43,10 +43,9 @@ export function JalanView() {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   // Form states
-  const [namaRuasJalan, setNamaRuasJalan] = useState("");
-  const [jenisJalan, setJenisJalan] = useState("");
+  const [selectedKecamatan, setSelectedKecamatan] = useState("");
+  const [selectedJalan, setSelectedJalan] = useState("");
   const [panjangSegmen, setPanjangSegmen] = useState("");
-  const [klasifikasiFungsi, setKlasifikasiFungsi] = useState("");
   const [jenisPerkerasan, setJenisPerkerasan] = useState("");
   const [jenisKerusakan, setJenisKerusakan] = useState("");
   const [tingkatKerusakan, setTingkatKerusakan] = useState("");
@@ -58,6 +57,23 @@ export function JalanView() {
   const [kategoriPrioritas, setKategoriPrioritas] = useState("");
   const [fotoKerusakan, setFotoKerusakan] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  
+  // Load districts for the select
+  const districts = getDistricts();
+  const [availableRoads, setAvailableRoads] = useState<string[]>([]);
+
+  // Update available roads when district changes
+  useEffect(() => {
+    if (selectedKecamatan) {
+      const roads = getRoadsByDistrict(selectedKecamatan);
+      setAvailableRoads(roads);
+      // Reset selected jalan when kecamatan changes
+      setSelectedJalan("");
+    } else {
+      setAvailableRoads([]);
+      setSelectedJalan("");
+    }
+  }, [selectedKecamatan]);
 
   // Error states
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -152,10 +168,8 @@ export function JalanView() {
       jalanSchema.parse({
         latitude,
         longitude,
-        namaRuasJalan,
-        jenisJalan,
+        namaRuasJalan: selectedJalan,
         panjangSegmen,
-        klasifikasiFungsi,
         jenisPerkerasan,
         jenisKerusakan,
         tingkatKerusakan,
@@ -201,9 +215,7 @@ export function JalanView() {
           : new Date().toISOString()),
 
       // Road identification - MAP TO API FORMAT
-      road_name: namaRuasJalan,
-      road_type: roadTypeToApi(jenisJalan),
-      road_class: roadClassToApi(klasifikasiFungsi),
+      road_name: selectedJalan,
       segment_length: parseFloat(panjangSegmen) || 0,
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
@@ -270,49 +282,44 @@ export function JalanView() {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Nama Ruas Jalan/Kode Ruas
-              <span className="text-red-500">*</span>
+              Lokasi Jalan<span className="text-red-500">*</span>
             </label>
-            <TextareaWithMic
-              value={namaRuasJalan}
-              onChange={(e) => setNamaRuasJalan(e.target.value)}
-              placeholder="Contoh: Ruas Ngawi-Karangjati-20"
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                errors.namaRuasJalan
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}
+            <SearchableSelect
+              options={districts}
+              value={selectedKecamatan}
+              onValueChange={setSelectedKecamatan}
+              placeholder="Cari Kecamatan..."
+              emptyMessage="Tidak ada kecamatan yang ditemukan"
+              className={errors.selectedKecamatan ? "border-red-500" : ""}
             />
-            {errors.namaRuasJalan && (
+            {errors.selectedKecamatan && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.namaRuasJalan}
+                {errors.selectedKecamatan}
               </p>
             )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Jenis Jalan<span className="text-red-500">*</span>
+              Nama Ruas Jalan<span className="text-red-500">*</span>
             </label>
-            <Select value={jenisJalan} onValueChange={setJenisJalan}>
-              <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.jenisJalan
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
-              >
-                <SelectValue placeholder="Pilih Jenis Jalan" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="jalan-nasional">Jalan Nasional</SelectItem>
-                <SelectItem value="jalan-provinsi">Jalan Provinsi</SelectItem>
-                <SelectItem value="jalan-kabupaten">Jalan Kabupaten</SelectItem>
-                <SelectItem value="jalan-desa">Jalan Desa</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.jenisJalan && (
-              <p className="text-red-500 text-sm mt-1">{errors.jenisJalan}</p>
+            <SearchableSelect
+              options={availableRoads}
+              value={selectedJalan}
+              onValueChange={setSelectedJalan}
+              placeholder={selectedKecamatan ? "Cari Nama Jalan..." : "Pilih kecamatan terlebih dahulu"}
+              emptyMessage="Tidak ada jalan yang ditemukan"
+              disabled={!selectedKecamatan}
+              className={errors.selectedJalan ? "border-red-500" : ""}
+              onSearch={(query: string) => {
+                if (!selectedKecamatan) return [];
+                return searchRoads(query, selectedKecamatan);
+              }}
+            />
+            {errors.selectedJalan && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.selectedJalan}
+              </p>
             )}
           </div>
 
@@ -336,37 +343,6 @@ export function JalanView() {
             {errors.panjangSegmen && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.panjangSegmen}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Klasifikasi Fungsi Jalan<span className="text-red-500">*</span>
-            </label>
-            <Select
-              value={klasifikasiFungsi}
-              onValueChange={setKlasifikasiFungsi}
-            >
-              <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.klasifikasiFungsi
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
-              >
-                <SelectValue placeholder="Pilih Klasifikasi Fungsi Jalan" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="arteri">Arteri</SelectItem>
-                <SelectItem value="kolektor">Kolektor</SelectItem>
-                <SelectItem value="lokal">Lokal</SelectItem>
-                <SelectItem value="lingkungan">Lingkungan</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.klasifikasiFungsi && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.klasifikasiFungsi}
               </p>
             )}
           </div>
@@ -729,18 +705,10 @@ export function JalanView() {
             )}
           </div>
 
-          {/* Foto Lokasi dengan GPS */}
+          {/* Foto Lokasi */}
           <div className="md:col-span-2">
             <SmartImageUploader
               label="Foto Lokasi/Kerusakan"
-              onCoordinatesExtracted={(coords, index) => {
-                // Auto-update koordinat dari GPS foto pertama
-                if (index === 0) {
-                  setLatitude(coords.latitude.toString());
-                  setLongitude(coords.longitude.toString());
-                  setPosition([coords.latitude, coords.longitude]);
-                }
-              }}
               onFilesSelected={(files: File[]) => {
                 setFotoKerusakan(files);
               }}
@@ -749,9 +717,6 @@ export function JalanView() {
               }}
               maxFiles={2}
               required
-              enableCamera={true}
-              enableGPSExtraction={true}
-              autoFillCoordinates={true}
             />
             {errors.fotoKerusakan && (
               <p className="text-red-500 text-sm mt-1">

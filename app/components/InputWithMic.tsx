@@ -10,7 +10,7 @@ interface InputWithMicProps extends React.ComponentProps<"input"> {
 function InputWithMic({
   className,
   type,
-  enableVoice = true,
+  enableVoice = false,
   ...props
 }: InputWithMicProps) {
   const [isListening, setIsListening] = React.useState(false);

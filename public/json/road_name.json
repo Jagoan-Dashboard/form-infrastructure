@@ -1,0 +1,1078 @@
+[
+  {
+    "district": "Bringin",
+    "name": "Bringin - Boan Barat"
+  },
+  {
+    "district": "Bringin",
+    "name": "Dero - Mojo"
+  },
+  {
+    "district": "Bringin",
+    "name": "Gandong - Gunungsari"
+  },
+  {
+    "district": "Bringin",
+    "name": "Gandong - Kenongorejo"
+  },
+  {
+    "district": "Bringin",
+    "name": "Gunungsari - Kenongorejo"
+  },
+  {
+    "district": "Bringin",
+    "name": "Karangjati - Waduk Sangiran"
+  },
+  {
+    "district": "Bringin",
+    "name": "Kenongorejo - Boan Barat"
+  },
+  {
+    "district": "Bringin",
+    "name": "Mojo - Bringin"
+  },
+  {
+    "district": "Bringin",
+    "name": "Mojo - Sumber Bening"
+  },
+  {
+    "district": "Bringin",
+    "name": "Sidokerto - Mojo"
+  },
+  {
+    "district": "Bringin",
+    "name": "Sumber Bening - Plosolor"
+  },
+  {
+    "district": "Bringin",
+    "name": "Waduk Pondok - Gandong"
+  },
+  {
+    "district": "Bringin",
+    "name": "Waduk Sangiran - Bringin"
+  },
+  {
+    "district": "Geneng",
+    "name": "Geneng - Kedungputri"
+  },
+  {
+    "district": "Geneng",
+    "name": "Geneng - Pojok"
+  },
+  {
+    "district": "Geneng",
+    "name": "Geneng - Tepas"
+  },
+  {
+    "district": "Geneng",
+    "name": "Kedungglagah - Kendung"
+  },
+  {
+    "district": "Geneng",
+    "name": "Keniten - Pojok"
+  },
+  {
+    "district": "Geneng",
+    "name": "Kersikan - Kasreman"
+  },
+  {
+    "district": "Geneng",
+    "name": "Klitik - Kersikan"
+  },
+  {
+    "district": "Geneng",
+    "name": "Klitik - Paron"
+  },
+  {
+    "district": "Gerih",
+    "name": "Guyung - Kedungputri"
+  },
+  {
+    "district": "Gerih",
+    "name": "Kayut - Widodaren"
+  },
+  {
+    "district": "Gerih",
+    "name": "Keras - Kayut"
+  },
+  {
+    "district": "Gerih",
+    "name": "Patalan - Widodaren"
+  },
+  {
+    "district": "Gerih",
+    "name": "Tepas - Kayut"
+  },
+  {
+    "district": "Gerih",
+    "name": "Widodaren - Guyung"
+  },
+  {
+    "district": "Gerih",
+    "name": "Widodaren - Randusongo"
+  },
+  {
+    "district": "Jogorogo",
+    "name": "Begal - Jogorogo"
+  },
+  {
+    "district": "Jogorogo",
+    "name": "Girimulyo - Kletekan"
+  },
+  {
+    "district": "Jogorogo",
+    "name": "Gondanglegi - Dadapan"
+  },
+  {
+    "district": "Jogorogo",
+    "name": "Jaten - Girimulyo"
+  },
+  {
+    "district": "Jogorogo",
+    "name": "Jogorogo - Dadapan"
+  },
+  {
+    "district": "Jogorogo",
+    "name": "Jogorogo - Jaten"
+  },
+  {
+    "district": "Jogorogo",
+    "name": "Kletekan - Hargomulyo"
+  },
+  {
+    "district": "Jogorogo",
+    "name": "Ngrayudan - Girimulyo"
+  },
+  {
+    "district": "Jogorogo",
+    "name": "Soco - Gondanglegi"
+  },
+  {
+    "district": "Jogorogo",
+    "name": "Soco - Jogorogo"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Duwet - Gembol"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Gembol - Karanganyar"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Jatimulyo - Pandean"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Jatimulyo - Sriwedari"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Karanganyar - Bangklean"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Mengger - Duwet"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Mengger - Karanganyar"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Mengger - Sriwedari"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Nglondan - Mengger"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Pandean - Komplang"
+  },
+  {
+    "district": "Karanganyar",
+    "name": "Sriwedari - Pandean"
+  },
+  {
+    "district": "Karangjati",
+    "name": "Campurasri - Paras"
+  },
+  {
+    "district": "Karangjati",
+    "name": "Campurasri - Sembung"
+  },
+  {
+    "district": "Karangjati",
+    "name": "Karangjati - Pilangkenceng"
+  },
+  {
+    "district": "Karangjati",
+    "name": "Karangjati - Rejuno"
+  },
+  {
+    "district": "Karangjati",
+    "name": "Paras - Ringinanom"
+  },
+  {
+    "district": "Karangjati",
+    "name": "Rejuno - Pakolan"
+  },
+  {
+    "district": "Karangjati",
+    "name": "Ringinanom - Babadan"
+  },
+  {
+    "district": "Karangjati",
+    "name": "Ringinanom - Sembung"
+  },
+  {
+    "district": "Karangjati",
+    "name": "Sidokerto - Campurasri"
+  },
+  {
+    "district": "Kasreman",
+    "name": "Banyuurip - Gunungsari"
+  },
+  {
+    "district": "Kasreman",
+    "name": "Cangakan - Banjaransari"
+  },
+  {
+    "district": "Kasreman",
+    "name": "Cangakan - Kasreman"
+  },
+  {
+    "district": "Kasreman",
+    "name": "Kasreman - Gunungsari"
+  },
+  {
+    "district": "Kasreman",
+    "name": "Kasreman - Pacing"
+  },
+  {
+    "district": "Kasreman",
+    "name": "Kasreman - Pucung"
+  },
+  {
+    "district": "Kasreman",
+    "name": "Munggut - Ngasinan"
+  },
+  {
+    "district": "Kasreman",
+    "name": "Pucung - Gunungsari"
+  },
+  {
+    "district": "Kasreman",
+    "name": "Selo - Tawun"
+  },
+  {
+    "district": "Kasreman",
+    "name": "Tawun - Kasreman"
+  },
+  {
+    "district": "Kedunggalar",
+    "name": "Jatigembol - Begal"
+  },
+  {
+    "district": "Kedunggalar",
+    "name": "Jatigembol - Sekarputih"
+  },
+  {
+    "district": "Kedunggalar",
+    "name": "Jenggrik - Trinil"
+  },
+  {
+    "district": "Kedunggalar",
+    "name": "Kedunggalar - Jatigembol"
+  },
+  {
+    "district": "Kedunggalar",
+    "name": "Pelangkidul - Jatigembol"
+  },
+  {
+    "district": "Kedunggalar",
+    "name": "Sidowayah - Kedunggalar"
+  },
+  {
+    "district": "Kedunggalar",
+    "name": "Soko - Trinil"
+  },
+  {
+    "district": "Kendal",
+    "name": "Dadapan - Kendal"
+  },
+  {
+    "district": "Kendal",
+    "name": "Dadapan - Ngrayudan"
+  },
+  {
+    "district": "Kendal",
+    "name": "Karanggupito - Ngrayudan"
+  },
+  {
+    "district": "Kendal",
+    "name": "Kendal - Playaran"
+  },
+  {
+    "district": "Kendal",
+    "name": "Kendal - Sidorejo"
+  },
+  {
+    "district": "Kendal",
+    "name": "Kendal - Simo"
+  },
+  {
+    "district": "Kendal",
+    "name": "Majasem - Kendal"
+  },
+  {
+    "district": "Kendal",
+    "name": "Playaran - Patalan"
+  },
+  {
+    "district": "Kendal",
+    "name": "Randusongo - Kuwon"
+  },
+  {
+    "district": "Kendal",
+    "name": "Randusongo - Majasem"
+  },
+  {
+    "district": "Kendal",
+    "name": "Simo - Bakalan"
+  },
+  {
+    "district": "Kendal",
+    "name": "Simo - Karanggupito"
+  },
+  {
+    "district": "Kendal",
+    "name": "Simo - Mlati"
+  },
+  {
+    "district": "Kwadungan",
+    "name": "Gandri - Karangsono"
+  },
+  {
+    "district": "Kwadungan",
+    "name": "Karangsono - Banget"
+  },
+  {
+    "district": "Kwadungan",
+    "name": "Karangsono - Kwadungan"
+  },
+  {
+    "district": "Kwadungan",
+    "name": "Kendung - Kwadungan"
+  },
+  {
+    "district": "Kwadungan",
+    "name": "Kendung - Pojok"
+  },
+  {
+    "district": "Kwadungan",
+    "name": "Kwadungan - Budug"
+  },
+  {
+    "district": "Mantingan",
+    "name": "Jatimulyo - Kandangsapi"
+  },
+  {
+    "district": "Mantingan",
+    "name": "Mantingan - Jatimulyo"
+  },
+  {
+    "district": "Mantingan",
+    "name": "Mantingan - Sriwedari"
+  },
+  {
+    "district": "Mantingan",
+    "name": "Mantingan - Tempursari"
+  },
+  {
+    "district": "Mantingan",
+    "name": "Tempursari - Bulaktimun"
+  },
+  {
+    "district": "Mantingan",
+    "name": "Tempursari - Gondang"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Banyuurip - Kerek"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Cereng - Prandon"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Dungus - Kandangan"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. A. Yani Jalur Lambat A"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. A. Yani Jalur Lambat B"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Achmad Dalan"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Baitur Rohman"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Bangau"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Basuki Rahmat Jalur Lambat A"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Basuki Rahmat Jalur Lambat B"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Benteng Ngawi Purba"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Blekok"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Blekok - Dawu"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Branjangan"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Brawijaya"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Cendrawasih I"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Cendrawasih Ii"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Dadapan"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Diponegoro"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Dr. Soetomo"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Dr. Wahidin"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Garuda I"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Garuda Ii"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Gelatik I"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Gelatik Ii"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Haryono I"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Haryono Ii"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Hasanudin"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Imam Bonjol"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Indragiri"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Ingasrejo"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Ismoyo"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Ja. Suprapto"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Janoko"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Jawa"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Jekitut"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Kartini"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Kemuning"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Kenari"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Ketonggo I"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Ketonggo Ii"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Ketonggo Iii"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Ketonggo Iv"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Kresno"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Kutilang"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Kyai Mojo I"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Kyai Mojo Ii"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Lombok"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. M. Duryat"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Mangkubumi"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Manyar I"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Manyar Ii"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Merdeka"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Merdeka Barat"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Merdeka Timur"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Moh. Ilyas"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Moh. Thamrin"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Moh. Yamin"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Mt. Haryono"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Munginsidi"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Musi"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Panjaitan"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Patiunus"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Pb. Sudirman Jalur Lambat A"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Pb. Sudirman Jalur Lambat B"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Perkutut"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Pgt. Ngunengan"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Podang"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Puntodewo"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Raden Patah"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Raden Shaleh"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Rajawali"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Ronggo Warsito"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. S. Parman"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Sambi"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Sentot"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Siliwangi"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Soetoyo"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Sultan Agung"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Sunan Kalijaga"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Supriadi"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Suroko"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Suryo Jalur Lambat A"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Suryo Jalur Lambat B"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Terusan M. Duryat"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Teuku Umar I"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Teuku Umar Ii"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Trunojoyo"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Untung Suropati"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Wareng"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Jl. Yos Sudarso"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Kandangan - Krawut"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Kandangan - Ploso"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Kerek - Selopuro"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Ngawi Purba - Tawun"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Ploso - Kendung"
+  },
+  {
+    "district": "Ngawi",
+    "name": "Watualang - Pitu"
+  },
+  {
+    "district": "Ngrambe",
+    "name": "Gedoro - Jagir"
+  },
+  {
+    "district": "Ngrambe",
+    "name": "Gedoro - Ngrambe"
+  },
+  {
+    "district": "Ngrambe",
+    "name": "Jogorogo - Ngrambe"
+  },
+  {
+    "district": "Ngrambe",
+    "name": "Lingkar Waru - Makam Adipati Ronggolono"
+  },
+  {
+    "district": "Ngrambe",
+    "name": "Ngrambe - Sambirejo"
+  },
+  {
+    "district": "Ngrambe",
+    "name": "Ngrambe - Waru"
+  },
+  {
+    "district": "Ngrambe",
+    "name": "Sambirejo - Girikerto"
+  },
+  {
+    "district": "Ngrambe",
+    "name": "Sambirejo - Sine"
+  },
+  {
+    "district": "Ngrambe",
+    "name": "Waru - Hargomulyo"
+  },
+  {
+    "district": "Padas",
+    "name": "Bendo - Tapen"
+  },
+  {
+    "district": "Padas",
+    "name": "Bintoyo - Pangkur"
+  },
+  {
+    "district": "Padas",
+    "name": "Kedungprahu - Bintoyo"
+  },
+  {
+    "district": "Padas",
+    "name": "Kedungprahu - Wadukpondok"
+  },
+  {
+    "district": "Padas",
+    "name": "Krawut - Tambakromo"
+  },
+  {
+    "district": "Padas",
+    "name": "Munggut - Bendo"
+  },
+  {
+    "district": "Padas",
+    "name": "Pacing - Dero"
+  },
+  {
+    "district": "Padas",
+    "name": "Padas - Kwadungan Lor"
+  },
+  {
+    "district": "Padas",
+    "name": "Padas - Pucung"
+  },
+  {
+    "district": "Padas",
+    "name": "Padas - Tambakromo"
+  },
+  {
+    "district": "Padas",
+    "name": "Tambakromo - Campurasri"
+  },
+  {
+    "district": "Pangkur",
+    "name": "Babadan - Karangsono"
+  },
+  {
+    "district": "Pangkur",
+    "name": "Paras - Gandri"
+  },
+  {
+    "district": "Pangkur",
+    "name": "Ploso - Tapen"
+  },
+  {
+    "district": "Pangkur",
+    "name": "Tambakromo - Tapen"
+  },
+  {
+    "district": "Pangkur",
+    "name": "Tapen - Paras"
+  },
+  {
+    "district": "Paron",
+    "name": "Blego - Gelung"
+  },
+  {
+    "district": "Paron",
+    "name": "Gentong - Alas Ketonggo"
+  },
+  {
+    "district": "Paron",
+    "name": "Gentong - Kedungwaru"
+  },
+  {
+    "district": "Paron",
+    "name": "Gerdon - Jambangan"
+  },
+  {
+    "district": "Paron",
+    "name": "Gerdon - Semen"
+  },
+  {
+    "district": "Paron",
+    "name": "Jeblogan - Pelangkidul"
+  },
+  {
+    "district": "Paron",
+    "name": "Kedungputri - Paron"
+  },
+  {
+    "district": "Paron",
+    "name": "Kedungputri - Teguhan"
+  },
+  {
+    "district": "Paron",
+    "name": "Kedungwaru - Durenan"
+  },
+  {
+    "district": "Paron",
+    "name": "Kenep - Alas Ketonggo"
+  },
+  {
+    "district": "Paron",
+    "name": "Ngale - Blego"
+  },
+  {
+    "district": "Paron",
+    "name": "Pandansari - Paron"
+  },
+  {
+    "district": "Paron",
+    "name": "Paron - Jeblogan"
+  },
+  {
+    "district": "Paron",
+    "name": "Paron - Teguhan"
+  },
+  {
+    "district": "Paron",
+    "name": "Teguhan - Pelangkidul"
+  },
+  {
+    "district": "Paron",
+    "name": "Teguhan - Soco"
+  },
+  {
+    "district": "Paron",
+    "name": "Tempuran - Kedungputri"
+  },
+  {
+    "district": "Pitu",
+    "name": "Bangunrejolor - Gembol"
+  },
+  {
+    "district": "Pitu",
+    "name": "Bangunrejolor - Randublatung"
+  },
+  {
+    "district": "Pitu",
+    "name": "Banjarejo - Bangunrejolor"
+  },
+  {
+    "district": "Pitu",
+    "name": "Ngancar - Papungan"
+  },
+  {
+    "district": "Pitu",
+    "name": "Ngawi - Pitu"
+  },
+  {
+    "district": "Pitu",
+    "name": "Papungan - Bangunrejolor"
+  },
+  {
+    "district": "Pitu",
+    "name": "Pitu - Ngangar"
+  },
+  {
+    "district": "Pitu",
+    "name": "Selopuro - Megeri"
+  },
+  {
+    "district": "Pitu",
+    "name": "Soko - Ngancar"
+  },
+  {
+    "district": "Sine",
+    "name": "Bulak Timun - Ketanggung"
+  },
+  {
+    "district": "Sine",
+    "name": "Girikerto - Jamus"
+  },
+  {
+    "district": "Sine",
+    "name": "Jagir - Tulakan"
+  },
+  {
+    "district": "Sine",
+    "name": "Jamus - Hargomulyo"
+  },
+  {
+    "district": "Sine",
+    "name": "Jamus - Wonosari"
+  },
+  {
+    "district": "Sine",
+    "name": "Pocol - Wonosari"
+  },
+  {
+    "district": "Sine",
+    "name": "Sine - Pocol"
+  },
+  {
+    "district": "Sine",
+    "name": "Sine - Sukorejo"
+  },
+  {
+    "district": "Sine",
+    "name": "Sine - Tulakan"
+  },
+  {
+    "district": "Sine",
+    "name": "Tulakan - Winong"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Banyubiru - Ketanggung"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Gendingan - Payak"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Gendingan - Walikukun"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Kauman - Dirgo"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Kedunggudel - Banyubiru"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Kedunggudel - Gedoro"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Kedunggudel - Tanjung"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Sekarputih - Walikukun"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Tanjung - Sekarputih"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Walikukun - Dirgo"
+  },
+  {
+    "district": "Widodaren",
+    "name": "Walikukun - Kedunggudel"
+  }
+]

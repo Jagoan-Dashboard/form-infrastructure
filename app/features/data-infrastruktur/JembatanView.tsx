@@ -1,10 +1,11 @@
 import z from "zod";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
 import { InputWithMic } from "~/components/InputWithMic";
 import { TextareaWithMic } from "~/components/TextareaWithMic";
 import { Button } from "~/components/ui/button";
+import bridgeData from "~/../public/json/bridge_name.json";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,7 @@ import {
 import { useCheckIndexData } from "~/middleware/checkIndexData";
 import { toast } from "sonner";
 import SmartImageUploader from "~/components/SmartImageUploader";
+import SearchableSelect from "~/components/search/SearchableSelect";
 
 export function JembatanView() {
   // Check if IndexView data is filled
@@ -41,6 +43,9 @@ export function JembatanView() {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   // Form states
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedBridge, setSelectedBridge] = useState("");
+  const [selectedSection, setSelectedSection] = useState("");
   const [namaJembatan, setNamaJembatan] = useState("");
   const [jenisStruktur, setJenisStruktur] = useState("");
   const [jenisKerusakan, setJenisKerusakan] = useState("");
@@ -54,6 +59,43 @@ export function JembatanView() {
   // Error states
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get unique districts
+  const districts = useMemo(() => {
+    const uniqueDistricts = new Set<string>();
+    bridgeData.forEach(item => uniqueDistricts.add(item.district));
+    return Array.from(uniqueDistricts).sort();
+  }, []);
+
+  // Get filtered bridges based on selected district
+  const filteredBridges = useMemo(() => {
+    if (!selectedDistrict) return [];
+    const bridges = new Set<string>();
+    bridgeData
+      .filter(item => item.district === selectedDistrict)
+      .forEach(item => bridges.add(item.bridge_name));
+    return Array.from(bridges).sort();
+  }, [selectedDistrict]);
+
+  // Get filtered sections based on selected bridge
+  const filteredSections = useMemo(() => {
+    if (!selectedDistrict || !selectedBridge) return [];
+    return bridgeData
+      .filter(item => item.district === selectedDistrict && item.bridge_name === selectedBridge)
+      .map(item => item.section_name)
+      .sort();
+  }, [selectedDistrict, selectedBridge]);
+
+  // Reset dependent fields when district changes
+  useEffect(() => {
+    setSelectedBridge("");
+    setSelectedSection("");
+  }, [selectedDistrict]);
+
+  // Reset section when bridge changes
+  useEffect(() => {
+    setSelectedSection("");
+  }, [selectedBridge]);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -252,21 +294,60 @@ export function JembatanView() {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Nama Jembatan/Kode Jembatan
-              <span className="text-red-500">*</span>
+              Kecamatan<span className="text-red-500">*</span>
             </label>
-            <TextareaWithMic
-              value={namaJembatan}
-              onChange={(e) => setNamaJembatan(e.target.value)}
-              placeholder="Contoh: Jembatan Mantingan"
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                errors.namaJembatan
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}
+            <SearchableSelect
+              options={districts}
+              value={selectedDistrict}
+              onValueChange={setSelectedDistrict}
+              placeholder="Pilih Kecamatan..."
+              emptyMessage="Tidak ada kecamatan yang ditemukan"
+              className={errors.district ? "border-red-500" : ""}
             />
-            {errors.namaJembatan && (
-              <p className="text-red-500 text-sm mt-1">{errors.namaJembatan}</p>
+            {errors.district && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.district}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Nama Jembatan<span className="text-red-500">*</span>
+            </label>
+            <SearchableSelect
+              options={filteredBridges}
+              value={selectedBridge}
+              onValueChange={setSelectedBridge}
+              placeholder={selectedDistrict ? "Pilih Jembatan..." : "Pilih Kecamatan terlebih dahulu"}
+              emptyMessage="Tidak ada jembatan yang ditemukan"
+              disabled={!selectedDistrict}
+              className={errors.bridge ? "border-red-500" : ""}
+            />
+            {errors.bridge && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.bridge}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Nama Ruas<span className="text-red-500">*</span>
+            </label>
+            <SearchableSelect
+              options={filteredSections}
+              value={selectedSection}
+              onValueChange={setSelectedSection}
+              placeholder={selectedBridge ? "Pilih Ruas..." : "Pilih Jembatan terlebih dahulu"}
+              emptyMessage="Tidak ada ruas yang ditemukan"
+              disabled={!selectedBridge}
+              className={errors.section ? "border-red-500" : ""}
+            />
+            {errors.section && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.section}
+              </p>
             )}
           </div>
 
@@ -276,11 +357,10 @@ export function JembatanView() {
             </label>
             <Select value={jenisStruktur} onValueChange={setJenisStruktur}>
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.jenisStruktur
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.jenisStruktur
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+                  }`}
               >
                 <SelectValue placeholder="Pilih Jenis Struktur" />
               </SelectTrigger>
@@ -303,11 +383,10 @@ export function JembatanView() {
             </label>
             <Select value={jenisKerusakan} onValueChange={setJenisKerusakan}>
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.jenisKerusakan
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.jenisKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+                  }`}
               >
                 <SelectValue placeholder="Pilih Jenis Kerusakan" />
               </SelectTrigger>
@@ -343,11 +422,10 @@ export function JembatanView() {
               onValueChange={setTingkatKerusakan}
             >
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.tingkatKerusakan
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.tingkatKerusakan
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+                  }`}
               >
                 <SelectValue placeholder="Pilih Tingkat Kerusakan" />
               </SelectTrigger>
@@ -393,11 +471,10 @@ export function JembatanView() {
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                  errors.latitude
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.latitude
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+                  }`}
                 placeholder="-7.4034"
                 enableVoice={false}
               />
@@ -414,11 +491,10 @@ export function JembatanView() {
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                  errors.longitude
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.longitude
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+                  }`}
                 placeholder="111.4464"
                 enableVoice={false}
               />
@@ -470,11 +546,10 @@ export function JembatanView() {
               onValueChange={setKondisiLaluLintas}
             >
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.kondisiLaluLintas
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.kondisiLaluLintas
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+                  }`}
               >
                 <SelectValue placeholder="Pilih Kondisi Lalu Lintas Saat ini" />
               </SelectTrigger>
@@ -508,11 +583,10 @@ export function JembatanView() {
               onChange={(e) => setVolumeLaluLintas(e.target.value)}
               placeholder="Contoh: 200"
               enableVoice={false}
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                errors.volumeLaluLintas
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-200 focus:ring-blue-500"
-              }`}
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.volumeLaluLintas
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-200 focus:ring-blue-500"
+                }`}
             />
             {errors.volumeLaluLintas && (
               <p className="text-red-500 text-sm mt-1">
@@ -530,11 +604,10 @@ export function JembatanView() {
               onValueChange={setKategoriPrioritas}
             >
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.kategoriPrioritas
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                }`}
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.kategoriPrioritas
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-200 focus:ring-blue-500"
+                  }`}
               >
                 <SelectValue placeholder="Pilih Kategori Prioritas Penanganan" />
               </SelectTrigger>
@@ -551,18 +624,10 @@ export function JembatanView() {
             )}
           </div>
 
-          {/* Foto Lokasi dengan GPS */}
+          {/* Foto Lokasi */}
           <div className="md:col-span-2">
             <SmartImageUploader
               label="Foto Lokasi/Kerusakan"
-              onCoordinatesExtracted={(coords, index) => {
-                // Auto-update koordinat dari GPS foto pertama
-                if (index === 0) {
-                  setLatitude(coords.latitude.toString());
-                  setLongitude(coords.longitude.toString());
-                  setPosition([coords.latitude, coords.longitude]);
-                }
-              }}
               onFilesSelected={(files: File[]) => {
                 setFotoKerusakan(files);
               }}
@@ -571,9 +636,6 @@ export function JembatanView() {
               }}
               maxFiles={2}
               required
-              enableCamera={true}
-              enableGPSExtraction={true}
-              autoFillCoordinates={true}
             />
             {errors.fotoKerusakan && (
               <p className="text-red-500 text-sm mt-1">
