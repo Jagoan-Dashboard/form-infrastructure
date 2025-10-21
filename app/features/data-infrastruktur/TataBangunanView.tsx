@@ -21,6 +21,7 @@ import { useFormDataStore } from "~/store/formDataStore";
 import { useCheckIndexData } from "~/middleware/checkIndexData";
 import { toast } from "sonner";
 import SmartImageUploader from "~/components/SmartImageUploader";
+import TataBangunanDetails from "~/components/tataBangunanDetails";
 import {
   buildingTypeToApi,
   reportStatusToApi,
@@ -28,6 +29,8 @@ import {
   workTypeToApi,
   conditionAfterRehabToApi
 } from "~/utils/enumMapper";
+
+type ReportStatus = 'kerusakan' | 'rehabilitasi' | 'pembangunan-baru';
 
 export function TataBangunanView() {
   // Check if IndexView data is filled
@@ -43,7 +46,7 @@ export function TataBangunanView() {
   // Form states
   const [namaBangunan, setNamaBangunan] = useState("");
   const [jenisBangunan, setJenisBangunan] = useState("");
-  const [statusLaporan, setStatusLaporan] = useState("");
+  const [statusLaporan, setStatusLaporan] = useState<ReportStatus | "">("");
   const [sumberDana, setSumberDana] = useState("");
   const [tahunPembangunan, setTahunPembangunan] = useState("");
   const [alamatLengkap, setAlamatLengkap] = useState("");
@@ -58,7 +61,7 @@ export function TataBangunanView() {
   // Error states
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | undefined>(undefined);
 
   const navigate = useNavigate();
   const { indexData } = useFormDataStore();
@@ -241,7 +244,7 @@ export function TataBangunanView() {
     }
 
     setIsSubmitting(true);
-    setSubmitError(null);
+    setSubmitError(undefined);
 
     try {
       const apiData = mapFormToApiData();
@@ -338,7 +341,9 @@ export function TataBangunanView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Status Laporan<span className="text-red-500">*</span>
             </label>
-            <Select value={statusLaporan} onValueChange={setStatusLaporan}>
+            <Select 
+              value={statusLaporan} 
+              onValueChange={(value: string) => setStatusLaporan(value as ReportStatus)}>
               <SelectTrigger
                 className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
                   errors.statusLaporan
@@ -349,6 +354,9 @@ export function TataBangunanView() {
                 <SelectValue placeholder="Pilih Status Laporan" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="kerusakan">
+                  Kerusakan
+                </SelectItem>
                 <SelectItem value="rehabilitasi">
                   Rehabilitasi/Perbaikan
                 </SelectItem>
@@ -587,115 +595,24 @@ export function TataBangunanView() {
         </div>
       </div>
 
-      {/* Detail Kerusakan - Hide only for "Pembangunan Baru" */}
+      {/* Detail Section - Conditionally rendered based on statusLaporan */}
       {statusLaporan !== "pembangunan-baru" && statusLaporan !== "" && (
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
-          <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-            Detail Kerusakan
-          </h3>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Jenis Pekerjaan<span className="text-red-500">*</span>
-              </label>
-              <Select value={jenisPekerjaan} onValueChange={setJenisPekerjaan}>
-                <SelectTrigger
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                    errors.jenisPekerjaan
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-200 focus:ring-blue-500"
-                  }`}
-                >
-                  <SelectValue placeholder="Pilih Jenis Pekerjaan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="perbaikan-atap">Perbaikan Atap</SelectItem>
-                  <SelectItem value="perbaikan-lantai">Perbaikan Lantai</SelectItem>
-                  <SelectItem value="perbaikan-dinding">
-                    Perbaikan Dinding/Cat
-                  </SelectItem>
-                  <SelectItem value="perbaikan-pintu-jendela">
-                    Perbaikan Pintu/Jendela
-                  </SelectItem>
-                  <SelectItem value="perbaikan-sanitasi">
-                    Perbaikan Sanitasi/MCK
-                  </SelectItem>
-                  <SelectItem value="perbaikan-listrik-air">
-                    Perbaikan Listrik/Air
-                  </SelectItem>
-                  <SelectItem value="lainnya">Lainnya</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.jenisPekerjaan && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.jenisPekerjaan}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Kondisi Setelah Rehabilitasi<span className="text-red-500">*</span>
-              </label>
-              <Select
-                value={kondisiSetelahRehabilitasi}
-                onValueChange={setKondisiSetelahRehabilitasi}
-              >
-                <SelectTrigger
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                    errors.kondisiSetelahRehabilitasi
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-200 focus:ring-blue-500"
-                  }`}
-                >
-                  <SelectValue placeholder="Pilih Kondisi Setelah Rehabilitasi" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="baik-siap-pakai">
-                    Baik & Siap Pakai
-                  </SelectItem>
-                  <SelectItem value="butuh-perbaikan">
-                    Masih Membutuhkan Perbaikan Tambahan
-                  </SelectItem>
-                  <SelectItem value="lainnya">Lainnya</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.kondisiSetelahRehabilitasi && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.kondisiSetelahRehabilitasi}
-                </p>
-              )}
-            </div>
-
-            {/* Foto Lokasi */}
-            <div className="md:col-span-2">
-              <SmartImageUploader
-                label="Foto Bangunan"
-                onFilesSelected={(files: File[]) => {
-                  setFotoKerusakan(files);
-                }}
-                onPreviewUrlsUpdated={(urls: string[]) => {
-                  setPreviewUrls(urls);
-                }}
-                maxFiles={2}
-                required
-              />
-              {errors.fotoKerusakan && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.fotoKerusakan}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Error Message */}
-          {submitError && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-              <p className="text-red-600 text-sm font-medium">{submitError}</p>
-            </div>
-          )}
-        </div>
+        <TataBangunanDetails
+          reportStatus={statusLaporan}
+          jenisPekerjaan={jenisPekerjaan}
+          setJenisPekerjaan={setJenisPekerjaan}
+          kondisiSetelahRehabilitasi={kondisiSetelahRehabilitasi}
+          setKondisiSetelahRehabilitasi={setKondisiSetelahRehabilitasi}
+          fotoKerusakan={fotoKerusakan}
+          setFotoKerusakan={setFotoKerusakan}
+          errors={{
+            jenisPekerjaan: errors.jenisPekerjaan,
+            kondisiSetelahRehabilitasi: errors.kondisiSetelahRehabilitasi,
+            fotoKerusakan: errors.fotoKerusakan
+          }}
+          submitError={submitError}
+          setSubmitError={setSubmitError}
+        />
       )}
 
       {/* Action Buttons - Always visible */}

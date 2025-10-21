@@ -898,5 +898,15 @@
     "district": "WIDODAREN",
     "bridge_name": "WATUALANG",
     "section_name": "WATUALANG - PITU"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "WATUALANG",
+    "section_name": "TES 1"
+  },
+  {
+    "district": "WIDODAREN",
+    "bridge_name": "WATUALANG",
+    "section_name": "TES 2"
   }
 ]

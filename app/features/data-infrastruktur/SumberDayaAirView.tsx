@@ -586,7 +586,7 @@ export function SumberDayaAirView() {
                   Tersumbat Sampah
                 </SelectItem>
                 <SelectItem value="beton-rusak">
-                  Struktur Beton Rusak
+                  Struktur Rusak
                 </SelectItem>
                 <SelectItem value="pintu-macet">
                   Pintu Air Macet/Tidak Berfungsi
@@ -759,9 +759,6 @@ export function SumberDayaAirView() {
 
           {/* Foto Lokasi */}
           <div className="md:col-span-2">
-            <Label className="text-sm font-semibold text-gray-700 mb-4">
-              Foto Lokasi/Kerusakan<span className="text-red-500">*</span>
-            </Label>
             <SmartImageUploader
               label="Foto Lokasi/Kerusakan"
               onFilesSelected={(files: File[]) => {

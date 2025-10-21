@@ -1,32 +1,24 @@
 import React, { useState, useRef } from "react";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
-import exifr from "exifr";
 
-interface GPSCoordinates {
-  latitude: number;
-  longitude: number;
-}
-
-interface SmartImageUploaderProps {
+export interface ImageUploaderProps {
   onFilesSelected?: (files: File[]) => void;
   onPreviewUrlsUpdated?: (urls: string[]) => void;
   maxFiles?: number;
   label?: string;
   required?: boolean;
   className?: string;
-  // All camera and GPS features are disabled
 }
 
-export default function SmartImageUploader({
+export default function ImageUploader({
   onFilesSelected,
   onPreviewUrlsUpdated,
   maxFiles = 2,
   label = "Foto Lokasi",
   required = false,
   className = "",
-}: SmartImageUploaderProps) {
+}: ImageUploaderProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -136,7 +128,7 @@ export default function SmartImageUploader({
       <label className="block text-sm font-semibold text-gray-700 mb-2">
         {label}
         {required && <span className="text-red-500"> * </span>}
-        <span className="text-blue-500 font-medium">(Pastikan foto yang diupload memuat data lokasi)</span>
+        <span className="text-blue-500 font-medium">(Maksimal {maxFiles} foto)</span>
       </label>
 
       {/* File Upload Area with Preview */}
