@@ -184,8 +184,6 @@ export const binamargaJalanApi = {
 
     // Road identification
     formData.append('road_name', data.road_name);
-    formData.append('road_type', data.road_type.toUpperCase());
-    formData.append('road_class', data.road_class.toUpperCase());
     formData.append('segment_length', data.segment_length.toString());
 
     // Location
