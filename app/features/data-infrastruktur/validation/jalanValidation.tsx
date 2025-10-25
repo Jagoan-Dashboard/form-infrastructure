@@ -20,14 +20,18 @@ export const jalanSchema = z.object({
     }, "Longitude harus berupa angka antara -180 dan 180"),
 
   // Informasi Ruas Jalan validation
+  institusi: z
+    .string()
+    .min(1, "Institusi wajib dipilih"),
+
+  kecamatan: z
+    .string()
+    .min(1, "Kecamatan wajib dipilih"),
+
   namaRuasJalan: z
     .string()
     .min(1, "Nama Ruas Jalan/Kode Ruas wajib diisi")
     .max(100, "Nama Ruas Jalan tidak boleh lebih dari 100 karakter"),
-
-  jenisJalan: z
-    .string()
-    .min(1, "Jenis Jalan wajib dipilih"),
 
   panjangSegmen: z
     .string()
@@ -37,10 +41,6 @@ export const jalanSchema = z.object({
       const num = parseFloat(val);
       return num > 0;
     }, "Panjang Segmen harus lebih dari 0"),
-
-  klasifikasiFungsi: z
-    .string()
-    .min(1, "Klasifikasi Fungsi Jalan wajib dipilih"),
 
   // Data Teknis Perkerasan Jalan validation
   jenisPerkerasan: z

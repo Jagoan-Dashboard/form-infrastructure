@@ -89,6 +89,23 @@ export const tataBangunanSchema = z.object({
     }, "Semua file harus berformat JPG, JPEG, atau PNG"),
 });
 
+// Validation schema untuk kerusakan (membutuhkan foto dan jenis pekerjaan, tapi tidak kondisi setelah rehab)
+export const tataBangunanKerusakanSchema = tataBangunanSchema.extend({
+  jenisPekerjaan: z
+    .string()
+    .min(1, "Jenis Pekerjaan wajib dipilih"),
+
+  fotoKerusakan: z
+    .array(z.instanceof(File))
+    .min(1, "Minimal 1 foto harus diupload")
+    .refine((files) => {
+      return files.every(file => file.size <= 5 * 1024 * 1024); // 5MB max per file
+    }, "Setiap file tidak boleh lebih dari 5MB")
+    .refine((files) => {
+      return files.every(file => ["image/jpeg", "image/jpg", "image/png"].includes(file.type));
+    }, "Semua file harus berformat JPG, JPEG, atau PNG"),
+});
+
 // Validation schema untuk rehabilitasi/perbaikan
 export const tataBangunanRehabilitasiSchema = tataBangunanSchema.extend({
   jenisPekerjaan: z

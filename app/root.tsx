@@ -48,11 +48,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         
         
         {/* Meta tags SEO */}
-        <title>Dashboard Ngawi</title>
-        <meta name="description" content="Dashboard Ngawi" />
-        <meta name="application-name" content="Dashboard Ngawi" />
+        <title>Form Ngawi</title>
+        <meta name="description" content="Form Ngawi" />
+        <meta name="application-name" content="Form Ngawi" />
         <meta name="author" content="Pemerintah Kabupaten Ngawi" />
-        <meta name="keywords" content="Dashboard Ngawi, Pemerintah Kabupaten Ngawi" />
+        <meta name="keywords" content="Form Ngawi, Pemerintah Kabupaten Ngawi" />
 
         <Meta />
         <Links />

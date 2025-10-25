@@ -1,5 +1,3 @@
-import z from "zod";
-import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
 import { InputWithMic } from "~/components/InputWithMic";
@@ -13,260 +11,62 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useNavigate } from "react-router";
-import { apiService } from "~/services/apiService";
-import type { TataBangunanForm } from "~/types/formData";
-import { Label } from "~/components/ui/label";
-import { tataBangunanSchema, tataBangunanRehabilitasiSchema } from "./validation/tataBangunanValidation";
-import { useFormDataStore } from "~/store/formDataStore";
 import { useCheckIndexData } from "~/middleware/checkIndexData";
-import { toast } from "sonner";
-import SmartImageUploader from "~/components/SmartImageUploader";
 import TataBangunanDetails from "~/components/tataBangunanDetails";
-import {
-  buildingTypeToApi,
-  reportStatusToApi,
-  fundingSourceToApi,
-  workTypeToApi,
-  conditionAfterRehabToApi
-} from "~/utils/enumMapper";
+import { useGeolocation, useTataBangunan } from "./hooks";
 
 type ReportStatus = 'kerusakan' | 'rehabilitasi' | 'pembangunan-baru';
 
 export function TataBangunanView() {
-  // Check if IndexView data is filled
   useCheckIndexData();
 
-  const [position, setPosition] = useState<[number, number]>([
-    -7.4034, 111.4464,
-  ]); // Default: Ngawi
-  const [latitude, setLatitude] = useState("-7.4034");
-  const [longitude, setLongitude] = useState("111.4464");
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-
-  // Form states
-  const [namaBangunan, setNamaBangunan] = useState("");
-  const [jenisBangunan, setJenisBangunan] = useState("");
-  const [statusLaporan, setStatusLaporan] = useState<ReportStatus | "">("");
-  const [sumberDana, setSumberDana] = useState("");
-  const [tahunPembangunan, setTahunPembangunan] = useState("");
-  const [alamatLengkap, setAlamatLengkap] = useState("");
-  const [luasLantai, setLuasLantai] = useState("");
-  const [jumlahLantai, setJumlahLantai] = useState("");
-  const [jenisPekerjaan, setJenisPekerjaan] = useState("");
-  const [kondisiSetelahRehabilitasi, setKondisiSetelahRehabilitasi] =
-    useState("");
-  const [fotoKerusakan, setFotoKerusakan] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-
-  // Error states
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | undefined>(undefined);
-
   const navigate = useNavigate();
-  const { indexData } = useFormDataStore();
+  
+  // Use custom hooks
+  const {
+    position,
+    setPosition,
+    latitude,
+    longitude,
+    isLoadingLocation,
+    handleLatitudeChange,
+    handleLongitudeChange,
+    aktivasiLokasi,
+  } = useGeolocation();
 
-  // Sync position dengan input values
-  useEffect(() => {
-    if (position) {
-      setLatitude(position[0].toString());
-      setLongitude(position[1].toString());
-    }
-  }, [position]);
+  const {
+    namaBangunan,
+    setNamaBangunan,
+    jenisBangunan,
+    setJenisBangunan,
+    statusLaporan,
+    setStatusLaporan,
+    sumberDana,
+    setSumberDana,
+    tahunPembangunan,
+    setTahunPembangunan,
+    alamatLengkap,
+    setAlamatLengkap,
+    luasLantai,
+    setLuasLantai,
+    jumlahLantai,
+    setJumlahLantai,
+    jenisPekerjaan,
+    setJenisPekerjaan,
+    kondisiSetelahRehabilitasi,
+    setKondisiSetelahRehabilitasi,
+    previewUrls,
+    fotoKerusakan,
+    setFotoKerusakan,
+    errors,
+    isSubmitting,
+    submitError,
+    setSubmitError,
+    handleSubmit: handleFormSubmit,
+  } = useTataBangunan();
 
-  // Handle manual input latitude
-  const handleLatitudeChange = (value: string) => {
-    setLatitude(value);
-    const lat = parseFloat(value);
-    if (!isNaN(lat) && !isNaN(parseFloat(longitude))) {
-      setPosition([lat, parseFloat(longitude)]);
-    }
-  };
-
-  // Handle manual input longitude
-  const handleLongitudeChange = (value: string) => {
-    setLongitude(value);
-    const lng = parseFloat(value);
-    if (!isNaN(lng) && !isNaN(parseFloat(latitude))) {
-      setPosition([parseFloat(latitude), lng]);
-    }
-  };
-
-  // Aktifkan GPS location
-  const aktivasiLokasi = () => {
-    setIsLoadingLocation(true);
-
-    // Check if geolocation is supported
-    if (!("geolocation" in navigator)) {
-      alert("Geolocation tidak didukung oleh browser Anda.");
-      setIsLoadingLocation(false);
-      return;
-    }
-
-    // Check if running on localhost (HTTP) vs production (HTTPS)
-    const isSecureContext = window.isSecureContext;
-    if (!isSecureContext) {
-      console.warn(
-        "Geolocation might not work properly in non-HTTPS environment"
-      );
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const newPosition: [number, number] = [
-          pos.coords.latitude,
-          pos.coords.longitude,
-        ];
-        setPosition(newPosition);
-        setIsLoadingLocation(false);
-        console.log(`Location received: ${newPosition[0]}, ${newPosition[1]}`);
-      },
-      (error) => {
-        setIsLoadingLocation(false);
-        console.error("Error getting location:", error);
-
-        // Provide more specific error messages
-        let errorMessage = "Tidak dapat mengakses lokasi. ";
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage +=
-              "Izin lokasi ditolak. Silakan aktifkan izin lokasi di pengaturan browser/device Anda.";
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage += "Informasi lokasi tidak tersedia.";
-            break;
-          case error.TIMEOUT:
-            errorMessage += "Permintaan lokasi timeout.";
-            break;
-          default:
-            errorMessage += "Pastikan izin lokasi diaktifkan dan coba lagi.";
-            break;
-        }
-        alert(errorMessage);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000,
-      }
-    );
-  };
-
-  const validateForm = () => {
-    try {
-      // Use different schema based on status laporan
-      // Only "Pembangunan Baru" doesn't require detail kerusakan
-      const schema = statusLaporan === "pembangunan-baru"
-        ? tataBangunanSchema
-        : tataBangunanRehabilitasiSchema;
-
-      schema.parse({
-        latitude,
-        longitude,
-        namaBangunan,
-        jenisBangunan,
-        statusLaporan,
-        sumberDana,
-        tahunPembangunan,
-        alamatLengkap,
-        luasLantai,
-        jumlahLantai,
-        jenisPekerjaan,
-        kondisiSetelahRehabilitasi,
-        fotoKerusakan,
-      });
-
-      // If validation passes, clear errors
-      setErrors({});
-      return true;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const newErrors: Record<string, string> = {};
-        error.issues.forEach((err) => {
-          // Use the field path as key, not the message
-          if (err.path && err.path.length > 0) {
-            const fieldName = err.path[0] as string;
-            newErrors[fieldName] = err.message;
-          }
-        });
-        setErrors(newErrors);
-        return false;
-      }
-      return false;
-    }
-  };
-
-  // Map form values to API format
-  const mapFormToApiData = (): TataBangunanForm & {
-    photoFiles?: File[];
-    reporter_name: string;
-    reporter_role: string;
-    village: string;
-    district: string;
-  } => {
-    return {
-      // Reporter info from index form
-      reporter_name: indexData?.namaPelapor || "Default Reporter",
-      reporter_role: indexData?.jabatan || "Public",
-      village: indexData?.desaKecamatan || "Default Village",
-      district: indexData?.desaKecamatan || "Default District",
-
-      // Building identification - MAP TO API FORMAT
-      building_name: namaBangunan,
-      building_type: buildingTypeToApi(jenisBangunan),
-      report_status: reportStatusToApi(statusLaporan),
-      funding_source: fundingSourceToApi(sumberDana),
-      last_year_construction: parseInt(tahunPembangunan),
-
-      // Technical data
-      full_address: alamatLengkap,
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude),
-      floor_area: parseFloat(luasLantai),
-      floor_count: jumlahLantai,
-
-      // Optional rehabilitation data - MAP TO API FORMAT
-      work_type: jenisPekerjaan ? workTypeToApi(jenisPekerjaan) : "",
-      condition_after_rehab: kondisiSetelahRehabilitasi ? conditionAfterRehabToApi(kondisiSetelahRehabilitasi) : "",
-
-      // Photos as string array (base64 or URLs - but we'll use files)
-      photos: previewUrls,
-
-      // Actual files for upload
-      photoFiles: fotoKerusakan,
-    };
-  };
-
-  // Handle form submission
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitError(undefined);
-
-    try {
-      const apiData = mapFormToApiData();
-      const response = await apiService.submitBuildingReport(apiData);
-
-      if (response.data.success) {
-        toast.success("Data berhasil dikirim!");
-        navigate("/success");
-      } else {
-        throw new Error(response.data.message || "Submission failed");
-      }
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Terjadi kesalahan saat mengirim data";
-      toast.error("Gagal mengirim data", {
-        description: errorMessage,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleSubmit = () => {
+    handleFormSubmit(latitude, longitude);
   };
 
 
@@ -288,11 +88,10 @@ export function TataBangunanView() {
               value={namaBangunan}
               onChange={(e) => setNamaBangunan(e.target.value)}
               placeholder="Contoh: SMA Negeri"
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                errors.namaBangunan
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.namaBangunan
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-200 focus:ring-blue-500"
-              }`}
+                }`}
             />
             {errors.namaBangunan && (
               <p className="text-red-500 text-sm mt-1">{errors.namaBangunan}</p>
@@ -306,11 +105,10 @@ export function TataBangunanView() {
             </label>
             <Select value={jenisBangunan} onValueChange={setJenisBangunan}>
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.jenisBangunan
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.jenisBangunan
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
               >
                 <SelectValue placeholder="Pilih Jenis Bangunan" />
               </SelectTrigger>
@@ -341,15 +139,14 @@ export function TataBangunanView() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Status Laporan<span className="text-red-500">*</span>
             </label>
-            <Select 
-              value={statusLaporan} 
+            <Select
+              value={statusLaporan}
               onValueChange={(value: string) => setStatusLaporan(value as ReportStatus)}>
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.statusLaporan
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.statusLaporan
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
               >
                 <SelectValue placeholder="Pilih Status Laporan" />
               </SelectTrigger>
@@ -379,11 +176,10 @@ export function TataBangunanView() {
             </label>
             <Select value={sumberDana} onValueChange={setSumberDana}>
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.sumberDana
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.sumberDana
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
               >
                 <SelectValue placeholder="Pilih Sumber Dana" />
               </SelectTrigger>
@@ -416,11 +212,10 @@ export function TataBangunanView() {
               onChange={(e) => setTahunPembangunan(e.target.value)}
               placeholder="Contoh: 2010"
               enableVoice={false}
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                errors.tahunPembangunan
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.tahunPembangunan
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-200 focus:ring-blue-500"
-              }`}
+                }`}
             />
             {errors.tahunPembangunan && (
               <p className="text-red-500 text-sm mt-1">
@@ -447,11 +242,10 @@ export function TataBangunanView() {
               value={alamatLengkap}
               onChange={(e) => setAlamatLengkap(e.target.value)}
               placeholder="Contoh: Jl. Teuku Umar 63211 Ngawi Jawa Timur"
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                errors.alamatLengkap
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.alamatLengkap
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-200 focus:ring-blue-500"
-              }`}
+                }`}
             />
             {errors.alamatLengkap && (
               <p className="text-red-500 text-sm mt-1">
@@ -470,11 +264,10 @@ export function TataBangunanView() {
               onChange={(e) => setLuasLantai(e.target.value)}
               placeholder="Contoh: 500"
               enableVoice={false}
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                errors.luasLantai
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.luasLantai
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-200 focus:ring-blue-500"
-              }`}
+                }`}
             />
             {errors.luasLantai && (
               <p className="text-red-500 text-sm mt-1">{errors.luasLantai}</p>
@@ -487,11 +280,10 @@ export function TataBangunanView() {
             </label>
             <Select value={jumlahLantai} onValueChange={setJumlahLantai}>
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.jumlahLantai
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.jumlahLantai
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
               >
                 <SelectValue placeholder="Pilih Jumlah Lantai" />
               </SelectTrigger>
@@ -534,11 +326,10 @@ export function TataBangunanView() {
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                  errors.latitude
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.latitude
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
                 placeholder="-7.4034"
                 enableVoice={false}
               />
@@ -555,11 +346,10 @@ export function TataBangunanView() {
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                  errors.longitude
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.longitude
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
                 placeholder="111.4464"
                 enableVoice={false}
               />

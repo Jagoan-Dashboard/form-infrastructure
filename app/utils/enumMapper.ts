@@ -26,8 +26,10 @@ import {
   URGENCY_CATEGORY_OPTIONS,
   IRRIGATION_TYPE_OPTIONS,
   WATER_DAMAGE_TYPE_OPTIONS,
-  INSTITUTION_OPTIONS,
+  INSTITUTION_TATA_RUANG,
   getApiValue,
+  INSTITUTION_UNIT_BINAMARGA,
+  INSTITUTION_UNIT_SDA,
 } from '~/constants/formOptions';
 
 // ============================================
@@ -58,8 +60,8 @@ export const conditionAfterRehabToApi = (uiValue: string): string => {
 // BINA MARGA MAPPERS
 // ============================================
 
-export const institutionToApi = (uiValue: string): string => {
-  return getApiValue(INSTITUTION_OPTIONS, uiValue);
+export const institutionBinaMargaToApi = (uiValue: string): string => {
+  return getApiValue(INSTITUTION_UNIT_BINAMARGA, uiValue);
 };
 
 export const roadTypeToApi = (uiValue: string): string => {
@@ -106,6 +108,10 @@ export const bridgeDamageLevelToApi = (uiValue: string): string => {
 // TATA RUANG MAPPERS
 // ============================================
 
+export const institutionTataRuangToApi = (uiValue: string): string => {
+  return getApiValue(INSTITUTION_TATA_RUANG, uiValue);
+};
+
 export const areaCategoryToApi = (uiValue: string): string => {
   return getApiValue(AREA_CATEGORY_OPTIONS, uiValue);
 };
@@ -129,6 +135,10 @@ export const urgencyCategoryToApi = (uiValue: string): string => {
 // ============================================
 // SUMBER DAYA AIR MAPPERS
 // ============================================
+
+export const institutionSumberDayaAirToApi = (uiValue: string): string => {
+  return getApiValue(INSTITUTION_UNIT_SDA, uiValue);
+};
 
 export const irrigationTypeToApi = (uiValue: string): string => {
   return getApiValue(IRRIGATION_TYPE_OPTIONS, uiValue);
@@ -155,7 +165,6 @@ export const peranPelaporToInstitution = (peran: string): string => {
   };
   return mapping[peran] || 'DESA';
 };
-
 /**
  * Generic mapper untuk mengubah kebab-case atau lowercase ke SCREAMING_SNAKE_CASE
  * Contoh: "ringan" → "RINGAN", "jalan-nasional" → "JALAN_NASIONAL"

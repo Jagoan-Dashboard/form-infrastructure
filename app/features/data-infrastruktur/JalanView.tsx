@@ -1,9 +1,6 @@
-import z from "zod";
-import { useEffect, useState } from "react";
 import Maps from "./components/Maps";
 import { Icon } from "@iconify/react";
 import { InputWithMic } from "~/components/InputWithMic";
-import { TextareaWithMic } from "~/components/TextareaWithMic";
 import { Button } from "~/components/ui/button";
 import {
   Select,
@@ -13,262 +10,70 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useNavigate } from "react-router";
-import { jalanSchema } from "./validation/jalanValidation";
-import { apiService } from "~/services/apiService";
-import type { BinamargaJalanForm } from "~/types/formData";
-import { useFormDataStore } from "~/store/formDataStore";
-import {
-  peranPelaporToInstitution,
-  pavementTypeToApi,
-  roadDamageTypeToApi,
-  damageLevelToApi,
-  trafficConditionToApi,
-  urgencyLevelToApi
-} from "~/utils/enumMapper";
 import { useCheckIndexData } from "~/middleware/checkIndexData";
-import { toast } from "sonner";
 import SmartImageUploader from "~/components/SmartImageUploader";
 import SearchableSelect from "~/components/search/SearchableSelect";
-import { getDistricts, getRoadsByDistrict, searchRoads } from "~/utils/roadUtils";
+import { searchRoads } from "~/utils/roadUtils";
+import { useGeolocation, useJalan } from "./hooks";
 
 export function JalanView() {
-  // Check if IndexView data is filled
   useCheckIndexData();
 
-  const [position, setPosition] = useState<[number, number]>([
-    -7.4034, 111.4464,
-  ]); // Default: Ngawi
-  const [latitude, setLatitude] = useState("-7.4034");
-  const [longitude, setLongitude] = useState("111.4464");
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-
-  // Form states
-  const [selectedKecamatan, setSelectedKecamatan] = useState("");
-  const [selectedJalan, setSelectedJalan] = useState("");
-  const [panjangSegmen, setPanjangSegmen] = useState("");
-  const [jenisPerkerasan, setJenisPerkerasan] = useState("");
-  const [jenisKerusakan, setJenisKerusakan] = useState("");
-  const [tingkatKerusakan, setTingkatKerusakan] = useState("");
-  const [panjangKerusakan, setPanjangKerusakan] = useState("");
-  const [lebarKerusakan, setLebarKerusakan] = useState("");
-  const [totalLuasKerusakan, setTotalLuasKerusakan] = useState("");
-  const [kondisiLaluLintas, setKondisiLaluLintas] = useState("");
-  const [volumeLaluLintas, setVolumeLaluLintas] = useState("");
-  const [kategoriPrioritas, setKategoriPrioritas] = useState("");
-  const [fotoKerusakan, setFotoKerusakan] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  
-  // Load districts for the select
-  const districts = getDistricts();
-  const [availableRoads, setAvailableRoads] = useState<string[]>([]);
-
-  // Update available roads when district changes
-  useEffect(() => {
-    if (selectedKecamatan) {
-      const roads = getRoadsByDistrict(selectedKecamatan);
-      setAvailableRoads(roads);
-      // Reset selected jalan when kecamatan changes
-      setSelectedJalan("");
-    } else {
-      setAvailableRoads([]);
-      setSelectedJalan("");
-    }
-  }, [selectedKecamatan]);
-
-  // Error states
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
   const navigate = useNavigate();
-  const { indexData } = useFormDataStore();
 
-  // Sync position dengan input values
-  useEffect(() => {
-    if (position) {
-      setLatitude(position[0].toString());
-      setLongitude(position[1].toString());
-    }
-  }, [position]);
+  // Use custom hooks
+  const {
+    position,
+    setPosition,
+    latitude,
+    longitude,
+    isLoadingLocation,
+    handleLatitudeChange,
+    handleLongitudeChange,
+    aktivasiLokasi,
+  } = useGeolocation();
 
-  // Handle manual input latitude
-  const handleLatitudeChange = (value: string) => {
-    setLatitude(value);
-    const lat = parseFloat(value);
-    if (!isNaN(lat) && !isNaN(parseFloat(longitude))) {
-      setPosition([lat, parseFloat(longitude)]);
-    }
-  };
+  const {
+    institusi,
+    setInstitusi,
+    selectedKecamatan,
+    setSelectedKecamatan,
+    selectedJalan,
+    setSelectedJalan,
+    panjangSegmen,
+    setPanjangSegmen,
+    jenisPerkerasan,
+    setJenisPerkerasan,
+    jenisKerusakan,
+    setJenisKerusakan,
+    tingkatKerusakan,
+    setTingkatKerusakan,
+    panjangKerusakan,
+    setPanjangKerusakan,
+    lebarKerusakan,
+    setLebarKerusakan,
+    totalLuasKerusakan,
+    setTotalLuasKerusakan,
+    kondisiLaluLintas,
+    setKondisiLaluLintas,
+    volumeLaluLintas,
+    setVolumeLaluLintas,
+    kategoriPrioritas,
+    setKategoriPrioritas,
+    fotoKerusakan,
+    setFotoKerusakan,
+    previewUrls,
+    setPreviewUrls,
+    errors,
+    isSubmitting,
+    submitError,
+    districts,
+    availableRoads,
+    handleSubmit: handleFormSubmit,
+  } = useJalan();
 
-  // Handle manual input longitude
-  const handleLongitudeChange = (value: string) => {
-    setLongitude(value);
-    const lng = parseFloat(value);
-    if (!isNaN(lng) && !isNaN(parseFloat(latitude))) {
-      setPosition([parseFloat(latitude), lng]);
-    }
-  };
-
-  // Aktifkan GPS location
-  const aktivasiLokasi = () => {
-    setIsLoadingLocation(true);
-
-    // Check if geolocation is supported
-    if (!("geolocation" in navigator)) {
-      alert("Geolocation tidak didukung oleh browser Anda.");
-      setIsLoadingLocation(false);
-      return;
-    }
-
-    // Check if running on localhost (HTTP) vs production (HTTPS)
-    const isSecureContext = window.isSecureContext;
-
-    // Use more specific options for mobile
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const newPosition: [number, number] = [
-          pos.coords.latitude,
-          pos.coords.longitude,
-        ];
-        setPosition(newPosition);
-        setIsLoadingLocation(false);
-      },
-      (error) => {
-        setIsLoadingLocation(false);
-
-        // Provide more specific error messages
-        let errorMessage = "Tidak dapat mengakses lokasi. ";
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage +=
-              "Izin lokasi ditolak. Silakan aktifkan izin lokasi di pengaturan browser/device Anda.";
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage += "Informasi lokasi tidak tersedia.";
-            break;
-          case error.TIMEOUT:
-            errorMessage += "Permintaan lokasi timeout.";
-            break;
-          default:
-            errorMessage += "Pastikan izin lokasi diaktifkan dan coba lagi.";
-            break;
-        }
-        alert(errorMessage);
-      },
-      {
-        enableHighAccuracy: true, // Use GPS if available for better accuracy
-        timeout: 10000, // 10 seconds timeout
-        maximumAge: 60000, // Accept cached position up to 1 minute old
-      }
-    );
-  };
-
-  const validateForm = () => {
-    try {
-      jalanSchema.parse({
-        latitude,
-        longitude,
-        namaRuasJalan: selectedJalan,
-        panjangSegmen,
-        jenisPerkerasan,
-        jenisKerusakan,
-        tingkatKerusakan,
-        panjangKerusakan,
-        lebarKerusakan,
-        totalLuasKerusakan,
-        kondisiLaluLintas,
-        volumeLaluLintas,
-        kategoriPrioritas,
-        fotoKerusakan,
-      });
-
-      // If validation passes, clear errors
-      setErrors({});
-      return true;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const newErrors: Record<string, string> = {};
-        error.issues.forEach((err) => {
-          // Use the field path as key, not the message
-          if (err.path && err.path.length > 0) {
-            const fieldName = err.path[0] as string;
-            newErrors[fieldName] = err.message;
-          }
-        });
-        setErrors(newErrors);
-        return false;
-      }
-      return false;
-    }
-  };
-
-  // Map form values to API format
-  const mapFormToApiData = (): BinamargaJalanForm & { photoFiles?: File[] } => {
-    return {
-      // Reporter info from index form
-      reporter_name: indexData?.namaPelapor || "Default Reporter",
-      institution_unit: peranPelaporToInstitution(indexData?.peranPelapor || ""),
-      phone_number: indexData?.nomorHP || "000000000000",
-      report_datetime:
-        (indexData?.tanggalLaporan instanceof Date
-          ? indexData.tanggalLaporan.toISOString()
-          : new Date().toISOString()),
-
-      // Road identification - MAP TO API FORMAT
-      road_name: selectedJalan,
-      segment_length: parseFloat(panjangSegmen) || 0,
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude),
-
-      // Damage details - MAP TO API FORMAT
-      pavement_type: pavementTypeToApi(jenisPerkerasan),
-      damage_type: roadDamageTypeToApi(jenisKerusakan),
-      damage_level: damageLevelToApi(tingkatKerusakan),
-      damaged_length: parseFloat(panjangKerusakan) || 0,
-      damaged_width: parseFloat(lebarKerusakan) || 0,
-      total_damaged_area: parseFloat(totalLuasKerusakan) || 0,
-
-      // Traffic impact - MAP TO API FORMAT
-      traffic_condition: trafficConditionToApi(kondisiLaluLintas),
-      daily_traffic_volume: parseInt(volumeLaluLintas) || 0,
-      urgency_level: urgencyLevelToApi(kategoriPrioritas),
-
-      // Photos
-      photos: previewUrls,
-      photoFiles: fotoKerusakan,
-    };
-  };
-
-  // Handle form submission
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      const apiData = mapFormToApiData();
-      const response = await apiService.submitBinamargaJalan(apiData);
-
-      if (response.data.success) {
-        toast.success("Data berhasil dikirim!");
-        navigate("/success");
-      } else {
-        throw new Error(response.data.message || "Submission failed");
-      }
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Terjadi kesalahan saat mengirim data";
-      toast.error("Gagal mengirim data", {
-        description: errorMessage,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleSubmit = () => {
+    handleFormSubmit(latitude, longitude);
   };
 
   return (
@@ -282,6 +87,33 @@ export function JalanView() {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Institusi<span className="text-red-500">*</span>
+            </label>
+            <Select value={institusi} onValueChange={setInstitusi}>
+              <SelectTrigger
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.institusi
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-200 focus:ring-blue-500"
+                  }`}
+              >
+                <SelectValue placeholder="Pilih Institusi" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desa">
+                  Desa
+                </SelectItem>
+                <SelectItem value="kecamatan">Kecamatan</SelectItem>
+                <SelectItem value="upt-jalan">UPT Jalan</SelectItem>
+                <SelectItem value="dinas-pupr">Dinas PUPR</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.institusi && (
+              <p className="text-red-500 text-sm mt-1">{errors.institusi}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Lokasi Jalan<span className="text-red-500">*</span>
             </label>
             <SearchableSelect
@@ -290,11 +122,11 @@ export function JalanView() {
               onValueChange={setSelectedKecamatan}
               placeholder="Cari Kecamatan..."
               emptyMessage="Tidak ada kecamatan yang ditemukan"
-              className={errors.selectedKecamatan ? "border-red-500" : ""}
+              className={errors.kecamatan ? "border-red-500" : ""}
             />
-            {errors.selectedKecamatan && (
+            {errors.kecamatan && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.selectedKecamatan}
+                {errors.kecamatan}
               </p>
             )}
           </div>
@@ -334,11 +166,10 @@ export function JalanView() {
               onChange={(e) => setPanjangSegmen(e.target.value)}
               placeholder="Contoh: 2785"
               enableVoice={false}
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                errors.panjangSegmen
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.panjangSegmen
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-200 focus:ring-blue-500"
-              }`}
+                }`}
             />
             {errors.panjangSegmen && (
               <p className="text-red-500 text-sm mt-1">
@@ -374,11 +205,10 @@ export function JalanView() {
                 type="text"
                 value={latitude}
                 onChange={(e) => handleLatitudeChange(e.target.value)}
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                  errors.latitude
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.latitude
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
                 placeholder="-7.4034"
                 enableVoice={false}
               />
@@ -395,11 +225,10 @@ export function JalanView() {
                 type="text"
                 value={longitude}
                 onChange={(e) => handleLongitudeChange(e.target.value)}
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                  errors.longitude
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.longitude
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
                 placeholder="111.4464"
                 enableVoice={false}
               />
@@ -448,11 +277,10 @@ export function JalanView() {
             </label>
             <Select value={jenisPerkerasan} onValueChange={setJenisPerkerasan}>
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.jenisPerkerasan
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.jenisPerkerasan
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
               >
                 <SelectValue placeholder="Pilih Jenis Perkerasan" />
               </SelectTrigger>
@@ -476,11 +304,10 @@ export function JalanView() {
             </label>
             <Select value={jenisKerusakan} onValueChange={setJenisKerusakan}>
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.jenisKerusakan
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.jenisKerusakan
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
               >
                 <SelectValue placeholder="Pilih Jenis Kerusakan" />
               </SelectTrigger>
@@ -517,11 +344,10 @@ export function JalanView() {
               onValueChange={setTingkatKerusakan}
             >
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.tingkatKerusakan
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.tingkatKerusakan
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
               >
                 <SelectValue placeholder="Pilih Tingkat Kerusakan" />
               </SelectTrigger>
@@ -548,11 +374,10 @@ export function JalanView() {
               onChange={(e) => setPanjangKerusakan(e.target.value)}
               placeholder="Contoh: 10"
               enableVoice={false}
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
-                errors.panjangKerusakan
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${errors.panjangKerusakan
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-200 focus:ring-blue-500"
-              }`}
+                }`}
             />
             {errors.panjangKerusakan && (
               <p className="text-red-500 text-sm mt-1">
@@ -571,11 +396,10 @@ export function JalanView() {
               onChange={(e) => setLebarKerusakan(e.target.value)}
               placeholder="Contoh: 2"
               enableVoice={false}
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
-                errors.lebarKerusakan
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${errors.lebarKerusakan
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-200 focus:ring-blue-500"
-              }`}
+                }`}
             />
             {errors.lebarKerusakan && (
               <p className="text-red-500 text-sm mt-1">
@@ -594,11 +418,10 @@ export function JalanView() {
               onChange={(e) => setTotalLuasKerusakan(e.target.value)}
               placeholder="Contoh: 20"
               enableVoice={false}
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
-                errors.totalLuasKerusakan
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${errors.totalLuasKerusakan
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-200 focus:ring-blue-500"
-              }`}
+                }`}
             />
             {errors.totalLuasKerusakan && (
               <p className="text-red-500 text-sm mt-1">
@@ -624,11 +447,10 @@ export function JalanView() {
               onValueChange={setKondisiLaluLintas}
             >
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.kondisiLaluLintas
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.kondisiLaluLintas
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
               >
                 <SelectValue placeholder="Pilih Kondisi Lalu Lintas Saat ini" />
               </SelectTrigger>
@@ -662,11 +484,10 @@ export function JalanView() {
               onChange={(e) => setVolumeLaluLintas(e.target.value)}
               placeholder="Contoh: 200"
               enableVoice={false}
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
-                errors.volumeLaluLintas
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${errors.volumeLaluLintas
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-200 focus:ring-blue-500"
-              }`}
+                }`}
             />
             {errors.volumeLaluLintas && (
               <p className="text-red-500 text-sm mt-1">
@@ -684,11 +505,10 @@ export function JalanView() {
               onValueChange={setKategoriPrioritas}
             >
               <SelectTrigger
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${
-                  errors.kategoriPrioritas
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all appearance-none bg-white ${errors.kategoriPrioritas
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:ring-blue-500"
-                }`}
+                  }`}
               >
                 <SelectValue placeholder="Pilih Kategori Prioritas Penanganan" />
               </SelectTrigger>

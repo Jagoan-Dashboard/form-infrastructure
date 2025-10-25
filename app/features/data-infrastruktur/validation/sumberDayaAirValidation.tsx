@@ -29,6 +29,10 @@ export const sumberDayaAirSchema = z.object({
     .string()
     .min(1, "Jenis Irigasi wajib dipilih"),
 
+  institusi: z
+    .string()
+    .min(1, "Institusi wajib dipilih"),
+
   // Data Kerusakan validation
   jenisKerusakan: z
     .string()

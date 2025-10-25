@@ -20,10 +20,23 @@ export const jembatanSchema = z.object({
     }, "Longitude harus berupa angka antara -180 dan 180"),
 
   // Data Jembatan validation
+  institusi: z
+    .string()
+    .min(1, "Institusi wajib dipilih"),
+
+  kecamatan: z
+    .string()
+    .min(1, "Kecamatan wajib dipilih"),
+
   namaJembatan: z
     .string()
     .min(1, "Nama Jembatan/Kode Jembatan wajib diisi")
     .max(100, "Nama Jembatan tidak boleh lebih dari 100 karakter"),
+
+  namaRuas: z
+    .string()
+    .min(1, "Nama Ruas wajib diisi")
+    .max(100, "Nama Ruas tidak boleh lebih dari 100 karakter"),
 
   jenisStruktur: z
     .string()

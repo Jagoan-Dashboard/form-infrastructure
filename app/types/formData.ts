@@ -54,6 +54,8 @@ export interface SumberDayaAirForm {
     damage_level: string;
     estimated_length: number;
     estimated_width: number;
+    estimated_depth: number;
+    estimated_area: number;
     estimated_volume: number;
     affected_rice_field_area: number;
     affected_farmers_count: number;
@@ -68,6 +70,7 @@ export interface BinamargaJalanForm {
     phone_number: string;
     report_datetime: string;
 
+    district: string;
     road_name: string;
     segment_length: number;
     latitude: number;
@@ -94,7 +97,9 @@ export interface BinamargaJembatanForm {
     phone_number: string;
     report_datetime: string;
 
+    district: string;
     bridge_name: string;
+    bridge_section: string;
     bridge_structure_type: string;
     latitude: number;
     longitude: number;

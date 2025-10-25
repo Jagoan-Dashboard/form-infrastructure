@@ -25,6 +25,10 @@ export const tataRuangSchema = z.object({
     .min(1, "Gambaran area lokasi/kawasan wajib diisi")
     .max(200, "Gambaran area tidak boleh lebih dari 200 karakter"),
 
+  instansi: z
+    .string()
+    .min(1, "Instansi wajib dipilih"),
+
   kategoriKawasan: z
     .string()
     .min(1, "Kategori Kawasan wajib dipilih"),

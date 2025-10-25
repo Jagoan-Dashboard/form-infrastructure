@@ -107,6 +107,11 @@ export const BUILDING_TYPE_OPTIONS: SelectOption[] = [
 
 export const REPORT_STATUS_OPTIONS: SelectOption[] = [
   {
+    value: 'kerusakan',
+    label: 'Kerusakan',
+    apiValue: REPORT_STATUS.KERUSAKAN,
+  },
+  {
     value: 'rehabilitasi',
     label: 'Rehabilitasi/Perbaikan',
     apiValue: REPORT_STATUS.REHABILITASI,
@@ -216,7 +221,7 @@ export const CONDITION_AFTER_REHAB_OPTIONS: SelectOption[] = [
 // BINA MARGA OPTIONS
 // ============================================
 
-export const INSTITUTION_OPTIONS: SelectOption[] = [
+export const INSTITUTION_TATA_RUANG: SelectOption[] = [
   {
     value: 'dinas',
     label: 'Dinas',
@@ -231,6 +236,47 @@ export const INSTITUTION_OPTIONS: SelectOption[] = [
     value: 'kecamatan',
     label: 'Kecamatan',
     apiValue: INSTITUTION_UNIT.KECAMATAN,
+  },
+];
+
+export const INSTITUTION_UNIT_SDA: SelectOption[] = [
+  {
+    value: 'upt-irigasi',
+    label: 'UPT Irigasi',
+    apiValue: INSTITUTION_UNIT.UPT_IRIGASI,
+  },
+  {
+    value: 'poktan',
+    label: 'Poktan',
+    apiValue: INSTITUTION_UNIT.POKTAN,
+  },
+  {
+    value: 'dinas-pupr',
+    label: 'Dinas PUPR',
+    apiValue: INSTITUTION_UNIT.DINAS_PUPR,
+  },
+];
+
+export const INSTITUTION_UNIT_BINAMARGA: SelectOption[] = [
+  {
+    value: 'desa',
+    label: 'Desa',
+    apiValue: INSTITUTION_UNIT.DESA,
+  },
+  {
+    value: 'kecamatan',
+    label: 'Kecamatan',
+    apiValue: INSTITUTION_UNIT.KECAMATAN,
+  },
+  {
+    value: 'dinas-pupr',
+    label: 'Dinas PUPR',
+    apiValue: INSTITUTION_UNIT.DINAS_PUPR,
+  },
+  {
+    value: 'upt-jalan',
+    label: 'UPT Jalan',
+    apiValue: INSTITUTION_UNIT.UPT_JALAN,
   },
 ];
 
